@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Check-in</title>
+</head>
+<body>
+    <center>
+        {% if room_name %}
+            <form method="get" action="/check_in">
+                <h2>ห้อง : {{ room_name }}</h2>
+                <button name="room" type="submit" value="{{ room_name }}">Check in</button>
+            </form>
+        {% elif error_message %}
+            <h2>{{ error_message }}</h2>
+        {% elif localtime %}
+            <h1>ห้อง : {{ room_check_in }}</h1>
+            <h2>เวลา Check-in : {{ localtime }}</h2>
+            <button type="submit">Check out</button>
+        {% endif %}
+    </center>
+</body>
+</html>

@@ -8,6 +8,7 @@
         {% if room_name %}
             <form  method="get" action="{% url 'kmutnbtrackapp:check_in' %}" >
                 <h2>ห้อง : {{ room_name }}</h2>
+                <h4>จำนวนคน :</h4> <h4 style="color: aquamarine;">{{ room_amount }}</h4>
                 <button name="room" type="submit" value="{{ room_name }}">Check in</button>
             </form>
         {% elif error_message %}

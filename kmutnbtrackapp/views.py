@@ -17,7 +17,7 @@ def home(request):
         return render(request, 'home.html', {"error_message": error_message})
 
 def checkIn(request):
-    room_check_in = request.GET.get('room')
+    room_check_in = request.GET.get('next')
     localtime = time.asctime(time.localtime(time.time()))
     print(room_check_in)
     print("เวลา Check in :", localtime)

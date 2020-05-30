@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% if not user.is_authenticated %}
+    <a href="{% url "social:begin" "google-oauth2" %}">Sign in with KMUTNB google account</a><br>
+    {% endif %}
+    {% if user.is_authenticated %}
+        <h1>Logged in as {{ user.first_name }}</h1>
+    <a href="{% url "logout" %}">Logout</a>
+    {% endif %}
+</head>
+<body>
+
+</body>
+</html>

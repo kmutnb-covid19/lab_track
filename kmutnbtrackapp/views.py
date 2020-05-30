@@ -4,12 +4,12 @@ import time
 # Create your views here.
 
 
-def login(request):#this function is used when user get in home page
-    return render(request,'Page/login.html')
+def login(request,room_name):#this function is used when user get in home page
+    return render(request,'Page/login.html', {"room_name": room_name})
 
 def home(request):
     if request.GET:
-        room_name = request.GET.get('room')
+        room_name = request.GET.get('next')
         print(room_name)
         return render(request,'home.html',{"room_name":room_name})
     else:

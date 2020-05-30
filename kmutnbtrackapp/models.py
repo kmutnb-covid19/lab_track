@@ -10,9 +10,3 @@ class StudentID(models.Model):
 
     def __str__(self):
         return self.student_id
-
-
-class History(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    lab_name = models.TextField(blank=True)
-    time = models.DateTimeField(blank=True)

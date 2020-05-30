@@ -32,10 +32,22 @@ def checkIn(request):
         Student = StudentID.objects.get(user=request.user)
         lab_obj = Lab.objects.get(lab_name=lab_name)
         if not History.objects.filter(Student=Student,lab=lab_obj,lab_name=lab_obj.lab_name,student_name=request.user.first_name+request.user.last_name,student_ids=Student.student_id).exists():
-            localtime = time.asctime(time.localtime(time.time()))
-            History.objects.create(Student=Student,lab=lab_obj,lab_name=lab_obj.lab_name,student_name=request.user.first_name+request.user.last_name,student_ids=Student.student_id)
-            return render(request, 'home.html', {"localtime": localtime, "room_check_in": lab_name})
-        return render(request, 'home.html', {"localtime": History.date, "room_check_in": lab_name})
+            inlocaltime = time.asctime(time.localtime(time.time()))
+            History.objects.create(Student=Student,lab=lab_obj,lab_name=lab_obj.lab_name,student_name=request.user.first_name+request.user.last_name,student_ids=Student.student_id,checkin=inlocaltime)
+            return render(request, 'home.html', {"localtime": inlocaltime, "room_check_in": lab_name})
+        Log=History.objects.get(Student=Student, lab=lab_obj, lab_name=lab_obj.lab_name,student_name=request.user.first_name + request.user.last_name,student_ids=Student.student_id)
+        return render(request, 'home.html', {"localtime": Log.checkin, "room_check_in": lab_name})
     else:
         error_message = "QR code ไม่ถูกต้อง"
         return render(request, 'home.html', {"error_message": error_message})
+
+def checkOut(request):
+    lab_name = request.GET.get('roomout')
+    Student = StudentID.objects.get(user=request.user)
+    lab_obj = Lab.objects.get(lab_name=lab_name)
+    outlocaltime = time.asctime(time.localtime(time.time()))
+    Log=History.objects.get(Student=Student, lab=lab_obj, lab_name=lab_obj.lab_name,student_name=request.user.first_name + request.user.last_name,student_ids=Student.student_id)
+    if not Log.checkout:
+        Log.checkout=outlocaltime
+        Log.save()
+    return render(request, 'Page/logout_success.html', {"localtime": Log.checkout, "room_check_in": lab_name})

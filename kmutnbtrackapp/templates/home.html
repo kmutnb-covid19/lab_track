@@ -15,8 +15,11 @@
         {% elif localtime %}
             <h1>ห้อง : {{ room_check_in }}</h1>
             <h2>เวลา Check-in : {{ localtime }}</h2>
-            <button type="submit" onclick="location.href='{% url "logout" %}'">Check out</button>
+             <form  method="get" action="{% url 'kmutnbtrackapp:check_out' %}" >
+            <button name="roomout" type="submit" value="{{ room_check_in }}">Check out</button>
+            </form>
         {% endif %}
+
     </center>
 </body>
 </html>

@@ -13,10 +13,12 @@ class StudentID(models.Model):
     def __str__(self):
         return self.student_id
 class History(models.Model):
+#   id_by_date = models.อะไรสักอย่าง
     Student = models.ForeignKey(StudentID,on_delete=models.CASCADE)
     lab = models.ForeignKey(Lab, on_delete=models.CASCADE)
     lab_name = models.CharField(max_length=300,null=True)
-    date = models.DateTimeField(auto_now_add=True)
+    checkin = models.CharField(max_length=13,null=True)
+    checkout = models.CharField(max_length=13,null=True)
     student_name= models.CharField(max_length=50,blank=True)
     student_ids = models.CharField(max_length=13, blank=True)
 

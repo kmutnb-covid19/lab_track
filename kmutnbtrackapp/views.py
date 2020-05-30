@@ -1,7 +1,13 @@
-from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect
+from django.urls import reverse
+
+from kmutnbtrackapp.models import *
+from django.template import RequestContext
 import time
 
 # Create your views here.
+
 
 
 def login(request,room_name):#this function is used when user get in home page
@@ -9,17 +15,27 @@ def login(request,room_name):#this function is used when user get in home page
 
 def home(request):
     if request.GET:
-        room_name = request.GET.get('next')
-        print(room_name)
-        return render(request,'home.html',{"room_name":room_name})
+        lab_name = request.GET.get('next')
+        if not request.user.is_authenticated:#check if user do not login
+            return HttpResponseRedirect(reverse("kmutnbtrackapp:login",args=[lab_name]))
+        print(lab_name)
+        return render(request,'home.html',{"room_name":lab_name})
     else:
         error_message = "กรุณาสเเกน QR code หน้าห้อง หรือติดต่ออาจารย์ผู้สอน"
         return render(request, 'home.html', {"error_message": error_message})
 
 def checkIn(request):
-    room_check_in = request.GET.get('next')
-    localtime = time.asctime(time.localtime(time.time()))
-    print(room_check_in)
-    print("เวลา Check in :", localtime)
-
-    return render(request, 'home.html', {"localtime": localtime,"room_check_in":room_check_in})
+    lab_name = request.GET.get('room')
+    print("checkin:")
+    print(lab_name)
+    if Lab.objects.filter(lab_name=lab_name).exists():
+        Student = StudentID.objects.get(user=request.user)
+        lab_obj = Lab.objects.get(lab_name=lab_name)
+        if not History.objects.filter(Student=Student,lab=lab_obj,lab_name=lab_obj.lab_name,student_name=request.user.first_name+request.user.last_name,student_ids=Student.student_id).exists():
+            localtime = time.asctime(time.localtime(time.time()))
+            History.objects.create(Student=Student,lab=lab_obj,lab_name=lab_obj.lab_name,student_name=request.user.first_name+request.user.last_name,student_ids=Student.student_id)
+            return render(request, 'home.html', {"localtime": localtime, "room_check_in": lab_name})
+        return render(request, 'home.html', {"localtime": History.date, "room_check_in": lab_name})
+    else:
+        error_message = "QR code ไม่ถูกต้อง"
+        return render(request, 'home.html', {"error_message": error_message})

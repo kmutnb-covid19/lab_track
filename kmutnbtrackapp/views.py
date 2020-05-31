@@ -1,14 +1,21 @@
+"""
+Imports should be grouped in the following order:
+
+1.Standard library imports.
+2.Related third party imports.
+3.Local application/library specific imports.
+"""
+import datetime
+
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.template import RequestContext
 from django.urls import reverse
 from django.contrib.auth import logout
 
 from kmutnbtrackapp.models import *
-import datetime
-
 
 # Create your views here.
-
 
 def login(request, room_name):  # this function is used when user get in home page
     return render(request, 'Page/login.html', {"room_name": room_name})
@@ -17,16 +24,17 @@ def login(request, room_name):  # this function is used when user get in home pa
 def home(request):
     if request.GET:
         lab_name = request.GET.get('next')
-        if not request.user.is_authenticated:  # check if user do not login
-            return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=[lab_name]))
+        amount = Lab.objects.get(lab_name=lab_name)
+        if not request.user.is_authenticated:#check if user do not login
+            return HttpResponseRedirect(reverse("kmutnbtrackapp:login",args=[lab_name]))
         print(lab_name)
-        return render(request, 'home.html', {"room_name": lab_name})
+        return render(request,'home.html',{"room_name":lab_name, 'room_amount':amount})
     else:
         error_message = "กรุณาสเเกน QR code หน้าห้อง หรือติดต่ออาจารย์ผู้สอน"
         return render(request, 'home.html', {"error_message": error_message})
 
 
-def check_in(request):
+def check_in(request):  # api
     lab_name = request.GET.get('room')
     print("checkin:")
     print(lab_name)
@@ -52,7 +60,7 @@ def check_in(request):
         return render(request, 'home.html', {"error_message": error_message})
 
 
-def check_out(request):
+def check_out(request): # api
     lab_name = request.GET.get('roomout')
     student = StudentID.objects.get(user=request.user)
     lab_obj = Lab.objects.get(lab_name=lab_name)

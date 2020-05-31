@@ -1,8 +1,7 @@
-
 .idea/kmutnbtrack.iml
 *.xml
 *.pyc
 *.sqlite3
 *.iml
 db.sqlite3
-*.pyc
+

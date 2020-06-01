@@ -5,27 +5,18 @@
 </head>
 <body>
     <center>
-        {% if check_in_status %}
-            <h1>คุณยังไม่ได้ check out</h1>
-            <h1>ห้อง : {{ room }}</h1>
-             <form method="post" action="{% url 'kmutnbtrackapp:check_out' room %}" >
-             {% csrf_token %}
-            <button name="roomout" type="submit" value="{{ room }}">Check out</button>
-            </form>
-        {% elif room_name %}
-            <form method="post" action="{% url 'kmutnbtrackapp:check_in' room_name %}" >
-                {% csrf_token %}
+        {% if room_name %}
+            <form  method="get" action="{% url 'kmutnbtrackapp:check_in' lab_name=room_name %}" >
                 <h2>ห้อง : {{ room_name }}</h2>
                 <h4>จำนวนคน :</h4> <h4 style="color: aquamarine;">{{ room_amount }}</h4>
                 <button name="room" type="submit" value="{{ room_name }}">Check in</button>
             </form>
         {% elif error_message %}
             <h2>{{ error_message }}</h2>
-        {% elif room_check_in %}
+        {% elif localtime %}
             <h1>ห้อง : {{ room_check_in }}</h1>
             <h2>วัน เวลา Check-in : {{ localtime }}</h2>
-             <form method="post" action="{% url 'kmutnbtrackapp:check_out' room_check_in %}" >
-             {% csrf_token %}
+             <form  method="get" action="{% url 'kmutnbtrackapp:check_out' lab_name=room_check_in %}" >
             <button name="roomout" type="submit" value="{{ room_check_in }}">Check out</button>
             </form>
         {% endif %}

@@ -15,3 +15,4 @@ class HistoryAdmin(admin.ModelAdmin):
 
 admin.site.register(History, HistoryAdmin)
 admin.site.register(Lab, LabAdmin)
+admin.site.register(Person)

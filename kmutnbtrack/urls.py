@@ -20,8 +20,8 @@ from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path('', include('kmutnbtrackapp.urls')),
-    path('admin/', admin.site.urls),
     path('auth/', include('social_django.urls', namespace='social')),
+    path('admin/', admin.site.urls),
     path("logout/", LogoutView.as_view(next_page='/logout_success'), name="logout"),
-    path("logout_success", TemplateView.as_view(template_name="Page/logout_success.html"))
+    path("logout_success", TemplateView.as_view(template_name="Page/check_out_success.html"))
 ]

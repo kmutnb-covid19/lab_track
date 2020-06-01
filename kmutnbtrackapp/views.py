@@ -48,7 +48,7 @@ def login_page(request, room_name):  # this function is used when user get in ho
     if not request.user.is_authenticated:
         return render(request, 'Page/check_in.html', {"room_name": room_name})
     elif Person.objects.get(user=request.user).check_in_status == 1:
-        return HttpResponseRedirect(reverse("kmutnbtrackapp:check_in"))
+        return HttpResponseRedirect(reverse("kmutnbtrackapp:check_in", args=(room_name,)))
     else:
         return render(request, 'home.html', {"room_name": room_name})
 
@@ -58,7 +58,7 @@ def home(request):
         lab_name = request.GET.get('next')
         amount = Lab.objects.get(name=lab_name)
         if not request.user.is_authenticated:  # check if user do not login
-            return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=[lab_name]))
+            return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_name,)))
         print(lab_name)
         return render(request, 'home.html', {"room_name": lab_name, 'room_amount': amount})
     else:

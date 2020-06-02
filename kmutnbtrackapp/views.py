@@ -11,6 +11,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth import logout, authenticate, login
+from django.core.paginator import Paginator
 
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.forms import SignUpForm
@@ -98,3 +99,28 @@ def check_out(request, lab_name):  # api
         log.save()
     logout(request)
     return render(request, 'Page/check_out_success.html', {"localtime": log.checkout, "room_check_in": lab_name})
+
+def history_search(request):
+    if request.user.is_superuser:
+        try: # advance search
+            mode = request.GET['mode']
+            q = request.GET['q']
+            from_date = request.GET['from']
+            to_date = request.GET['to']
+            
+        except: # no parameter
+            try: # with page number ?
+                page_number = request.GET['page']
+            except: # no page number
+                page_number = 1
+
+            all_history = History.objects.all()
+            p = Paginator(all_history, 24)
+            page_count = p.num_pages
+            shown_history = p.page(page_number)
+            return render(request, 'admin/history_search.html', 
+                    {'shown_history': shown_history,
+                        'page_number': page_number,
+                        'page_count': page_count,
+                    })
+

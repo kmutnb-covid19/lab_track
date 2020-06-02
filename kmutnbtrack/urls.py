@@ -18,9 +18,12 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LogoutView
 
+from kmutnbtrackapp import views
+
 urlpatterns = [
     path('', include('kmutnbtrackapp.urls')),
     path('auth/', include('social_django.urls', namespace='social')),
+    path('admin/history/search', views.history_search, name='history_search'),
     path('admin/', admin.site.urls),
     path("logout/", LogoutView.as_view(next_page='/logout_success'), name="logout"),
     path("logout_success", TemplateView.as_view(template_name="Page/check_out_success.html"))

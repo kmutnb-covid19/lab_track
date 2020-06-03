@@ -59,7 +59,7 @@ def home(request):
         amount = Lab.objects.get(name=lab_name)
         if not request.user.is_authenticated:  # check if user do not login
             return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_name,)))
-        print(lab_name)
+
         return render(request, 'home.html', {"room_name": lab_name, 'room_amount': amount})
     else:
         error_message = "กรุณาสเเกน QR code หน้าห้อง หรือติดต่ออาจารย์ผู้สอน"
@@ -73,7 +73,7 @@ def check_in(request, lab_name):  # api
         lab_name = History.objects.get(person=person, checkout=None).lab.name
         return render(request, 'home.html',
                       {"check_in_status": Person.objects.get(user=request.user).check_in_status,
-                       "room": lab_name})
+                       "room_check_in": lab_name})
     elif Lab.objects.filter(name=lab_name).exists():  # check that lab does exists
         if History.objects.filter(person=person,lab=lab_obj).count() != 0:  # เช็คอินครั้งแรก
             last_index = History.objects.filter(person=person,lab=lab_obj).count() - 1  # เอา index ตัวสุดท้ายที่อยู่ในโมเดลของประวัติโดยเรียงตามเวลาจะได้เวลาล่าสุดที่ check in lab นี้

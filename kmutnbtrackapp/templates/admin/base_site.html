@@ -1,0 +1,14 @@
+{% extends 'admin/base_site.html' %}
+
+{% load static %}
+
+{% block branding %}
+    <div class="head">
+        <h1 id="name">Labtrack Admin Dashboard</h1>
+        <a href="{% url 'history_search' %}"><button>History Search</button></a>
+    </div>
+    
+{% endblock %}
+
+
+

@@ -7,6 +7,8 @@ Imports should be grouped in the following order:
 """
 import datetime
 
+from django.db.models import F
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -77,8 +79,7 @@ def check_in(request, lab_name):  # api
                        "room_check_in": lab_name})
     elif Lab.objects.filter(name=lab_name).exists():  # check that lab does exists
         if History.objects.filter(person=person,lab=lab_obj).count() != 0:  # เช็คอินครั้งแรก
-            last_index = History.objects.filter(person=person,lab=lab_obj).count() - 1  # เอา index ตัวสุดท้ายที่อยู่ในโมเดลของประวัติโดยเรียงตามเวลาจะได้เวลาล่าสุดที่ check in lab นี้
-            time = History.objects.filter(person=person, lab=lab_obj).order_by('checkin')[last_index]
+            time = History.objects.filter(person=person, lab=lab_obj).order_by('checkin')[-1] # เอา index ตัวสุดท้ายที่อยู่ในโมเดลของประวัติโดยเรียงตามเวลาจะได้เวลาล่าสุดที่ check in lab นี้
             if datetime.datetime.now().hour - time.checkin.hour >= 1 or datetime.datetime.now().day > time.checkin.day:
                 person.check_in()
                 Log = History.objects.create(person=person, lab=lab_obj)
@@ -111,27 +112,53 @@ def check_out(request, lab_name):  # api
     logout(request)
     return render(request, 'Page/check_out_success.html', {"localtime": log.checkout, "room_check_in": lab_name})
 
-def history_search(request):
-    if request.user.is_superuser:
-        try: # advance search
-            mode = request.GET['mode']
-            q = request.GET['q']
-            from_date = request.GET['from']
-            to_date = request.GET['to']
-            
-        except: # no parameter
-            try: # with page number ?
-                page_number = request.GET['page']
-            except: # no page number
-                page_number = 1
 
-            all_history = History.objects.all()
-            p = Paginator(all_history, 24)
-            page_count = p.num_pages
-            shown_history = p.page(page_number)
-            return render(request, 'admin/history_search.html', 
-                    {'shown_history': shown_history,
-                        'page_number': page_number,
-                        'page_count': page_count,
-                    })
+
+def history_search(request,page=1):
+    if request.user.is_superuser:
+        histories = History.objects.all()
+
+        if request.GET:
+            mode = request.GET.get('mode','')
+            q = request.GET.get('q','')
+            start = request.GET.get('from','')
+            stop = request.GET.get('to','')
+
+            try:
+                start = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M") # convert from "2020-06-05T03:29" to Datetime object
+            except:
+                start = datetime.datetime.fromtimestamp(0)
+            
+            try:
+                stop = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M") # convert from "2020-06-05T03:29" to Datetime object
+            except:
+                stop = datetime.datetime.now()
+
+            histories = histories.exclude( Q(checkin__gt=stop) | Q(checkout__lt=start) )   # exclude every history which not intersect on timeline
+                        
+                                            
+                                            
+            if q != "": # if have specific keyword
+                if mode == "id":
+                    histories = histories.filter(Q(person__id__contains=q))
+                elif mode == "name":
+                    histories = histories.filter(Q(person__first_name__startswith=q) | Q(person__last_name__startswith=q))
+                elif mode == "lab":
+                    histories = histories.filter(Q(lab__name__contains=q))
+                elif mode == "tel":
+                    histories = histories.filter(Q(person__tel__contains=q))
+
+
+        p = Paginator(histories, 24)
+        page_range = p.page_range
+        shown_history = p.page(page)
+        return render(request, 'admin/history_search.html', 
+                {'shown_history': shown_history,
+                    'page_number': page,
+                    'page_range': page_range,
+                })
+
+
+def close_people_search(request):
+    return render(request, 'admin/risk_people_search.html')
 

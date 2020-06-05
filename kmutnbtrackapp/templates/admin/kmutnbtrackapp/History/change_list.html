@@ -1,0 +1,8 @@
+{% extends 'admin/change_list.html' %}
+
+{% block branding %}
+    <div class="head">
+        <h1 id="name">Labtrack Admin Dashboard</h1>
+    </div>
+    <a href="{% url 'admin_search' %}"><button>History Search Engine</button></a>
+{% endblock %}

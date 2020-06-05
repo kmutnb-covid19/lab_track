@@ -79,7 +79,7 @@ def check_in(request, lab_name):  # api
                        "room_check_in": lab_name})
     elif Lab.objects.filter(name=lab_name).exists():  # check that lab does exists
         if History.objects.filter(person=person,lab=lab_obj).count() != 0:  # เช็คอินครั้งแรก
-            time = History.objects.filter(person=person, lab=lab_obj).order_by('checkin')[-1] # เอา index ตัวสุดท้ายที่อยู่ในโมเดลของประวัติโดยเรียงตามเวลาจะได้เวลาล่าสุดที่ check in lab นี้
+            time = History.objects.filter(person=person, lab=lab_obj).order_by('checkin').last() # เอาตัวสุดท้ายที่อยู่ในโมเดลของประวัติโดยเรียงตามเวลาจะได้เวลาล่าสุดที่ check in lab นี้
             if datetime.datetime.now().hour - time.checkin.hour >= 1 or datetime.datetime.now().day > time.checkin.day:
                 person.check_in()
                 Log = History.objects.create(person=person, lab=lab_obj)
@@ -118,7 +118,7 @@ def history_search(request,page=1):
     if request.user.is_superuser:
         histories = History.objects.all()
 
-        if request.GET:
+        if request.GET: # if request has parameter
             mode = request.GET.get('mode','')
             q = request.GET.get('q','')
             start = request.GET.get('from','')
@@ -140,7 +140,7 @@ def history_search(request,page=1):
                                             
             if q != "": # if have specific keyword
                 if mode == "id":
-                    histories = histories.filter(Q(person__id__contains=q))
+                    histories = histories.filter(Q(person__student_id__startswith=q))
                 elif mode == "name":
                     histories = histories.filter(Q(person__first_name__startswith=q) | Q(person__last_name__startswith=q))
                 elif mode == "lab":
@@ -149,13 +149,13 @@ def history_search(request,page=1):
                     histories = histories.filter(Q(person__tel__contains=q))
 
 
-        p = Paginator(histories, 24)
-        page_range = p.page_range
-        shown_history = p.page(page)
+        #p = Paginator(histories, 24)
+        #page_range = p.page_range
+        #shown_history = p.page(page)
         return render(request, 'admin/history_search.html', 
-                {'shown_history': shown_history,
-                    'page_number': page,
-                    'page_range': page_range,
+                {'shown_history': histories,
+                    #'page_number': page,
+                    #'page_range': page_range,
                 })
 
 

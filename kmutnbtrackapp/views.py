@@ -114,21 +114,19 @@ def check_out(request, lab_name):  # api
 
 def querry_search(mode, keyword, start, stop):
     histories = History.objects.all()
-    try:
-        start = datetime.datetime.strptime(start,
-                                           "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
-    except:
-        start = datetime.datetime.fromtimestamp(0)
+    if type(start) != type(datetime.datetime.now()):
+        try:
+            start = datetime.datetime.strptime(start,
+                                               "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
+        except:
+            start = datetime.datetime.fromtimestamp(0)
 
-    try:
-        stop = datetime.datetime.strptime(stop, "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
-    except:
-        stop = datetime.datetime.now()
+    if type(stop) != type(datetime.datetime.now()):
+        try:
+            stop = datetime.datetime.strptime(stop, "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
+        except:
+            stop = datetime.datetime.now()
 
-    histories = histories.exclude(
-        Q(checkin__gt=stop) | Q(checkout__lt=start))  # exclude every history which not intersect on timeline
-
-    print(keyword)
     if keyword != "":  # if have specific keyword
         if mode == "id":
             histories = histories.filter(Q(person__student_id__startswith=keyword))
@@ -138,12 +136,14 @@ def querry_search(mode, keyword, start, stop):
             histories = histories.filter(Q(lab__name__contains=keyword))
         elif mode == "tel":
             histories = histories.filter(Q(person__tel__contains=keyword))
-    return histories
+        histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
+        return histories
+    else:
+        return 'EMPTY'
+
 
 def history_search(request,page=1):
     if request.user.is_superuser:
-        histories = History.objects.all()
-        print(request.GET)
         if request.GET: # if request has parameter
             mode = request.GET.get('mode','')
             keyword = request.GET.get('keyword','')
@@ -155,29 +155,19 @@ def history_search(request,page=1):
         #p = Paginator(histories, 24)
         #page_range = p.page_range
         #shown_history = p.page(page)
-        return render(request, 'admin/history_search.html', 
-                {'shown_history': histories,
-                    #'page_number': page,
-                    #'page_range': page_range,
-                })
+            return render(request, 'admin/history_search.html',
+                    {'shown_history': histories,
+                        #'page_number': page,
+                        #'page_range': page_range,
+                    })
+        else:
+            return render(request, 'admin/history_search.html',
+                    {'shown_history': '',
+                        #'page_number': page,
+                        #'page_range': page_range,
+                    })
 
-
-def close_people_search(request):
-    return render(request, 'admin/risk_people_search.html')
-
-def notify_user(request):
-    mode = request.GET.get('mode', '')
-    keyword = request.GET.get('keyword', '')
-    start = request.GET.get('from', '')
-    stop = request.GET.get('to', '')
-
-    user_history = querry_search(mode, keyword, start, stop)  #query set from db เอาไปใช้ตามสบาย
-
-    return render(request,'admin/notify.html',
-                {'notify_status': True,
-                })
-
-def export_csv(request):
+def export_normal_csv(request):
     mode = request.GET.get('mode', '')
     keyword = request.GET.get('keyword', '')
     start = request.GET.get('from', '')
@@ -191,4 +181,62 @@ def export_csv(request):
         writer.writerow([user.person, user.lab, user.checkin, user.checkout])
 
     response['Content-Disposition'] = 'attachment; filename="user_data.csv"'
+    return response
+
+def filter_risk_user(mode, keyword):
+    start = 0
+    stop = 0
+    risk_people_data = []
+    target_history = querry_search(mode, keyword, start, stop)
+
+    if target_history != 'EMPTY':
+        for user in target_history:
+            print(user.person, user.lab, user.checkin, user.checkout)
+            session_history = querry_search('lab', user.lab, user.checkin, user.checkout)
+            for session in session_history:
+                print('            ', session.person, session.lab, session.checkin, session.checkout)
+                risk_people_data.append([session.person.student_id,
+                                         session.person.first_name + ' ' + session.person.last_name,
+                                         session.lab,
+                                         session.checkin,
+                                         session.checkout])
+    return risk_people_data
+
+def close_people_search(request):
+    mode = request.GET.get('mode', '')
+    keyword = request.GET.get('keyword', '')
+
+    risk_people_data = filter_risk_user(mode, keyword)
+
+    return render(request, 'admin/risk_people_search.html',
+                  {'shown_history': risk_people_data,
+                   'shown_history_size': len(risk_people_data),
+                   # 'page_number': page,
+                   # 'page_range': page_range,
+                   })
+
+def notify_user(request):
+    mode = request.GET.get('mode', '')
+    keyword = request.GET.get('keyword', '')
+
+    risk_people_data = filter_risk_user(mode, keyword)    #เป็น list in list นะท๊อป โครงสร้างอยู่ใน filter_risk_user
+
+
+    return render(request,'admin/notify.html',
+                {'notify_status': True,
+                })
+
+def export_risk_csv(request):
+    mode = request.GET.get('mode', '')
+    keyword = request.GET.get('keyword', '')
+    risk_people_data = filter_risk_user(mode, keyword)
+
+    response = HttpResponse(content_type='text/csv')
+    writer = csv.writer(response)
+    writer.writerow(['Student ID', 'Person Name', 'Lab Name', 'Check in time', 'Check out time'])
+
+    for user in risk_people_data:
+        writer.writerow(user)
+
+    response['Content-Disposition'] = 'attachment; filename="risk_user_data.csv"'
     return response

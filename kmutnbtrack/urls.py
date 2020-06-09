@@ -28,6 +28,8 @@ urlpatterns = [
     path('admin/history/search/riskpeople/<int:page>', views.close_people_search),
     path('admin/history/search/history/', views.history_search, name='history_search'),
     path('admin/history/search/history/<int:page>', views.history_search),
+    path('admin/history/search/history/notify/', views.notify_user, name='notify'),
+    path('admin/history/search/history/download_csv/', views.export_csv, name='download_csv'),
     path('admin/', admin.site.urls),
     path("logout/", LogoutView.as_view(next_page='/logout_success'), name="logout"),
     path("logout_success", TemplateView.as_view(template_name="Page/check_out_success.html"))

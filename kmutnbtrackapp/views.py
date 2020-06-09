@@ -112,7 +112,7 @@ def check_out(request, lab_name):  # api
     logout(request)
     return render(request, 'Page/check_out_success.html', {"localtime": log.checkout, "room_check_in": lab_name})
 
-def querry_search(mode, q, start, stop):
+def querry_search(mode, keyword, start, stop):
     histories = History.objects.all()
     try:
         start = datetime.datetime.strptime(start,
@@ -121,34 +121,36 @@ def querry_search(mode, q, start, stop):
         start = datetime.datetime.fromtimestamp(0)
 
     try:
-        stop = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
+        stop = datetime.datetime.strptime(stop, "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
     except:
         stop = datetime.datetime.now()
 
     histories = histories.exclude(
         Q(checkin__gt=stop) | Q(checkout__lt=start))  # exclude every history which not intersect on timeline
 
-    if q != "":  # if have specific keyword
+    print(keyword)
+    if keyword != "":  # if have specific keyword
         if mode == "id":
-            histories = histories.filter(Q(person__student_id__startswith=q))
+            histories = histories.filter(Q(person__student_id__startswith=keyword))
         elif mode == "name":
-            histories = histories.filter(Q(person__first_name__startswith=q) | Q(person__last_name__startswith=q))
+            histories = histories.filter(Q(person__first_name__startswith=keyword) | Q(person__last_name__startswith=keyword))
         elif mode == "lab":
-            histories = histories.filter(Q(lab__name__contains=q))
+            histories = histories.filter(Q(lab__name__contains=keyword))
         elif mode == "tel":
-            histories = histories.filter(Q(person__tel__contains=q))
+            histories = histories.filter(Q(person__tel__contains=keyword))
     return histories
 
 def history_search(request,page=1):
     if request.user.is_superuser:
         histories = History.objects.all()
+        print(request.GET)
         if request.GET: # if request has parameter
             mode = request.GET.get('mode','')
-            q = request.GET.get('q','')
+            keyword = request.GET.get('keyword','')
             start = request.GET.get('from','')
             stop = request.GET.get('to','')
 
-            histories = querry_search(mode, q, start, stop)
+            histories = querry_search(mode, keyword, start, stop)
 
         #p = Paginator(histories, 24)
         #page_range = p.page_range
@@ -165,11 +167,11 @@ def close_people_search(request):
 
 def notify_user(request):
     mode = request.GET.get('mode', '')
-    q = request.GET.get('q', '')
+    keyword = request.GET.get('keyword', '')
     start = request.GET.get('from', '')
     stop = request.GET.get('to', '')
 
-    user_history = querry_search(mode, q, start, stop)  #query set from db เอาไปใช้ตามสบาย
+    user_history = querry_search(mode, keyword, start, stop)  #query set from db เอาไปใช้ตามสบาย
 
     return render(request,'admin/notify.html',
                 {'notify_status': True,
@@ -177,10 +179,10 @@ def notify_user(request):
 
 def export_csv(request):
     mode = request.GET.get('mode', '')
-    q = request.GET.get('q', '')
+    keyword = request.GET.get('keyword', '')
     start = request.GET.get('from', '')
     stop = request.GET.get('to', '')
-    histories = querry_search(mode, q, start, stop)
+    histories = querry_search(mode, keyword, start, stop)
     response = HttpResponse(content_type='text/csv')
     writer = csv.writer(response)
     writer.writerow(['Person Name', 'Lab Name', 'Check in time', 'Check out time'])

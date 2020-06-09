@@ -114,6 +114,7 @@ def check_out(request, lab_name):  # api
 
 def querry_search(mode, keyword, start, stop):
     histories = History.objects.all()
+
     if type(start) != type(datetime.datetime.now()):
         try:
             start = datetime.datetime.strptime(start,
@@ -126,7 +127,7 @@ def querry_search(mode, keyword, start, stop):
             stop = datetime.datetime.strptime(stop, "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now()
-
+    histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
     if keyword != "":  # if have specific keyword
         if mode == "id":
             histories = histories.filter(Q(person__student_id__startswith=keyword))
@@ -139,7 +140,7 @@ def querry_search(mode, keyword, start, stop):
         histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
         return histories
     else:
-        return 'EMPTY'
+        return histories
 
 
 def history_search(request,page=1):
@@ -175,10 +176,10 @@ def export_normal_csv(request):
     histories = querry_search(mode, keyword, start, stop)
     response = HttpResponse(content_type='text/csv')
     writer = csv.writer(response)
-    writer.writerow(['Person Name', 'Lab Name', 'Check in time', 'Check out time'])
+    writer.writerow(['Student ID', 'Person Name', 'Lab Name', 'Check in time', 'Check out time'])
 
     for user in histories:
-        writer.writerow([user.person, user.lab, user.checkin, user.checkout])
+        writer.writerow([str(user.person.student_id), user.person, user.lab, user.checkin, user.checkout])
 
     response['Content-Disposition'] = 'attachment; filename="user_data.csv"'
     return response
@@ -195,7 +196,7 @@ def filter_risk_user(mode, keyword):
             session_history = querry_search('lab', user.lab, user.checkin, user.checkout)
             for session in session_history:
                 print('            ', session.person, session.lab, session.checkin, session.checkout)
-                risk_people_data.append([session.person.student_id,
+                risk_people_data.append([str(session.person.student_id),
                                          session.person.first_name + ' ' + session.person.last_name,
                                          session.lab,
                                          session.checkin,

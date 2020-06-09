@@ -6,10 +6,11 @@ Imports should be grouped in the following order:
 3.Local application/library specific imports.
 """
 import datetime
+import csv
 
 from django.db.models import F
 from django.db.models import Q
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth import logout, authenticate, login
@@ -17,7 +18,6 @@ from django.core.paginator import Paginator
 
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.forms import SignUpForm
-
 
 # Create your views here.
 
@@ -112,42 +112,43 @@ def check_out(request, lab_name):  # api
     logout(request)
     return render(request, 'Page/check_out_success.html', {"localtime": log.checkout, "room_check_in": lab_name})
 
+def querry_search(mode, q, start, stop):
+    histories = History.objects.all()
+    try:
+        start = datetime.datetime.strptime(start,
+                                           "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
+    except:
+        start = datetime.datetime.fromtimestamp(0)
 
+    try:
+        stop = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
+    except:
+        stop = datetime.datetime.now()
+
+    histories = histories.exclude(
+        Q(checkin__gt=stop) | Q(checkout__lt=start))  # exclude every history which not intersect on timeline
+
+    if q != "":  # if have specific keyword
+        if mode == "id":
+            histories = histories.filter(Q(person__student_id__startswith=q))
+        elif mode == "name":
+            histories = histories.filter(Q(person__first_name__startswith=q) | Q(person__last_name__startswith=q))
+        elif mode == "lab":
+            histories = histories.filter(Q(lab__name__contains=q))
+        elif mode == "tel":
+            histories = histories.filter(Q(person__tel__contains=q))
+    return histories
 
 def history_search(request,page=1):
     if request.user.is_superuser:
         histories = History.objects.all()
-
         if request.GET: # if request has parameter
             mode = request.GET.get('mode','')
             q = request.GET.get('q','')
             start = request.GET.get('from','')
             stop = request.GET.get('to','')
 
-            try:
-                start = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M") # convert from "2020-06-05T03:29" to Datetime object
-            except:
-                start = datetime.datetime.fromtimestamp(0)
-            
-            try:
-                stop = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M") # convert from "2020-06-05T03:29" to Datetime object
-            except:
-                stop = datetime.datetime.now()
-
-            histories = histories.exclude( Q(checkin__gt=stop) | Q(checkout__lt=start) )   # exclude every history which not intersect on timeline
-                        
-                                            
-                                            
-            if q != "": # if have specific keyword
-                if mode == "id":
-                    histories = histories.filter(Q(person__student_id__startswith=q))
-                elif mode == "name":
-                    histories = histories.filter(Q(person__first_name__startswith=q) | Q(person__last_name__startswith=q))
-                elif mode == "lab":
-                    histories = histories.filter(Q(lab__name__contains=q))
-                elif mode == "tel":
-                    histories = histories.filter(Q(person__tel__contains=q))
-
+            histories = querry_search(mode, q, start, stop)
 
         #p = Paginator(histories, 24)
         #page_range = p.page_range
@@ -162,3 +163,30 @@ def history_search(request,page=1):
 def close_people_search(request):
     return render(request, 'admin/risk_people_search.html')
 
+def notify_user(request):
+    mode = request.GET.get('mode', '')
+    q = request.GET.get('q', '')
+    start = request.GET.get('from', '')
+    stop = request.GET.get('to', '')
+
+    user_history = querry_search(mode, q, start, stop)  #query set from db เอาไปใช้ตามสบาย
+
+    return render(request,'admin/notify.html',
+                {'notify_status': True,
+                })
+
+def export_csv(request):
+    mode = request.GET.get('mode', '')
+    q = request.GET.get('q', '')
+    start = request.GET.get('from', '')
+    stop = request.GET.get('to', '')
+    histories = querry_search(mode, q, start, stop)
+    response = HttpResponse(content_type='text/csv')
+    writer = csv.writer(response)
+    writer.writerow(['Person Name', 'Lab Name', 'Check in time', 'Check out time'])
+
+    for user in histories:
+        writer.writerow([user.person, user.lab, user.checkin, user.checkout])
+
+    response['Content-Disposition'] = 'attachment; filename="user_data.csv"'
+    return response

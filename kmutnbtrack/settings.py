@@ -148,3 +148,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+DEFAULT_FROM_EMAIL = 'bccsctop2@gmail.com'
+SERVER_EMAIL = 'bccsctop2@gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'bccsctop2@gmail.com'
+EMAIL_HOST_PASSWORD = 'affscrdnmysotbcr'

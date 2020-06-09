@@ -15,6 +15,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth import logout, authenticate, login
 from django.core.paginator import Paginator
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
 
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.forms import SignUpForm
@@ -197,10 +199,12 @@ def filter_risk_user(mode, keyword):
             for session in session_history:
                 print('            ', session.person, session.lab, session.checkin, session.checkout)
                 risk_people_data.append([str(session.person.student_id),
+                                         session.person.email,
                                          session.person.first_name + ' ' + session.person.last_name,
                                          session.lab,
                                          session.checkin,
                                          session.checkout])
+                    #index=> (0,stuid)(1,email)(2,first last)(3,lab)(4,checkin)(5,checkout)
     return risk_people_data
 
 def close_people_search(request):
@@ -220,8 +224,21 @@ def notify_user(request):
     mode = request.GET.get('mode', '')
     keyword = request.GET.get('keyword', '')
 
-    risk_people_data = filter_risk_user(mode, keyword)    #เป็น list in list นะท๊อป โครงสร้างอยู่ใน filter_risk_user
+    risk_people_data = filter_risk_user(mode, keyword)
+    for each_user in risk_people_data:
+        student_id = each_user[0]
+        user_email = each_user[1]
+        first_last_name = each_user[2]
+        lab_name = each_user[3]
 
+        subject = 'เทสการแจ้งเตือน'
+        message = render_to_string('mail.html',{'student_id': student_id,
+                                                'user_email': user_email,
+                                                'first_last_name': first_last_name,
+                                                'lab_name': lab_name,
+                                                })
+        email = EmailMessage(subject, message, to=[user_email])
+        email.send()
 
     return render(request,'admin/notify.html',
                 {'notify_status': True,

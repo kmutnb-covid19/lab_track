@@ -230,6 +230,7 @@ def risk_people_search(request):
 
             return render(request, 'admin/risk_people_search.html',
                     {'shown_history': risk_people_data,
+                     'keyword': keyword,
                     })
         else:
             return render(request, 'admin/risk_people_search.html',

@@ -18,7 +18,7 @@
                 <option value="name" selected="selected">name</option>
             </select>
 
-            <input name="keyword" placeholder="keyword here">
+            <input name="keyword" placeholder="keyword here" value="{{ keyword }}">
             <input type="submit" value="search">
             <button type="submit" formaction="{% url 'notify' %}">notify risk people</button>
             <button type="submit" formaction="{% url 'download_risk_csv' %}">download csv file</button>

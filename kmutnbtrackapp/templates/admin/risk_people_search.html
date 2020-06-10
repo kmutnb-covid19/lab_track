@@ -10,6 +10,7 @@
     <title>Risky people search</title>
 </head>
 <body>
+    <h5><a href="{% url 'admin:index' %}">admin home</a> > <a href="{% url 'admin_search' %}">main</a> > <a href="{% url 'risk_people_search' %}">Risky people search</a></h5>
     <h1 align="center">Risky people search</h1>
     <div>
         <form class="form-inline" action="{% url 'risk_people_search' %}" method="GET" enctype="multipart/form-data">

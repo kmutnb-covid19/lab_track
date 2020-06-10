@@ -146,6 +146,7 @@ def querry_search(mode, keyword, start, stop):
 
 def history_search(request,page=1):
     if request.user.is_superuser:
+        histories = "EMPTY"
         if request.GET: # if request has parameter
             mode = request.GET.get('mode','')
             keyword = request.GET.get('keyword','')
@@ -157,17 +158,12 @@ def history_search(request,page=1):
         #p = Paginator(histories, 24)
         #page_range = p.page_range
         #shown_history = p.page(page)
-            return render(request, 'admin/history_search.html',
-                    {'shown_history': histories,
-                        #'page_number': page,
-                        #'page_range': page_range,
-                    })
-        '''else:
-            return render(request, 'admin/history_search.html',
-                    {'shown_history': '',
-                        #'page_number': page,
-                        #'page_range': page_range,
-                    })'''
+        return render(request, 'admin/history_search.html',
+                {'shown_history': histories,
+                    #'page_number': page,
+                    #'page_range': page_range,
+                })
+
 
 def export_normal_csv(request):
     mode = request.GET.get('mode', '')

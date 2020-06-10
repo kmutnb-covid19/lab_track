@@ -199,7 +199,7 @@ def filter_risk_user(mode, keyword):
             checkin = user.checkin
             checkout = user.checkout
             print(user.person, user.lab, user.checkin, user.checkout)
-            session_history = querry_search('lab', lab, 0, 0)
+            session_history = querry_search('lab', lab, user.checkin, user.checkout)
             for session in session_history:
                 print('            ', session.person, session.lab, session.checkin, session.checkout)
                 risk_people_data.append([str(session.person.student_id),

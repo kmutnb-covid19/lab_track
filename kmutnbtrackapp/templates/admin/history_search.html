@@ -10,7 +10,7 @@
     <title>History Searching</title>
 </head>
 <body>
-    <h5><a href="{% url 'admin_search' %}">main</a> > <a href="{% url 'history_search' %}">History Searching</a></h5>
+    <h5><a href="{% url 'admin:index' %}">admin home</a> > <a href="{% url 'admin_search' %}">main</a> > <a href="{% url 'history_search' %}">History Searching</a></h5>
     <div>
         <form class="form-inline" action="{% url 'history_search' %}" method="GET" enctype="multipart/form-data">
             <select name="mode" id="mode">

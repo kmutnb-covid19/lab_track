@@ -149,10 +149,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-DEFAULT_FROM_EMAIL = 'bccsctop2@gmail.com'
-SERVER_EMAIL = 'bccsctop2@gmail.com'
+DEFAULT_FROM_EMAIL = 'KMUTNB labtrack <noreply@cony.codes>'
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.zoho.com'
+EMAIL_HOST_USER = 'noreply@cony.codes'
+EMAIL_HOST_PASSWORD = 'qwertyuiopQWERTYUIOP123'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'bccsctop2@gmail.com'
-EMAIL_HOST_PASSWORD = 'affscrdnmysotbcr'

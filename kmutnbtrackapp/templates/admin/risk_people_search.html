@@ -48,15 +48,14 @@
             </tr>
         </thead>
         <tbody id="table_body">
-            {% if shown_history_size > 0%}
-                {% for h in shown_history %}
-                <tr>
-                    <td>{{ h.0 }}</td>
-                    <td>{{ h.1 }}</td>
-                    <td></td>
-                    <td>{{ h.2 }}</td>
-                    <td>{{ h.3 }}</td>
-                    <td>{{ h.4 }}</td>
+            {% if shown_history %}
+                {% for each_user in shown_history %}  
+                    <tr>
+                    {% for each_data in each_user %}
+
+                        <td>{{ each_data }}</td>
+
+                    {% endfor %}
                 </tr>
                 {% endfor %}
             {% endif %}

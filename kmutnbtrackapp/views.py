@@ -111,7 +111,6 @@ def check_out(request, lab_name):  # api
     if not log.checkout:
         log.checkout = out_local_time
         log.save()
-    logout(request)
     return render(request, 'Page/check_out_success.html', {"localtime": log.checkout, "room_check_in": lab_name})
 
 def querry_search(mode, keyword, start, stop):

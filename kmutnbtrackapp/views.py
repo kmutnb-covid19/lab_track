@@ -50,8 +50,6 @@ def signup(request):
 def login_page(request, room_name):  # this function is used when user get in home page
     if not request.user.is_authenticated:
         return render(request, 'Page/check_in.html', {"room_name": room_name})
-    elif Person.objects.get(user=request.user).check_in_status == 1:
-        return HttpResponseRedirect(reverse("kmutnbtrackapp:check_in", args=(room_name,)))
     else:
         return render(request, 'home.html', {"room_name": room_name})
 
@@ -72,45 +70,17 @@ def home(request):
 def check_in(request, lab_name):  # api
     person = Person.objects.get(user=request.user)
     lab_obj = Lab.objects.get(name=lab_name)
-    if Person.objects.get(user=request.user).check_in_status:  # user try to check in but he forget to check out
-        lab_name = History.objects.get(person=person, checkout=None).lab.name
+    if Lab.objects.filter(name=lab_name).exists():  # check that lab does exists
+        Log = History.objects.create(person=person, lab=lab_obj
+                                         ,checkin=datetime.datetime.now()
+                                         ,checkout=datetime.datetime.strptime(request.POST.get('check_out_time'),"%X"))#แก้ตรงนี้นะไอตอง
         return render(request, 'home.html',
-                      {"check_in_status": Person.objects.get(user=request.user).check_in_status,
-                       "room_check_in": lab_name})
-    elif Lab.objects.filter(name=lab_name).exists():  # check that lab does exists
-        if History.objects.filter(person=person,lab=lab_obj).count() != 0:  # เช็คอินครั้งแรก
-            time = History.objects.filter(person=person, lab=lab_obj).order_by('checkin').last() # เอาตัวสุดท้ายที่อยู่ในโมเดลของประวัติโดยเรียงตามเวลาจะได้เวลาล่าสุดที่ check in lab นี้
-            if datetime.datetime.now().hour - time.checkin.hour >= 1 or datetime.datetime.now().day > time.checkin.day:
-                person.check_in()
-                Log = History.objects.create(person=person, lab=lab_obj)
-                Log.checkin = datetime.datetime.now()
-                Log.save()
-                return render(request, 'home.html', {"room_check_in": lab_name, "localtime": Log.checkin})
-            else:
-                already_checkin = 1
-                return render(request, 'home.html', {"room_check_in": lab_name, "already_checkin": already_checkin})
-        else:
-            person.check_in()
-            Log = History.objects.create(person=person, lab=lab_obj)
-            return render(request, 'home.html',
-                          {"room_check_in": lab_name, "localtime": Log.checkin})
+                          {"room_name": lab_name, "already_checkin": 1,"check_in":Log.checkin})
     else:  # lab does not exists
         error_message = "QR code ไม่ถูกต้อง"
         return render(request, 'home.html', {"error_message": error_message})
 
 
-def check_out(request, lab_name):  # api
-    person = Person.objects.get(user=request.user)
-    lab_obj = Lab.objects.get(name=lab_name)
-    out_local_time = datetime.datetime.now()
-    log = History.objects.get(person=person, lab=lab_obj, checkout=None)
-    person.check_in_status = False
-    person.save()
-    if not log.checkout:
-        log.checkout = out_local_time
-        log.save()
-    logout(request)
-    return render(request, 'Page/check_out_success.html', {"localtime": log.checkout, "room_check_in": lab_name})
 
 def querry_search(mode, keyword, start, stop):
     histories = History.objects.all()

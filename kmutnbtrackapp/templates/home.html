@@ -2,33 +2,27 @@
 <html lang="en">
 <body>
     <center>
-        {% if check_in_status %}
-            <h1>คุณยังไม่ได้ check out</h1>
-            <h1>ห้อง : {{ room_check_in }}</h1>
-             <form method="post" action="{% url 'kmutnbtrackapp:check_out' room_check_in %}" >
-             {% csrf_token %}
-            <button name="roomout" type="submit" value="{{ room_check_in }}">Check out</button>
-            </form>
-        {% elif already_checkin %}
-            <h1>คุณ check in ห้อง : {{ room_check_in }}</h1>
-            <p>กรุณารอ 1 ชั่วโมง</p>
-            </form>
+        {% if already_checkin %}
+            <h1>คุณได้ check in ไปแล้ว</h1>
+            <h1>ห้อง {{ room_name }}</h1>
+            <h1>เวลา check in : {{ check_in }}</h1>
         {% elif room_name %}
-            <form method="post" action="{% url 'kmutnbtrackapp:check_in' room_name %}" >
-                {% csrf_token %}
                 <h2>ห้อง : {{ room_name }}</h2>
                 <h4>จำนวนคน :</h4> <h4 style="color: aquamarine;">{{ room_amount }}</h4>
+            <form method="post" action="{% url 'kmutnbtrackapp:check_in' room_name  %}" >
+            {% csrf_token %}
+                <label for="check_out_time">เลือกเวลา check out :</label>
+                <select name="check_out_time" id="cars">
+                <option value="12:00:00">12:00</option>
+                <option value="16:00:00">16:00</option>
+                <option value="20:00:00">20:00</option>
+                </select>
                 <button name="room" type="submit" value="{{ room_name }}">Check in</button>
             </form>
         {% elif error_message %}
             <h2>{{ error_message }}</h2>
-        {% elif localtime %}
-            <h1>ห้อง : {{ room_check_in }}</h1>
-            <h2>วัน เวลา Check-in : {{ localtime }}</h2>
-             <form method="post" action="{% url 'kmutnbtrackapp:check_out' room_check_in %}" >
-             {% csrf_token %}
-            <button name="roomout" type="submit" value="{{ room_check_in }}">Check out</button>
-            </form>
+        {% elif already_checkin %}
+            <h1>คุณได้ check in ไปแล้ว</h1>
         {% endif %}
     </center>
 </body>

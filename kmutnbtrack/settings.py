@@ -148,3 +148,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+DEFAULT_FROM_EMAIL = 'KMUTNB labtrack <noreply@cony.codes>'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.zoho.com'
+EMAIL_HOST_USER = 'noreply@cony.codes'
+EMAIL_HOST_PASSWORD = '***REMOVED***'
+EMAIL_PORT = 587

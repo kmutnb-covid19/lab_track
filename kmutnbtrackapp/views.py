@@ -106,7 +106,6 @@ def check_in(request, lab_name):  # api
         return render(request, 'home.html', {"error_message": error_message})
 
 
-
 def query_search(mode, keyword, start, stop):
     histories = History.objects.all()
 
@@ -143,23 +142,23 @@ def query_search(mode, keyword, start, stop):
 def history_search(request, page=1):
     if request.user.is_superuser:
         histories = "EMPTY"
-        if request.GET: # if request has parameter
-            mode = request.GET.get('mode','')
-            keyword = request.GET.get('keyword','')
-            start = request.GET.get('from','')
-            stop = request.GET.get('to','')
+        if request.GET:  # if request has parameter
+            mode = request.GET.get('mode', '')
+            keyword = request.GET.get('keyword', '')
+            start = request.GET.get('from', '')
+            stop = request.GET.get('to', '')
 
-            histories =
-            (mode, keyword, start, stop)
+            histories = query_search(mode, keyword, start, stop)
 
-        #p = Paginator(histories, 24)
-        #page_range = p.page_range
-        #shown_history = p.page(page)
+        # p = Paginator(histories, 24)
+        # page_range = p.page_range
+        # shown_history = p.page(page)
         return render(request, 'admin/history_search.html',
-                {'shown_history': histories,
-                    #'page_number': page,
-                    #'page_range': page_range,
-                })
+                      {'shown_history': histories,
+                       # 'page_number': page,
+                       # 'page_range': page_range,
+                       })
+
 
 def export_normal_csv(request):
     mode = request.GET.get('mode', '')
@@ -190,7 +189,6 @@ def filter_risk_user(mode, keyword):
             session_history = query_search('lab', user.lab, user.checkin, user.checkout)
 
             for session in session_history:
-
                 risk_people_data.append([str(session.person.student_id),
                                          session.person.first_name + ' ' + session.person.last_name,
                                          '',
@@ -199,28 +197,29 @@ def filter_risk_user(mode, keyword):
                                          session.checkout,
                                          ])
                 risk_people_notify.append([str(session.person.student_id),
-                                         session.person.first_name + ' ' + session.person.last_name,
-                                         session.lab,
-                                         session.person.email,
-                                         ])
+                                           session.person.first_name + ' ' + session.person.last_name,
+                                           session.lab,
+                                           session.person.email,
+                                           ])
     return risk_people_data, risk_people_notify
+
 
 def risk_people_search(request):
     if request.user.is_superuser:
-        if request.GET: # if request has parameter
-            mode = request.GET.get('mode','')
-            keyword = request.GET.get('keyword','')
+        if request.GET:  # if request has parameter
+            mode = request.GET.get('mode', '')
+            keyword = request.GET.get('keyword', '')
 
-            risk_people_data,risk_people_notify = filter_risk_user(mode, keyword)
+            risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
 
             return render(request, 'admin/risk_people_search.html',
-                    {'shown_history': risk_people_data,
-                     'keyword': keyword,
-                    })
+                          {'shown_history': risk_people_data,
+                           'keyword': keyword,
+                           })
         else:
             return render(request, 'admin/risk_people_search.html',
-                    {'shown_history': '',
-                    })
+                          {'shown_history': '',
+                           })
 
 
 def notify_user(request):
@@ -234,11 +233,11 @@ def notify_user(request):
         user_email = each_user[3]
 
         subject = 'เทสการแจ้งเตือน'
-        message = render_to_string('admin/email.html',{'student_id': student_id,
-                                                'user_email': user_email,
-                                                'first_last_name': first_last_name,
-                                                'lab_name': lab_name,
-                                                })
+        message = render_to_string('admin/email.html', {'student_id': student_id,
+                                                        'user_email': user_email,
+                                                        'first_last_name': first_last_name,
+                                                        'lab_name': lab_name,
+                                                        })
         email = EmailMessage(subject, message, to=[user_email])
         email.send()
 

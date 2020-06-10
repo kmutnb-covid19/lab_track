@@ -16,6 +16,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth import logout, authenticate, login
 from django.core.paginator import Paginator
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
 
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.forms import SignUpForm
@@ -104,24 +106,26 @@ def check_in(request, lab_name):  # api
         return render(request, 'home.html', {"error_message": error_message})
 
 
+
 def query_search(mode, keyword, start, stop):
     histories = History.objects.all()
 
-    if type(start) != type(datetime.datetime.now()):
+    if isinstance(type(start), type(datetime.datetime.now())):
         try:
             start = datetime.datetime.strptime(start,
                                                "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             start = datetime.datetime.fromtimestamp(0)
 
-    if type(stop) != type(datetime.datetime.now()):
+    if isinstance(type(stop), type(datetime.datetime.now())):
         try:
             stop = datetime.datetime.strptime(stop,
                                               "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now()
-    histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
+
     if keyword != "":  # if have specific keyword
+        histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
         if mode == "id":
             histories = histories.filter(Q(person__student_id__startswith=keyword))
         elif mode == "name":
@@ -131,36 +135,31 @@ def query_search(mode, keyword, start, stop):
             histories = histories.filter(Q(lab__name__contains=keyword))
         elif mode == "tel":
             histories = histories.filter(Q(person__tel__contains=keyword))
-        histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
         return histories
     else:
-        return histories
+        return "EMPTY"
 
 
 def history_search(request, page=1):
     if request.user.is_superuser:
-        if request.GET:  # if request has parameter
-            mode = request.GET.get('mode', '')
-            keyword = request.GET.get('keyword', '')
-            start = request.GET.get('from', '')
-            stop = request.GET.get('to', '')
-            histories = query_search(mode, keyword, start, stop)
+        histories = "EMPTY"
+        if request.GET: # if request has parameter
+            mode = request.GET.get('mode','')
+            keyword = request.GET.get('keyword','')
+            start = request.GET.get('from','')
+            stop = request.GET.get('to','')
 
-            # p = Paginator(histories, 24)
-            # page_range = p.page_range
-            # shown_history = p.page(page)
-            return render(request, 'admin/history_search.html',
-                          {'shown_history': histories,
-                           # 'page_number': page,
-                           # 'page_range': page_range,
-                           })
-        else:
-            return render(request, 'admin/history_search.html',
-                          {'shown_history': '',
-                           # 'page_number': page,
-                           # 'page_range': page_range,
-                           })
+            histories =
+            (mode, keyword, start, stop)
 
+        #p = Paginator(histories, 24)
+        #page_range = p.page_range
+        #shown_history = p.page(page)
+        return render(request, 'admin/history_search.html',
+                {'shown_history': histories,
+                    #'page_number': page,
+                    #'page_range': page_range,
+                })
 
 def export_normal_csv(request):
     mode = request.GET.get('mode', '')
@@ -183,45 +182,65 @@ def filter_risk_user(mode, keyword):
     start = 0
     stop = 0
     risk_people_data = []
+    risk_people_notify = []
     target_history = query_search(mode, keyword, start, stop)
 
     if target_history != 'EMPTY':
         for user in target_history:
-            print(user.person, user.lab, user.checkin, user.checkout)
             session_history = query_search('lab', user.lab, user.checkin, user.checkout)
+
             for session in session_history:
-                print('            ', session.person, session.lab, session.checkin, session.checkout)
+
                 risk_people_data.append([str(session.person.student_id),
                                          session.person.first_name + ' ' + session.person.last_name,
+                                         '',
                                          session.lab,
                                          session.checkin,
-                                         session.checkout])
-    return risk_people_data
+                                         session.checkout,
+                                         ])
+                risk_people_notify.append([str(session.person.student_id),
+                                         session.person.first_name + ' ' + session.person.last_name,
+                                         session.lab,
+                                         session.person.email,
+                                         ])
+    return risk_people_data, risk_people_notify
 
+def risk_people_search(request):
+    if request.user.is_superuser:
+        if request.GET: # if request has parameter
+            mode = request.GET.get('mode','')
+            keyword = request.GET.get('keyword','')
 
-def close_people_search(request):
-    mode = request.GET.get('mode', '')
-    keyword = request.GET.get('keyword', '')
+            risk_people_data,risk_people_notify = filter_risk_user(mode, keyword)
 
-    risk_people_data = filter_risk_user(mode, keyword)
-
-    return render(request, 'admin/risk_people_search.html',
-                  {'shown_history': risk_people_data,
-                   'shown_history_size': len(risk_people_data),
-                   # 'page_number': page,
-                   # 'page_range': page_range,
-                   })
+            return render(request, 'admin/risk_people_search.html',
+                    {'shown_history': risk_people_data,
+                     'keyword': keyword,
+                    })
+        else:
+            return render(request, 'admin/risk_people_search.html',
+                    {'shown_history': '',
+                    })
 
 
 def notify_user(request):
     mode = request.GET.get('mode', '')
     keyword = request.GET.get('keyword', '')
+    risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
+    for each_user in risk_people_notify:
+        student_id = each_user[0]
+        first_last_name = each_user[1]
+        lab_name = each_user[2]
+        user_email = each_user[3]
 
-    risk_people_data = filter_risk_user(mode, keyword)  # เป็น list in list นะท๊อป โครงสร้างอยู่ใน filter_risk_user
-
-    return render(request, 'admin/notify.html',
-                  {'notify_status': True,
-                   })
+        subject = 'เทสการแจ้งเตือน'
+        message = render_to_string('admin/email.html',{'student_id': student_id,
+                                                'user_email': user_email,
+                                                'first_last_name': first_last_name,
+                                                'lab_name': lab_name,
+                                                })
+        email = EmailMessage(subject, message, to=[user_email])
+        email.send()
 
 
 def export_risk_csv(request):

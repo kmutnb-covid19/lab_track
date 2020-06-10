@@ -15,7 +15,7 @@
     <!-- navbar -->
     <nav class="navbar navbar-dark" style="background-color: #355C7D;">
         <a class="navbar-brand" href="#">
-            <img src="pictures\desktop.png" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
+            <img src="{% static 'images/desktop.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
             {{ room name }}
         </a>
     </nav>
@@ -272,7 +272,7 @@
     <!-- Page => Check-in Successful - Check out -->
     <div class="container">
         <!-- Component => Check-in Successful - Check out - 1 -->
-        <img id="To-logout-1-0-Log-1" class="displayed" src="pictures\Checkin_Completed.png">
+        <img id="To-logout-1-0-Log-1" class="displayed" src="{% static 'images/checkin_completed.png' %}">
 
         <!-- Component => Confirm Check out -->
         <div id="To-logout-0-1-Main" class="Confirm-Check-out-class" style="background: white;">                    

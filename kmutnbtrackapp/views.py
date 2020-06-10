@@ -130,6 +130,7 @@ def querry_search(mode, keyword, start, stop):
             stop = datetime.datetime.now()
 
     if keyword != "":  # if have specific keyword
+        histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
         if mode == "id":
             histories = histories.filter(Q(person__student_id__startswith=keyword))
         elif mode == "name":
@@ -138,7 +139,6 @@ def querry_search(mode, keyword, start, stop):
             histories = histories.filter(Q(lab__name__contains=keyword))
         elif mode == "tel":
             histories = histories.filter(Q(person__tel__contains=keyword))
-        histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
         return histories
     else:
         return "EMPTY"

@@ -128,7 +128,7 @@ def querry_search(mode, keyword, start, stop):
             stop = datetime.datetime.strptime(stop, "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now()
-    histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
+
     if keyword != "":  # if have specific keyword
         if mode == "id":
             histories = histories.filter(Q(person__student_id__startswith=keyword))
@@ -141,7 +141,7 @@ def querry_search(mode, keyword, start, stop):
         histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
         return histories
     else:
-        return histories
+        return "EMPTY"
 
 
 def history_search(request,page=1):
@@ -162,12 +162,12 @@ def history_search(request,page=1):
                         #'page_number': page,
                         #'page_range': page_range,
                     })
-        else:
+        '''else:
             return render(request, 'admin/history_search.html',
                     {'shown_history': '',
                         #'page_number': page,
                         #'page_range': page_range,
-                    })
+                    })'''
 
 def export_normal_csv(request):
     mode = request.GET.get('mode', '')
@@ -194,13 +194,9 @@ def filter_risk_user(mode, keyword):
 
     if target_history != 'EMPTY':
         for user in target_history:
-            lab = user.lab
-            checkin = user.checkin
-            checkout = user.checkout
-            print(user.person, user.lab, user.checkin, user.checkout)
-            session_history = querry_search('lab', lab, user.checkin, user.checkout)
+            session_history = querry_search('lab', user.lab, user.checkin, user.checkout)
             for session in session_history:
-                print('            ', session.person, session.lab, session.checkin, session.checkout)
+
                 risk_people_data.append([str(session.person.student_id),
                                          session.person.first_name + ' ' + session.person.last_name,
                                          '',
@@ -213,9 +209,6 @@ def filter_risk_user(mode, keyword):
                                          session.lab,
                                          session.person.email,
                                          ])
-                    #index=> (0,stuid)(1,first last)(3,lab)(4,checkin)(5,checkout)(6,email)
-                    #data -> tel, no email
-                    #notify -> no tel, email, no checkin-out
     return risk_people_data, risk_people_notify
 
 def risk_people_search(request):
@@ -225,7 +218,6 @@ def risk_people_search(request):
             keyword = request.GET.get('keyword','')
 
             risk_people_data,risk_people_notify = filter_risk_user(mode, keyword)
-            print(risk_people_data)
 
             return render(request, 'admin/risk_people_search.html',
                     {'shown_history': risk_people_data,

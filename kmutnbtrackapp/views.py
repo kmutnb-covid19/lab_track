@@ -15,6 +15,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth import logout, authenticate, login
 from django.core.paginator import Paginator
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
 
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.forms import SignUpForm
@@ -109,7 +111,6 @@ def check_out(request, lab_name):  # api
     if not log.checkout:
         log.checkout = out_local_time
         log.save()
-    logout(request)
     return render(request, 'Page/check_out_success.html', {"localtime": log.checkout, "room_check_in": lab_name})
 
 def querry_search(mode, keyword, start, stop):
@@ -188,40 +189,72 @@ def filter_risk_user(mode, keyword):
     start = 0
     stop = 0
     risk_people_data = []
+    risk_people_notify = []
     target_history = querry_search(mode, keyword, start, stop)
 
     if target_history != 'EMPTY':
         for user in target_history:
+            lab = user.lab
+            checkin = user.checkin
+            checkout = user.checkout
             print(user.person, user.lab, user.checkin, user.checkout)
-            session_history = querry_search('lab', user.lab, user.checkin, user.checkout)
+            session_history = querry_search('lab', lab, user.checkin, user.checkout)
             for session in session_history:
                 print('            ', session.person, session.lab, session.checkin, session.checkout)
                 risk_people_data.append([str(session.person.student_id),
                                          session.person.first_name + ' ' + session.person.last_name,
+                                         '',
                                          session.lab,
                                          session.checkin,
-                                         session.checkout])
-    return risk_people_data
+                                         session.checkout,
+                                         ])
+                risk_people_notify.append([str(session.person.student_id),
+                                         session.person.first_name + ' ' + session.person.last_name,
+                                         session.lab,
+                                         session.person.email,
+                                         ])
+                    #index=> (0,stuid)(1,first last)(3,lab)(4,checkin)(5,checkout)(6,email)
+                    #data -> tel, no email
+                    #notify -> no tel, email, no checkin-out
+    return risk_people_data, risk_people_notify
 
-def close_people_search(request):
-    mode = request.GET.get('mode', '')
-    keyword = request.GET.get('keyword', '')
+def risk_people_search(request):
+    if request.user.is_superuser:
+        if request.GET: # if request has parameter
+            mode = request.GET.get('mode','')
+            keyword = request.GET.get('keyword','')
 
-    risk_people_data = filter_risk_user(mode, keyword)
+            risk_people_data,risk_people_notify = filter_risk_user(mode, keyword)
+            print(risk_people_data)
 
-    return render(request, 'admin/risk_people_search.html',
-                  {'shown_history': risk_people_data,
-                   'shown_history_size': len(risk_people_data),
-                   # 'page_number': page,
-                   # 'page_range': page_range,
-                   })
+            return render(request, 'admin/risk_people_search.html',
+                    {'shown_history': risk_people_data,
+                     'keyword': keyword,
+                    })
+        else:
+            return render(request, 'admin/risk_people_search.html',
+                    {'shown_history': '',
+                    })
 
 def notify_user(request):
     mode = request.GET.get('mode', '')
     keyword = request.GET.get('keyword', '')
 
-    risk_people_data = filter_risk_user(mode, keyword)    #เป็น list in list นะท๊อป โครงสร้างอยู่ใน filter_risk_user
+    risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
+    for each_user in risk_people_notify:
+        student_id = each_user[0]
+        first_last_name = each_user[1]
+        lab_name = each_user[2]
+        user_email = each_user[3]
 
+        subject = 'เทสการแจ้งเตือน'
+        message = render_to_string('admin/email.html',{'student_id': student_id,
+                                                'user_email': user_email,
+                                                'first_last_name': first_last_name,
+                                                'lab_name': lab_name,
+                                                })
+        email = EmailMessage(subject, message, to=[user_email])
+        email.send()
 
     return render(request,'admin/notify.html',
                 {'notify_status': True,

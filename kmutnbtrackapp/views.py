@@ -8,6 +8,7 @@ Imports should be grouped in the following order:
 import datetime
 import csv
 
+from django.core.exceptions import ValidationError
 from django.db.models import F
 from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
@@ -18,6 +19,7 @@ from django.core.paginator import Paginator
 
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.forms import SignUpForm
+
 
 # Create your views here.
 
@@ -51,7 +53,8 @@ def login_page(request, room_name):  # this function is used when user get in ho
     if not request.user.is_authenticated:
         return render(request, 'Page/check_in.html', {"room_name": room_name})
     else:
-        return render(request, 'home.html', {"room_name": room_name})
+        time_option = compare_current_time()
+        return render(request, 'home.html', {"room_name": room_name, "time_option": time_option})
 
 
 def home(request):
@@ -60,29 +63,48 @@ def home(request):
         amount = Lab.objects.get(name=lab_name)
         if not request.user.is_authenticated:  # check if user do not login
             return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_name,)))
-
-        return render(request, 'home.html', {"room_name": lab_name, 'room_amount': amount})
+        time_option = compare_current_time()
+        return render(request, 'home.html', {"room_name": lab_name, 'room_amount': amount, "time_option": time_option})
     else:
         error_message = "กรุณาสเเกน QR code หน้าห้อง หรือติดต่ออาจารย์ผู้สอน"
         return render(request, 'home.html', {"error_message": error_message})
 
 
+def compare_current_time():
+    now_datetime = datetime.datetime.now()
+    noon = now_datetime.replace(hour=12, minute=0, second=0, microsecond=0)
+    four_pm = now_datetime.replace(hour=16, minute=0, second=0, microsecond=0)
+    eight_pm = now_datetime.replace(hour=20, minute=0, second=0, microsecond=0)
+    if now_datetime < noon:
+        return 1
+    elif noon < now_datetime < four_pm:
+        return 2
+    elif noon < now_datetime < eight_pm and now_datetime > four_pm:
+        return 3
+    else:
+        return 4
+
+
 def check_in(request, lab_name):  # api
     person = Person.objects.get(user=request.user)
     lab_obj = Lab.objects.get(name=lab_name)
+    time_checkout = request.POST.get('check_out_time')
+    now_datetime = datetime.datetime.now()
+    datetime_checkout = now_datetime.replace(hour=int(time_checkout.split(":")[0]),
+                                             minute=int(time_checkout.split(":")[1]))
+    if datetime_checkout < now_datetime:
+        return HttpResponse('''<script>alert("ไม่สามารถเลือกเวลาในอดีตได้!");history.go(-1);</script>''')
     if Lab.objects.filter(name=lab_name).exists():  # check that lab does exists
-        Log = History.objects.create(person=person, lab=lab_obj
-                                         ,checkin=datetime.datetime.now()
-                                         ,checkout=datetime.datetime.strptime(request.POST.get('check_out_time'),"%X"))#แก้ตรงนี้นะไอตอง
+        log = History.objects.create(person=person, lab=lab_obj, checkin=datetime.datetime.now(),
+                                     checkout=datetime_checkout)
         return render(request, 'home.html',
-                          {"room_name": lab_name, "already_checkin": 1,"check_in":Log.checkin})
+                      {"room_name": lab_name, "already_checkin": 1, "check_in": log.checkin})
     else:  # lab does not exists
         error_message = "QR code ไม่ถูกต้อง"
         return render(request, 'home.html', {"error_message": error_message})
 
 
-
-def querry_search(mode, keyword, start, stop):
+def query_search(mode, keyword, start, stop):
     histories = History.objects.all()
 
     if type(start) != type(datetime.datetime.now()):
@@ -94,7 +116,8 @@ def querry_search(mode, keyword, start, stop):
 
     if type(stop) != type(datetime.datetime.now()):
         try:
-            stop = datetime.datetime.strptime(stop, "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
+            stop = datetime.datetime.strptime(stop,
+                                              "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now()
     histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
@@ -102,7 +125,8 @@ def querry_search(mode, keyword, start, stop):
         if mode == "id":
             histories = histories.filter(Q(person__student_id__startswith=keyword))
         elif mode == "name":
-            histories = histories.filter(Q(person__first_name__startswith=keyword) | Q(person__last_name__startswith=keyword))
+            histories = histories.filter(
+                Q(person__first_name__startswith=keyword) | Q(person__last_name__startswith=keyword))
         elif mode == "lab":
             histories = histories.filter(Q(lab__name__contains=keyword))
         elif mode == "tel":
@@ -113,37 +137,37 @@ def querry_search(mode, keyword, start, stop):
         return histories
 
 
-def history_search(request,page=1):
+def history_search(request, page=1):
     if request.user.is_superuser:
-        if request.GET: # if request has parameter
-            mode = request.GET.get('mode','')
-            keyword = request.GET.get('keyword','')
-            start = request.GET.get('from','')
-            stop = request.GET.get('to','')
+        if request.GET:  # if request has parameter
+            mode = request.GET.get('mode', '')
+            keyword = request.GET.get('keyword', '')
+            start = request.GET.get('from', '')
+            stop = request.GET.get('to', '')
+            histories = query_search(mode, keyword, start, stop)
 
-            histories = querry_search(mode, keyword, start, stop)
-
-        #p = Paginator(histories, 24)
-        #page_range = p.page_range
-        #shown_history = p.page(page)
+            # p = Paginator(histories, 24)
+            # page_range = p.page_range
+            # shown_history = p.page(page)
             return render(request, 'admin/history_search.html',
-                    {'shown_history': histories,
-                        #'page_number': page,
-                        #'page_range': page_range,
-                    })
+                          {'shown_history': histories,
+                           # 'page_number': page,
+                           # 'page_range': page_range,
+                           })
         else:
             return render(request, 'admin/history_search.html',
-                    {'shown_history': '',
-                        #'page_number': page,
-                        #'page_range': page_range,
-                    })
+                          {'shown_history': '',
+                           # 'page_number': page,
+                           # 'page_range': page_range,
+                           })
+
 
 def export_normal_csv(request):
     mode = request.GET.get('mode', '')
     keyword = request.GET.get('keyword', '')
     start = request.GET.get('from', '')
     stop = request.GET.get('to', '')
-    histories = querry_search(mode, keyword, start, stop)
+    histories = query_search(mode, keyword, start, stop)
     response = HttpResponse(content_type='text/csv')
     writer = csv.writer(response)
     writer.writerow(['Student ID', 'Person Name', 'Lab Name', 'Check in time', 'Check out time'])
@@ -154,16 +178,17 @@ def export_normal_csv(request):
     response['Content-Disposition'] = 'attachment; filename="user_data.csv"'
     return response
 
+
 def filter_risk_user(mode, keyword):
     start = 0
     stop = 0
     risk_people_data = []
-    target_history = querry_search(mode, keyword, start, stop)
+    target_history = query_search(mode, keyword, start, stop)
 
     if target_history != 'EMPTY':
         for user in target_history:
             print(user.person, user.lab, user.checkin, user.checkout)
-            session_history = querry_search('lab', user.lab, user.checkin, user.checkout)
+            session_history = query_search('lab', user.lab, user.checkin, user.checkout)
             for session in session_history:
                 print('            ', session.person, session.lab, session.checkin, session.checkout)
                 risk_people_data.append([str(session.person.student_id),
@@ -172,6 +197,7 @@ def filter_risk_user(mode, keyword):
                                          session.checkin,
                                          session.checkout])
     return risk_people_data
+
 
 def close_people_search(request):
     mode = request.GET.get('mode', '')
@@ -186,16 +212,17 @@ def close_people_search(request):
                    # 'page_range': page_range,
                    })
 
+
 def notify_user(request):
     mode = request.GET.get('mode', '')
     keyword = request.GET.get('keyword', '')
 
-    risk_people_data = filter_risk_user(mode, keyword)    #เป็น list in list นะท๊อป โครงสร้างอยู่ใน filter_risk_user
+    risk_people_data = filter_risk_user(mode, keyword)  # เป็น list in list นะท๊อป โครงสร้างอยู่ใน filter_risk_user
 
+    return render(request, 'admin/notify.html',
+                  {'notify_status': True,
+                   })
 
-    return render(request,'admin/notify.html',
-                {'notify_status': True,
-                })
 
 def export_risk_csv(request):
     mode = request.GET.get('mode', '')

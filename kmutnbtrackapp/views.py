@@ -5,7 +5,7 @@ Imports should be grouped in the following order:
 2.Related third party imports.
 3.Local application/library specific imports.
 """
-import datetime
+from datetime import datetime, timedelta
 import csv
 
 from django.core.exceptions import ValidationError
@@ -101,7 +101,7 @@ def check_in(request, lab_name):  # api
                                      checkout=datetime_checkout)
         return render(request, 'home.html',
                       {"room_name": lab_name, "already_checkin": 1,
-                       "check_in": log.checkin.strftime("%A, %d %B %Y, %I:%M %p"),
+                       "check_in": (log.checkin + timedelta(hours=7)).strftime("%A, %d %B %Y, %I:%M %p"),
                        "check_out": log.checkout.strftime("%A, %d %B %Y, %I:%M %p")})
     else:  # lab does not exists
         error_message = "QR code ไม่ถูกต้อง"

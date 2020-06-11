@@ -18,19 +18,10 @@ class Person(models.Model):
     last_name = models.CharField(max_length=50, default="", blank=True)
     email = models.EmailField(default="", blank=True)
     student_id = models.CharField(max_length=13, default="", blank=True)
-    is_checkin = models.BooleanField(default=False)
     is_student = models.BooleanField(default=False)
 
     def __str__(self):
         return self.first_name + " " + self.last_name
-
-    def check_in(self):
-        self.is_checkin = True
-        self.save()
-
-    def check_out(self):
-        self.is_checkin = False
-        self.save()
 
 
 class History(models.Model):

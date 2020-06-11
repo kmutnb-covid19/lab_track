@@ -2,24 +2,29 @@
 <html lang="en">
 <script type="text/javascript">
 function OtherTime(val){
-    const element = document.getElementById('time_value');
-    element.value = val;
+    const UserMode = document.getElementById('time_value');
+    val = UserMode.value;
     if(val=='others')
         element.style.display='block';
     else
         element.style.display='none';
 }
 function CheckTime(hour, minute){
-    const element = document.getElementById('time_value');
-    var SelectTime = element.value.split(":");
-    if (SelectTime[0] >= hour){
-        if (SelectTime[1] >= minute){
-            document.getElementById("TimeFrom").submit();
+    const UserMode = document.getElementById('time').value;
+    const UserTime = document.getElementById('time_value');
+    var SelectTime = UserTime.value.split(":");
+    if (UserMode == "others"){
+        if (SelectTime[0] >= hour){
+            if (SelectTime[1] >= minute){
+                document.getElementById("TimeFrom").submit();
+            } else {
+                document.getElementById("status").innerHTML = "คุณไม่สามารถเลือกเวลาย้อนหลังได้";
+            }
         } else {
             document.getElementById("status").innerHTML = "คุณไม่สามารถเลือกเวลาย้อนหลังได้";
         }
     } else {
-        document.getElementById("status").innerHTML = "คุณไม่สามารถเลือกเวลาย้อนหลังได้";
+        document.getElementById("TimeFrom").submit();
     }
 }
 </script>

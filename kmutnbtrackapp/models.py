@@ -1,12 +1,20 @@
+import os
+import datetime
+import random
 from django.db import models
 from django.contrib.auth.models import User, AnonymousUser
-import datetime
 
 
 # Create your models here.
+
+def create_id():
+    return random.getrandbits(32)
+
+
 class Lab(models.Model):
     name = models.CharField(max_length=300, null=True)
     amount = models.IntegerField(blank=True)
+    hash = models.CharField(max_length=16, primary_key=True, default=create_id)
 
     def __str__(self):
         return self.name

@@ -4,13 +4,13 @@
     <center>
         {% if already_checkin %}
             <h1>คุณได้ check in ไปแล้ว</h1>
-            <h1>ห้อง {{ room_name }}</h1>
+            <h1>ห้อง {{ lab_name }}</h1>
             <h1>เวลา check in : {{ check_in }}</h1>
             <h1>เวลา check out ที่ระบุ : {{ check_out }}</h1>
-        {% elif room_name %}
-                <h2>ห้อง : {{ room_name }}</h2>
+        {% elif lab_hash %}
+                <h2>ห้อง : {{ lab_name }}</h2>
                 <h4>จำนวนคน :</h4> <h4 style="color: aquamarine;">{{ room_amount }}</h4>
-            <form method="post" action="{% url 'kmutnbtrackapp:check_in' room_name  %}" >
+            <form method="post" action="{% url 'kmutnbtrackapp:check_in' lab_hash  %}" >
             {% csrf_token %}
                 <label for="check_out_time">เลือกเวลา check out :</label>
                 <select name="check_out_time" id="time" onchange='OtherTime(this.value);'>
@@ -31,7 +31,7 @@
                     {% endif %}
                 </select>
                 <input type="time" name="check_out_time" id="time_value" value="12:00" style='display:none;'/>
-                <button name="room" type="submit" value="{{ room_name }}">Check in</button>
+                <button name="room" type="submit" value="{{ lab_hash }}">Check in</button>
             </form>
         {% elif error_message %}
             <h2>{{ error_message }}</h2>

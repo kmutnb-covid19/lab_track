@@ -15,6 +15,7 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth import logout, authenticate, login
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.paginator import Paginator
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
@@ -26,7 +27,7 @@ from kmutnbtrackapp.forms import SignUpForm
 # Create your views here.
 
 def signup(request):
-    lab_name = request.GET.get('next')
+    lab_hash = request.GET.get('next')
     # Receive data from POST
     if request.method == "POST":
         form = SignUpForm(request.POST)
@@ -44,29 +45,32 @@ def signup(request):
             email = form.cleaned_data.get('email')
             Person.objects.create(user=user, first_name=first_name, last_name=last_name, email=email,
                                   is_student=False)
-            return HttpResponseRedirect(reverse('kmutnbtrackapp:login', args=(lab_name,)))
+            return HttpResponseRedirect(reverse('kmutnbtrackapp:login', args=(lab_hash,)))
     # didn't receive POST
     else:
         form = SignUpForm()
     return render(request, 'Page/signup.html', {'form': form})
 
 
-def login_page(request, room_name):  # this function is used when user get in home page
+def login_page(request, lab_hash):  # this function is used when user get in home page
     if not request.user.is_authenticated:
-        return render(request, 'Page/check_in.html', {"room_name": room_name})
+        return render(request, 'Page/check_in.html', {"lab_hash": lab_hash})
     else:
         time_option = compare_current_time()
-        return render(request, 'home.html', {"room_name": room_name, "time_option": time_option})
+        lab_name = Lab.objects.get(hash=lab_hash).name
+        return render(request, 'home.html', {"lab_hash": lab_hash, "time_option": time_option, "lab_name": lab_name})
 
 
 def home(request):
     if request.GET:
-        lab_name = request.GET.get('next')
-        amount = Lab.objects.get(name=lab_name)
+        lab_hash = request.GET.get('next')
+        amount = Lab.objects.get(hash=lab_hash)
         if not request.user.is_authenticated:  # check if user do not login
-            return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_name,)))
+            return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_hash,)))
         time_option = compare_current_time()
-        return render(request, 'home.html', {"room_name": lab_name, 'room_amount': amount, "time_option": time_option})
+        lab_name = Lab.objects.get(hash=lab_hash).name
+        return render(request, 'home.html', {"lab_hash": lab_hash, 'room_amount': amount, "time_option": time_option,
+                                             "lab_name": lab_name})
     else:
         error_message = "กรุณาสเเกน QR code หน้าห้อง หรือติดต่ออาจารย์ผู้สอน"
         return render(request, 'home.html', {"error_message": error_message})
@@ -87,20 +91,21 @@ def compare_current_time():
         return 4
 
 
-def check_in(request, lab_name):  # api
+def check_in(request, lab_hash):  # api
     person = Person.objects.get(user=request.user)
-    lab_obj = Lab.objects.get(name=lab_name)
+    lab_obj = Lab.objects.get(hash=lab_hash)
     time_checkout = request.POST.get('check_out_time')
     now_datetime = datetime.datetime.now()
+    lab_name = Lab.objects.get(hash=lab_hash).name
     datetime_checkout = now_datetime.replace(hour=int(time_checkout.split(":")[0]),
                                              minute=int(time_checkout.split(":")[1]))
     if datetime_checkout < now_datetime:
         return HttpResponse('''<script>alert("ไม่สามารถเลือกเวลาในอดีตได้!");history.go(-1);</script>''')
-    if Lab.objects.filter(name=lab_name).exists():  # check that lab does exists
+    if Lab.objects.filter(hash=lab_hash).exists():  # check that lab does exists
         log = History.objects.create(person=person, lab=lab_obj, checkin=datetime.datetime.now(),
                                      checkout=datetime_checkout)
         return render(request, 'home.html',
-                      {"room_name": lab_name, "already_checkin": 1,
+                      {"lab_hash": lab_hash, "already_checkin": 1, "lab_name": lab_name,
                        "check_in": (log.checkin + timedelta(hours=7)).strftime("%A, %d %B %Y, %I:%M %p"),
                        "check_out": log.checkout.strftime("%A, %d %B %Y, %I:%M %p")})
     else:  # lab does not exists
@@ -258,3 +263,20 @@ def export_risk_csv(request):
 
     response['Content-Disposition'] = 'attachment; filename="risk_user_data.csv"'
     return response
+
+
+def generate_qr_code(request):
+    site_url = get_current_site(request)
+    selected_lab = ""
+    selected_lab_name = ""
+    selected_lab_hash = ""
+    all_lab_name = Lab.objects.all().order_by("name").values_list('name', flat=True)
+    all_lab_hash = Lab.objects.all().order_by("name").values_list('hash', flat=True)
+    if request.POST.get("lab_selector"):
+        selected_lab = request.POST["lab_selector"]
+        selected_lab_name = all_lab_name[int(selected_lab)]
+        selected_lab_hash = all_lab_hash[int(selected_lab)]
+    return render(request, 'admin/qr_code_generate.html', {"all_lab_name": all_lab_name,
+                                                           "selected_lab_hash": selected_lab_hash,
+                                                           "selected_lab_name": selected_lab_name,
+                                                           "selected_lab": selected_lab, 'domain': site_url.domain})

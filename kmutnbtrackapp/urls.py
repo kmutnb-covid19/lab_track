@@ -8,8 +8,8 @@ app_name = "kmutnbtrackapp"
 urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('login/', LoginView.as_view(), name="login"),
-    path('lab/<str:room_name>/', views.login_page, name='login'),
+    path('lab/<str:lab_hash>/', views.login_page, name='login'),
     path('home/', views.home, name='home'),
-    path('check_in/<str:lab_name>/', views.check_in, name='check_in'),
+    path('check_in/<str:lab_hash>/', views.check_in, name='check_in'),
 
 ]

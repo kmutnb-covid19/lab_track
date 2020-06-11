@@ -23,7 +23,10 @@ from kmutnbtrackapp import views
 urlpatterns = [
     path('', include('kmutnbtrackapp.urls')),
     path('auth/', include('social_django.urls', namespace='social')),
-    path('admin/history/search/', TemplateView.as_view(template_name="admin/history_search_main.html"), name='admin_search'),
+    path('qr_code/', include('qr_code.urls', namespace="qr_code")),
+    path('admin/qrcode/', views.generate_qr_code, name='generate_qr_code'),
+    path('admin/history/search/', TemplateView.as_view(template_name="admin/history_search_main.html"),
+         name='admin_search'),
     path('admin/history/search/riskpeople/', views.risk_people_search, name='risk_people_search'),
     path('admin/history/search/riskpeople/<int:page>', views.risk_people_search),
     path('admin/history/search/riskpeople/notify/', views.notify_user, name='notify'),

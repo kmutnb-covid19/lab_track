@@ -7,6 +7,7 @@ from .models import History, Lab, Person
 
 class LabAdmin(admin.ModelAdmin):
     list_display = ('name',)
+    readonly_fields = ["hash"]
 
 
 class HistoryAdmin(admin.ModelAdmin):

@@ -110,20 +110,20 @@ def check_in(request, lab_name):  # api
 
 def query_search(mode, keyword, start, stop):
     histories = History.objects.all()
-
-    if isinstance(type(start), type(datetime.datetime.now())):
+    if not isinstance(type(start), type(datetime.datetime.now())):
         try:
             start = datetime.datetime.strptime(start,
                                                "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             start = datetime.datetime.fromtimestamp(0)
 
-    if isinstance(type(stop), type(datetime.datetime.now())):
+    if not isinstance(type(stop), type(datetime.datetime.now())):
         try:
             stop = datetime.datetime.strptime(stop,
                                               "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now()
+
 
     if keyword != "":  # if have specific keyword
         histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
@@ -142,11 +142,11 @@ def query_search(mode, keyword, start, stop):
 
 
 def history_search(request, page=1):
+    keyword = request.GET.get('keyword', '')
     if request.user.is_superuser:
         histories = "EMPTY"
         if request.GET:  # if request has parameter
             mode = request.GET.get('mode', '')
-            keyword = request.GET.get('keyword', '')
             start = request.GET.get('from', '')
             stop = request.GET.get('to', '')
 
@@ -157,6 +157,7 @@ def history_search(request, page=1):
         # shown_history = p.page(page)
         return render(request, 'admin/history_search.html',
                       {'shown_history': histories,
+                       'keyword': keyword,
                        # 'page_number': page,
                        # 'page_range': page_range,
                        })
@@ -247,11 +248,11 @@ def notify_user(request):
 def export_risk_csv(request):
     mode = request.GET.get('mode', '')
     keyword = request.GET.get('keyword', '')
-    risk_people_data = filter_risk_user(mode, keyword)
+    risk_people_data,not_use = filter_risk_user(mode, keyword)
 
     response = HttpResponse(content_type='text/csv')
     writer = csv.writer(response)
-    writer.writerow(['Student ID', 'Person Name', 'Lab Name', 'Check in time', 'Check out time'])
+    writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
 
     for user in risk_people_data:
         writer.writerow(user)

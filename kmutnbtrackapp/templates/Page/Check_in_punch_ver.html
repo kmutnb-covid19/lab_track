@@ -1,4 +1,3 @@
-{% load static %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -12,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     
-    <title>{{ lab_name }}</title>
+    <title>{{ room name }}</title>
     <style>
         /* init html,navbar,content */
         html {
@@ -93,10 +92,10 @@
     </style>
     <script type="text/javascript">
         function Click_Sign_in_with_google() {
-            location.href="{% url 'social:begin' 'google-oauth2' %}?next={{ lab_hash }};"
+            // add function here
         }
         function Click_to_fill_out_the_form() {
-            location.href="{% url 'kmutnbtrackapp:signup' %}?next={{ lab_hash }};"
+            // add function here
         }
     </script>
 </head>
@@ -104,8 +103,8 @@
     <!-- navbar room name-->
     <nav class="navbar navbar-dark" style="background-color: #355C7D;">
         <a class="navbar-brand" href="#">
-            <img src="{% static 'images/desktop.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
-            {{ lab_name }}
+            <img src="pictures\desktop.png" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
+            {{ room name }}
         </a>
     </nav>
 
@@ -113,15 +112,14 @@
     <div class="Main-Check-in">
         <p class="chooseCheckin-text">กรุณาเลือกเช็คอินก่อนเข้าใช้งานห้องแล็บ</p>
         <div class="container" style="text-align: center;">
-            <img id="check-in" src="{% static 'images/checkin_botton.png' %}" alt="checkin_pic">
+            <img id="check-in" src="pictures\checkin botton.png" alt="checkin_pic">
             <div class="over-img">
                 <p class="text_overimg">เช็คอินเข้าแล็บ</p>
                 <button class="register_btn" onclick="Click_to_fill_out_the_form()">กรอกรายละเอียด</button>
                 <button class="google_btn" onclick="Click_Sign_in_with_google()">
-                    <img id="google_img" src="{% static 'images/google.png' %}" alt="google_pic">
-                    Checkin with KMUTNB
+                    <img id="google_img" src="pictures\google.png" alt="google_pic">
+                    Sign in with KMUTNB
                 </button>
-                <button><a href="{% url 'kmutnbtrackapp:login' %}">Login</a></button>
             </div>
         </div>
     </div>

@@ -14,7 +14,8 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import logout, authenticate, login
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.paginator import Paginator
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
@@ -27,21 +28,22 @@ from kmutnbtrackapp.forms import SignUpForm
 
 def home(request):
     if request.GET:
-        lab_name = request.GET.get('next')
-        amount = Lab.objects.get(name=lab_name)
+        lab_hash = request.GET.get('next')
         if not request.user.is_authenticated:  # check if user do not login
-            return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_name,)))
-        time_option = compare_current_time()
-        return render(request, 'home.html', {"room_name": lab_name, 'room_amount': amount, "time_option": time_option})
+            return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_hash,)))
+        return HttpResponseRedirect(reverse("kmutnbtrackapp:lab_home", args=(lab_hash,)))
+    return HttpResponse('Logout Successful')
 
 
-def lab_home_page(request, room_name):  # this function is used when user get in home page
+def lab_home_page(request, lab_hash):  # this function is used when user get in home page
     if not request.user.is_authenticated:  # if user hasn't login
-        return render(request, 'Page/lab_home.html', {"room_name": room_name})  # render page for logging in in that lab
+        lab_name = Lab.objects.get(hash=lab_hash).name
+        return render(request, 'Page/lab_home.html', {"lab_name": lab_name, "lab_hash": lab_hash})  # render page for logging in in that lab
 
     else: # if user already login and not checkin yet
         time_option = compare_current_time()
-        return render(request, 'Page/lab_checkin.html', {"room_name": room_name, "time_option":time_option})  # render page for checkin
+        lab_name = Lab.objects.get(hash=lab_hash).name
+        return render(request, 'Page/lab_checkin.html', {"lab_name":lab_name, "lab_hash": lab_hash, "time_option":time_option})  # render page for checkin
 
 
 def signup(request):  # when stranger click 'Signup and Checkin'
@@ -76,23 +78,17 @@ def login_api(request):  # api when stranger login
 
 def logout_api(request):  # api for logging out
     logout(request)
-    lab_name = request.GET.get("lab")
-    return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_name,)))
+    lab_hash = request.GET.get("lab")
+    return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
 
-def login_api(request): # api when stranger login
-    pass
 
-def logout_api(request): # api for logging out
-    logout(request)
-    lab_name = request.GET.get("lab")
-    return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_name,)))
-
-def login_page(request, room_name):  # this function is used when user get in home page
+def login_page(request, lab_hash):  # this function is used when user get in home page
     if not request.user.is_authenticated:
-        return render(request, 'Page/check_in.html', {"room_name": room_name})
+        return render(request, 'Page/check_in.html', {"lab_hash": lab_hash})
     else:
         time_option = compare_current_time()
-        return render(request, 'home.html', {"room_name": room_name, "time_option": time_option})
+        lab_name = Lab.objects.get(hash=lab_hash).name
+        return render(request, 'home.html', {"lab_hash": lab_hash, "time_option": time_option, "lab_name": lab_name})
 
 
 def compare_current_time():
@@ -125,25 +121,27 @@ def compare_current_time():
         return 4
 
 
-def check_in(request, lab_name):  # api
+def check_in(request, lab_hash):  # api
     person = Person.objects.get(user=request.user)
-    lab_obj = Lab.objects.get(name=lab_name)
+    lab_obj = Lab.objects.get(hash=lab_hash)
     time_checkout = request.POST.get('check_out_time')
     now_datetime = datetime.datetime.now()
+    lab_name = Lab.objects.get(hash=lab_hash).name
     datetime_checkout = now_datetime.replace(hour=int(time_checkout.split(":")[0]),
                                              minute=int(time_checkout.split(":")[1]))
     if datetime_checkout < now_datetime:
         return HttpResponse('''<script>alert("ไม่สามารถเลือกเวลาในอดีตได้!");history.go(-1);</script>''')
-    if Lab.objects.filter(name=lab_name).exists():  # check that lab does exists
+    if Lab.objects.filter(hash=lab_hash).exists():  # check that lab does exists
         log = History.objects.create(person=person, lab=lab_obj, checkin=datetime.datetime.now(),
                                      checkout=datetime_checkout)
         return render(request, 'home.html',
-                      {"room_name": lab_name, "already_checkin": 1,
+                      {"lab_hash": lab_hash, "already_checkin": 1, "lab_name": lab_name,
                        "check_in": (log.checkin + timedelta(hours=7)).strftime("%A, %d %B %Y, %I:%M %p"),
                        "check_out": log.checkout.strftime("%A, %d %B %Y, %I:%M %p")})
     else:  # lab does not exists
         error_message = "QR code ไม่ถูกต้อง"
         return render(request, 'home.html', {"error_message": error_message})
+
 
 def query_search(mode, keyword, start, stop):
     histories = History.objects.all()
@@ -176,6 +174,7 @@ def query_search(mode, keyword, start, stop):
     else:
         return "EMPTY"
 
+
 def history_search(request, page=1):
     keyword = request.GET.get('keyword', '')
     if request.user.is_superuser:
@@ -194,6 +193,7 @@ def history_search(request, page=1):
                        # 'page_number': page,
                        # 'page_range': page_range,
                        })
+
 
 def export_normal_csv(request):
     mode = request.GET.get('mode', '')
@@ -254,6 +254,7 @@ def risk_people_search(request):
                           {'shown_history': '',
                            })
 
+
 def notify_user(request):
     mode = request.GET.get('mode', '')
     keyword = request.GET.get('keyword', '')
@@ -272,6 +273,7 @@ def notify_user(request):
         email = EmailMessage(subject, message, to=[user_email])
         email.send()
 
+
 def export_risk_csv(request):
     mode = request.GET.get('mode', '')
     keyword = request.GET.get('keyword', '')
@@ -285,3 +287,20 @@ def export_risk_csv(request):
         writer.writerow(user)
     response['Content-Disposition'] = 'attachment; filename="risk_user_data.csv"'
     return response
+
+
+def generate_qr_code(request):
+    site_url = get_current_site(request)
+    selected_lab = ""
+    selected_lab_name = ""
+    selected_lab_hash = ""
+    all_lab_name = Lab.objects.all().order_by("name").values_list('name', flat=True)
+    all_lab_hash = Lab.objects.all().order_by("name").values_list('hash', flat=True)
+    if request.POST.get("lab_selector"):
+        selected_lab = request.POST["lab_selector"]
+        selected_lab_name = all_lab_name[int(selected_lab)]
+        selected_lab_hash = all_lab_hash[int(selected_lab)]
+    return render(request, 'admin/qr_code_generate.html', {"all_lab_name": all_lab_name,
+                                                           "selected_lab_hash": selected_lab_hash,
+                                                           "selected_lab_name": selected_lab_name,
+                                                           "selected_lab": selected_lab, 'domain': site_url.domain})

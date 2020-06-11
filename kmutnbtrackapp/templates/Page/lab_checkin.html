@@ -1,14 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<body onload="OtherTime(document.getElementById('time').value);">
-    <center>
-        {% if already_checkin %}
-            <h1>คุณได้ check in ไปแล้ว</h1>
-            <h1>ห้อง {{ room_name }}</h1>
-            <h1>เวลา check in : {{ check_in }}</h1>
-            <h1>เวลา check out ที่ระบุ : {{ check_out }}</h1>
-        {% elif room_name %}
-                <h2>ห้อง : {{ room_name }}</h2>
+<body>
+    <button><a href="{% url 'kmutnbtrackapp:logout' %}?lab={{ room_name }}">Logout</a></button>
+<center>
+    <h2>ห้อง : {{ room_name }}</h2>
                 <h4>จำนวนคน :</h4> <h4 style="color: aquamarine;">{{ room_amount }}</h4>
             <form method="post" action="{% url 'kmutnbtrackapp:check_in' room_name  %}" >
             {% csrf_token %}
@@ -33,14 +28,8 @@
                 <input type="time" name="check_out_time" id="time_value" value="12:00" style='display:none;'/>
                 <button name="room" type="submit" value="{{ room_name }}">Check in</button>
             </form>
-        {% elif error_message %}
-            <h2>{{ error_message }}</h2>
-        {% elif already_checkin %}
-            <h1>คุณได้ check in ไปแล้ว</h1>
-        {% endif %}
-    </center>
+</center>
 </body>
-<html>
 <script type="text/javascript">
 function OtherTime(val){
     const element = document.getElementById('time_value');

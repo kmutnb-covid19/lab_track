@@ -1,0 +1,130 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="HandheldFriendly" content="true">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;500;600&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    
+    <title>{{ room_name }}</title>
+    <style>
+        /* init html,navbar,content */
+        html {
+            height: 100%;
+            width: 100%;
+        }
+        .navbar-brand {
+            cursor: default;
+        }
+        div.Main-Check-in {
+            margin: 0%;
+            min-height: 100%;
+            min-width: 100%;
+            justify-content: center;
+            align-content: center;
+            font-family: 'Kanit',sans-serif;
+        }
+        p {
+            font-family: 'Kanit', sans-serif;
+        }
+        
+        /* Check-in */
+        button {
+            font-weight: light;
+            font-size: calc(16px + (50 - 40) * ((100vw - 375px) / (1600 - 375)));
+            border-radius: 10px;
+            border: none;
+            background-color: white;
+            color: #355C7D;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #E2E1E1;
+        }
+        p.chooseCheckin-text {
+            text-align: center;
+            color : #355C7D;
+            font-weight: light;
+            font-size: calc(25px + (50 - 40) * ((100vw - 375px) / (1600 - 375)));
+            position: relative;
+            margin: 40px;
+        }
+        .container {
+            position: relative;
+        }
+        #check-in {
+            width: calc(100% - 5px);
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        p.text_overimg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            color: white;
+            font-weight: normal;
+            font-size: calc(22px + (50 - 40) * ((100vw - 375px) / (1600 - 375)));
+            transform: translate(-50%)
+        }
+        .register_btn {
+            position: absolute;
+            top: 87%;
+            left: 50%;
+            width: 60%;
+        }
+        .google_btn {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            width: 60%;
+        }
+        #google_img{
+            width: 30px;
+            height: auto;
+        }
+    </style>
+    <script type="text/javascript">
+        function Click_Sign_in_with_google() {
+            location.href="{% url 'social:begin' 'google-oauth2' %}?next={{ room_name }};"
+        }
+        function Click_to_fill_out_the_form() {
+            location.href="{% url 'kmutnbtrackapp:signup' %}?next={{ room_name }};"
+        }
+    </script>
+</head>
+<body>
+    <!-- navbar room name-->
+    <nav class="navbar navbar-dark" style="background-color: #355C7D;">
+        <a class="navbar-brand" href="#">
+            <img src="{% static 'images/desktop.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
+            {{ room_name }}
+        </a>
+    </nav>
+
+    <!-- Page Check-in -->
+    <div class="Main-Check-in">
+        <p class="chooseCheckin-text">กรุณาเลือกเช็คอินก่อนเข้าใช้งานห้องแล็บ</p>
+        <div class="container" style="text-align: center;">
+            <img id="check-in" src="{% static 'images/checkin_botton.png' %}" alt="checkin_pic">
+            <div class="over-img">
+                <p class="text_overimg">เช็คอินเข้าแล็บ</p>
+                <button class="register_btn" onclick="Click_to_fill_out_the_form()">กรอกรายละเอียด</button>
+                <button class="google_btn" onclick="Click_Sign_in_with_google()">
+                    <img id="google_img" src="{% static 'images/google.png' %}" alt="google_pic">
+                    Checkin with KMUTNB
+                </button>
+                <button><a href="{% url 'kmutnbtrackapp:login' %}">Login</a></button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

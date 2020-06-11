@@ -13,10 +13,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
-from django.contrib.auth.views import LogoutView
 
 from kmutnbtrackapp import views
 
@@ -32,6 +34,6 @@ urlpatterns = [
     path('admin/history/search/history/<int:page>', views.history_search),
     path('admin/history/search/history/download_normal_csv/', views.export_normal_csv, name='download_normal_csv'),
     path('admin/', admin.site.urls),
-    path("logout/", LogoutView.as_view(next_page='/logout_success'), name="logout"),
-    path("logout_success", TemplateView.as_view(template_name="Page/check_out_success.html"))
+    
 ]
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)

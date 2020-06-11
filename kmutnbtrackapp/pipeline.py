@@ -3,7 +3,6 @@
 import re
 
 from django.contrib.auth.models import User
-
 from kmutnbtrackapp.models import Person
 
 

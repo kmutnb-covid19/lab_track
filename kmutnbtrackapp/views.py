@@ -14,7 +14,7 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib.auth import logout, authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.core.paginator import Paginator
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
@@ -25,7 +25,26 @@ from kmutnbtrackapp.forms import SignUpForm
 
 # Create your views here.
 
-def signup(request):
+def home(request):
+    if request.GET:
+        lab_name = request.GET.get('next')
+        amount = Lab.objects.get(name=lab_name)
+        if not request.user.is_authenticated:  # check if user do not login
+            return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_name,)))
+        time_option = compare_current_time()
+        return render(request, 'home.html', {"room_name": lab_name, 'room_amount': amount, "time_option": time_option})
+
+
+def lab_home_page(request, room_name):  # this function is used when user get in home page
+    if not request.user.is_authenticated:  # if user hasn't login
+        return render(request, 'Page/lab_home.html', {"room_name": room_name})  # render page for logging in in that lab
+
+    else: # if user already login and not checkin yet
+        time_option = compare_current_time()
+        return render(request, 'Page/lab_checkin.html', {"room_name": room_name, "time_option":time_option})  # render page for checkin
+
+
+def signup(request):  # when stranger click 'Signup and Checkin'
     lab_name = request.GET.get('next')
     # Receive data from POST
     if request.method == "POST":
@@ -44,11 +63,21 @@ def signup(request):
             email = form.cleaned_data.get('email')
             Person.objects.create(user=user, first_name=first_name, last_name=last_name, email=email,
                                   is_student=False)
-            return HttpResponseRedirect(reverse('kmutnbtrackapp:login', args=(lab_name,)))
+            return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_name,)))
     # didn't receive POST
     else:
         form = SignUpForm()
-    return render(request, 'Page/signup.html', {'form': form})
+    return render(request, 'registration/signup.html', {'form': form})
+
+
+def login_api(request):  # api when stranger login
+    pass
+
+
+def logout_api(request):  # api for logging out
+    logout(request)
+    lab_name = request.GET.get("lab")
+    return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_name,)))
 
 
 def login_page(request, room_name):  # this function is used when user get in home page
@@ -59,17 +88,19 @@ def login_page(request, room_name):  # this function is used when user get in ho
         return render(request, 'home.html', {"room_name": room_name, "time_option": time_option})
 
 
-def home(request):
-    if request.GET:
-        lab_name = request.GET.get('next')
-        amount = Lab.objects.get(name=lab_name)
-        if not request.user.is_authenticated:  # check if user do not login
-            return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_name,)))
-        time_option = compare_current_time()
-        return render(request, 'home.html', {"room_name": lab_name, 'room_amount': amount, "time_option": time_option})
+def compare_current_time():
+    now_datetime = datetime.datetime.now()
+    noon = now_datetime.replace(hour=12, minute=0, second=0, microsecond=0)
+    four_pm = now_datetime.replace(hour=16, minute=0, second=0, microsecond=0)
+    eight_pm = now_datetime.replace(hour=20, minute=0, second=0, microsecond=0)
+    if now_datetime < noon:
+        return 1
+    elif noon < now_datetime < four_pm:
+        return 2
+    elif noon < now_datetime < eight_pm and now_datetime > four_pm:
+        return 3
     else:
-        error_message = "กรุณาสเเกน QR code หน้าห้อง หรือติดต่ออาจารย์ผู้สอน"
-        return render(request, 'home.html', {"error_message": error_message})
+        return 4
 
 
 def compare_current_time():
@@ -124,7 +155,6 @@ def query_search(mode, keyword, start, stop):
         except:
             stop = datetime.datetime.now()
 
-
     if keyword != "":  # if have specific keyword
         histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
         if mode == "id":
@@ -149,9 +179,7 @@ def history_search(request, page=1):
             mode = request.GET.get('mode', '')
             start = request.GET.get('from', '')
             stop = request.GET.get('to', '')
-
             histories = query_search(mode, keyword, start, stop)
-
         # p = Paginator(histories, 24)
         # page_range = p.page_range
         # shown_history = p.page(page)
@@ -172,14 +200,12 @@ def export_normal_csv(request):
     response = HttpResponse(content_type='text/csv')
     writer = csv.writer(response)
     writer.writerow(['Student ID', 'Person Name', 'Lab Name', 'Check in time', 'Check out time'])
-
     for user in histories:
         writer.writerow([str(user.person.student_id),
                          user.person,
                          user.lab,
                          user.checkin + timedelta(hours=7),
                          user.checkout + timedelta(hours=7)])
-
     response['Content-Disposition'] = 'attachment; filename="user_data.csv"'
     return response
 
@@ -190,11 +216,9 @@ def filter_risk_user(mode, keyword):
     risk_people_data = []
     risk_people_notify = []
     target_history = query_search(mode, keyword, start, stop)
-
     if target_history != 'EMPTY':
         for user in target_history:
             session_history = query_search('lab', user.lab, user.checkin, user.checkout)
-
             for session in session_history:
                 risk_people_data.append([str(session.person.student_id),
                                          session.person.first_name + ' ' + session.person.last_name,
@@ -216,9 +240,7 @@ def risk_people_search(request):
         if request.GET:  # if request has parameter
             mode = request.GET.get('mode', '')
             keyword = request.GET.get('keyword', '')
-
             risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
-
             return render(request, 'admin/risk_people_search.html',
                           {'shown_history': risk_people_data,
                            'keyword': keyword,
@@ -238,7 +260,6 @@ def notify_user(request):
         first_last_name = each_user[1]
         lab_name = each_user[2]
         user_email = each_user[3]
-
         subject = 'เทสการแจ้งเตือน'
         message = render_to_string('admin/email.html', {'student_id': student_id,
                                                         'user_email': user_email,
@@ -252,16 +273,13 @@ def notify_user(request):
 def export_risk_csv(request):
     mode = request.GET.get('mode', '')
     keyword = request.GET.get('keyword', '')
-    risk_people_data,not_use = filter_risk_user(mode, keyword)
-
+    risk_people_data, not_use = filter_risk_user(mode, keyword)
     response = HttpResponse(content_type='text/csv')
     writer = csv.writer(response)
     writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
-
     for user in risk_people_data:
         user[4] = user[4] + timedelta(hours=7)
         user[5] = user[5] + timedelta(hours=7)
         writer.writerow(user)
-
     response['Content-Disposition'] = 'attachment; filename="risk_user_data.csv"'
     return response

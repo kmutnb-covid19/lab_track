@@ -125,7 +125,7 @@ SOCIAL_AUTH_PIPELINE = (
 
 LOGIN_URL = '/auth/login/google-oauth2/'
 
-LOGIN_REDIRECT_URL = '/home'
+LOGIN_REDIRECT_URL = '/lab/computer_lab'
 LOGOUT_REDIRECT_URL = '/logout_success'
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
@@ -148,6 +148,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_root/')
+STATICFILES_DIRS = (
+  os.path.join(BASE_DIR, 'static/'),
+)
 
 DEFAULT_FROM_EMAIL = 'KMUTNB labtrack <noreply@cony.codes>'
 EMAIL_USE_TLS = True

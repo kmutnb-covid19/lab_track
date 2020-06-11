@@ -25,26 +25,23 @@ from kmutnbtrackapp.forms import SignUpForm
 
 # Create your views here.
 
-def home(request): 
+def home(request):
     if request.GET:
         lab_name = request.GET.get('next')
         amount = Lab.objects.get(name=lab_name)
         if not request.user.is_authenticated:  # check if user do not login
             return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_name,)))
-
-        return render(request, 'home.html', {"room_name": lab_name, 'room_amount': amount})
-    else:
-        error_message = "กรุณาสเเกน QR code หน้าห้อง หรือติดต่ออาจารย์ผู้สอน"
-        return render(request, 'home.html', {"error_message": error_message})
+        time_option = compare_current_time()
+        return render(request, 'home.html', {"room_name": lab_name, 'room_amount': amount, "time_option": time_option})
 
 
 def lab_home_page(request, room_name):  # this function is used when user get in home page
     if not request.user.is_authenticated: # if user hasn't login
         return render(request, 'Page/lab_home.html', {"room_name": room_name})  # render page for logging in in that lab
-    
+
     elif Person.objects.get(user=request.user).is_checkin: # if user already login and has already checkin
         return render(request, 'Page/check_in_success.html', {"room_name": room_name}) # render page checkin success
-        
+
     else: # if user already login and not checkin yet
         return render(request, 'Page/lab_checkin.html', {"room_name": room_name})  # render page for checkin
 
@@ -80,7 +77,7 @@ def login_api(request): # api when stranger login
 def logout_api(request): # api for logging out
     logout(request)
     lab_name = request.GET.get("lab")
-    return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_name,)))   
+    return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_name,)))
 
 def login_page(request, room_name):  # this function is used when user get in home page
     if not request.user.is_authenticated:
@@ -102,6 +99,21 @@ def compare_current_time():
         return 3
     else:
         return 4
+
+def compare_current_time():
+    now_datetime = datetime.datetime.now()
+    noon = now_datetime.replace(hour=12, minute=0, second=0, microsecond=0)
+    four_pm = now_datetime.replace(hour=16, minute=0, second=0, microsecond=0)
+    eight_pm = now_datetime.replace(hour=20, minute=0, second=0, microsecond=0)
+    if now_datetime < noon:
+        return 1
+    elif noon < now_datetime < four_pm:
+        return 2
+    elif noon < now_datetime < eight_pm and now_datetime > four_pm:
+        return 3
+    else:
+        return 4
+
 
 def check_in(request, lab_name):  # api
     person = Person.objects.get(user=request.user)
@@ -131,13 +143,14 @@ def query_search(mode, keyword, start, stop):
                                                "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             start = datetime.datetime.fromtimestamp(0)
-            
+
     if not isinstance(type(stop), type(datetime.datetime.now())):
         try:
             stop = datetime.datetime.strptime(stop,
                                               "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now()
+
 
     if keyword != "":  # if have specific keyword
         histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
@@ -191,6 +204,7 @@ def export_normal_csv(request):
     response['Content-Disposition'] = 'attachment; filename="user_data.csv"'
     return response
 
+
 def filter_risk_user(mode, keyword):
     start = 0
     stop = 0
@@ -214,6 +228,7 @@ def filter_risk_user(mode, keyword):
                                            session.person.email,
                                            ])
     return risk_people_data, risk_people_notify
+
 
 def risk_people_search(request):
     if request.user.is_superuser:

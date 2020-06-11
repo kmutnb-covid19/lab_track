@@ -1,0 +1,22 @@
+{% load qr_code %}
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<h2><a href="/admin">กลับสู่หน้า Admin</a></h2>
+<form method="post">
+    {% csrf_token %}
+    <label for="check_out_time">เลือก Lab ที่ต้องการสร้าง QR Code :</label>
+    <select name="lab_selector" id="select_lab">
+        {% for lab in all_lab_name %}
+            <option {%if selected_lab == forloop.counter0|stringformat:"i" %} selected {% endif %} value="{{ forloop.counter0 }}">{{ lab }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">สร้าง QR Code</button>
+</form>
+{% if selected_lab %}
+    <p>Lab : {{ selected_lab_name }}</p>
+    {% qr_from_text "http://"|add:domain|add:"/lab/"|add:selected_lab_hash size="s" image_format="png" error_correction="H" %}<br>
+    <h2><a href="{% qr_url_from_text "http://"|add:domain|add:"/lab/"|add:selected_lab_hash size="s" image_format="png" error_correction="H" %}" download="{{ selected_lab_name }}">Download {{ selected_lab_name }} QR Code</a></h2>
+{% endif %}
+</body>
+</html>

@@ -22,11 +22,11 @@ class Lab(models.Model):
 
 class Person(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=50, null=True)
-    last_name = models.CharField(max_length=50, null=True)
-    email = models.EmailField(blank=True, null=True)
-    student_id = models.CharField(max_length=13, blank=True)
-    is_student = models.BooleanField(blank=True, default=True)
+    first_name = models.CharField(max_length=50, default="", blank=True)
+    last_name = models.CharField(max_length=50, default="", blank=True)
+    email = models.EmailField(default="", blank=True)
+    student_id = models.CharField(max_length=13, default="", blank=True)
+    is_student = models.BooleanField(default=False)
 
     def __str__(self):
         return self.first_name + " " + self.last_name

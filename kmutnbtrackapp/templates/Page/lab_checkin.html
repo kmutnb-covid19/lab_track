@@ -1,11 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+<script type="text/javascript">
+function OtherTime(val){
+    const element = document.getElementById('time_value');
+    element.value = val;
+    if(val=='others')
+        element.style.display='block';
+    else
+        element.style.display='none';
+}
+function CheckTime(hour, minute){
+    const element = document.getElementById('time_value');
+    var SelectTime = element.value.split(":");
+    if (SelectTime[0] >= hour){
+        if (SelectTime[1] >= minute){
+            document.getElementById("TimeFrom").submit();
+        } else {
+            document.getElementById("status").innerHTML = "คุณไม่สามารถเลือกเวลาย้อนหลังได้";
+        }
+    } else {
+        document.getElementById("status").innerHTML = "คุณไม่สามารถเลือกเวลาย้อนหลังได้";
+    }
+}
+</script>
 <body onload="OtherTime(document.getElementById('time').value);">
     <button><a href="{% url 'kmutnbtrackapp:logout' %}?lab={{ lab_hash }}">Logout</a></button>
 <center>
     <h2>ห้อง : {{ lab_name }}</h2>
                 <h4>จำนวนคน :</h4> <h4 style="color: aquamarine;">{{ room_amount }}</h4>
-            <form method="post" action="{% url 'kmutnbtrackapp:check_in' lab_hash  %}" >
+            <form id="TimeFrom" method="post" action="{% url 'kmutnbtrackapp:check_in' lab_hash  %}" >
             {% csrf_token %}
                 <label for="check_out_time">เลือกเวลา check out :</label>
                 <select name="check_out_time" id="time" onchange='OtherTime(this.value);'>
@@ -25,19 +48,10 @@
                         <option selected="selected" value="others">อื่นๆ</option>
                     {% endif %}
                 </select>
-                <input type="time" name="check_out_time" id="time_value" value="12:00" style='display:none;'/>
-                <button name="room" type="submit" value="{{ lab_name }}">Check in</button>
+                <input type="time" name="check_out_time" id="time_value" value="12:00" style='display:none;' onchange="" />
+                <p id="status"></p>
+                <button name="room" type="button" value="{{ lab_name }}" onclick="CheckTime({{time_now_hour}},{{time_now_minute}})">Check in</button>
             </form>
 </center>
 </body>
-<script type="text/javascript">
-function OtherTime(val){
-    const element = document.getElementById('time_value');
-    element.value = val;
-    if(val=='others')
-        element.style.display='block';
-    else
-        element.style.display='none';
-}
-</script>
 </html>

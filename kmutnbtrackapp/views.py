@@ -44,8 +44,12 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
     else:  # if user already login and not check in yet
         time_option = compare_current_time()
         lab_name = Lab.objects.get(hash=lab_hash).name
-        return render(request, 'Page/lab_checkin.html', {"lab_name": lab_name, "lab_hash": lab_hash,
-                                                         "time_option": time_option})  # render page for checkin
+        return render(request, 'Page/lab_checkin.html', {"lab_name": lab_name,
+                                                         "lab_hash": lab_hash,
+                                                         "time_option": time_option,
+                                                         "time_now_hour": datetime.datetime.now().hour,
+                                                         "time_now_minute": datetime.datetime.now().minute
+                                                         })  # render page for checkin
 
 
 def signup(request):  # when stranger click 'Signup and Checkin'

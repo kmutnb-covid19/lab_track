@@ -174,7 +174,11 @@ def export_normal_csv(request):
     writer.writerow(['Student ID', 'Person Name', 'Lab Name', 'Check in time', 'Check out time'])
 
     for user in histories:
-        writer.writerow([str(user.person.student_id), user.person, user.lab, user.checkin, user.checkout])
+        writer.writerow([str(user.person.student_id),
+                         user.person,
+                         user.lab,
+                         user.checkin + timedelta(hours=7),
+                         user.checkout + timedelta(hours=7)])
 
     response['Content-Disposition'] = 'attachment; filename="user_data.csv"'
     return response
@@ -255,6 +259,8 @@ def export_risk_csv(request):
     writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
 
     for user in risk_people_data:
+        user[4] = user[4] + timedelta(hours=7)
+        user[5] = user[5] + timedelta(hours=7)
         writer.writerow(user)
 
     response['Content-Disposition'] = 'attachment; filename="risk_user_data.csv"'

@@ -41,7 +41,7 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
         return render(request, 'Page/lab_home.html', {"lab_name": lab_name, "lab_hash": lab_hash})
         # render page for logging in in that lab
 
-    else:  # if user already login and not checkin yet
+    else:  # if user already login and not check in yet
         time_option = compare_current_time()
         lab_name = Lab.objects.get(hash=lab_hash).name
         return render(request, 'Page/lab_checkin.html', {"lab_name": lab_name, "lab_hash": lab_hash,
@@ -84,21 +84,12 @@ def logout_api(request):  # api for logging out
     return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
 
 
-def login_page(request, lab_hash):  # this function is used when user get in home page
-    if not request.user.is_authenticated:
-        return render(request, 'Page/check_in.html', {"lab_hash": lab_hash})
-    else:
-        time_option = compare_current_time()
-        lab_name = Lab.objects.get(hash=lab_hash).name
-        return render(request, 'home.html', {"lab_hash": lab_hash, "time_option": time_option, "lab_name": lab_name})
-
-
-def compare_current_time():
+def compare_current_time():# make check out valid
     now_datetime = datetime.datetime.now()
-    noon = now_datetime.replace(hour=12, minute=0, second=0, microsecond=0)
-    four_pm = now_datetime.replace(hour=16, minute=0, second=0, microsecond=0)
-    eight_pm = now_datetime.replace(hour=20, minute=0, second=0, microsecond=0)
-    if now_datetime < noon:
+    noon = now_datetime.replace(hour=12, minute=0, second=0, microsecond=0) # noon time value
+    four_pm = now_datetime.replace(hour=16, minute=0, second=0, microsecond=0)#evening time value
+    eight_pm = now_datetime.replace(hour=20, minute=0, second=0, microsecond=0)# night time value
+    if now_datetime < noon:  # return for use in templates
         return 1
     elif noon < now_datetime < four_pm:
         return 2
@@ -108,14 +99,14 @@ def compare_current_time():
         return 4
 
 
-def check_in(request, lab_hash):  # api
+def check_in(request, lab_hash):  # when user checkin record in history
     person = Person.objects.get(user=request.user)
     lab_obj = Lab.objects.get(hash=lab_hash)
-    time_checkout = request.POST.get('check_out_time')
+    time_checkout = request.POST.get('check_out_time') #get check out time
     now_datetime = datetime.datetime.now()
     lab_name = Lab.objects.get(hash=lab_hash).name
     datetime_checkout = now_datetime.replace(hour=int(time_checkout.split(":")[0]),
-                                             minute=int(time_checkout.split(":")[1]))
+                                             minute=int(time_checkout.split(":")[1])) #get check out time in object datetime
     if datetime_checkout < now_datetime:
         return HttpResponse('''<script>alert("ไม่สามารถเลือกเวลาในอดีตได้!");history.go(-1);</script>''')
     if Lab.objects.filter(hash=lab_hash).exists():  # check that lab does exists

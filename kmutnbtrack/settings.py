@@ -125,7 +125,7 @@ SOCIAL_AUTH_PIPELINE = (
 
 LOGIN_URL = '/auth/login/google-oauth2/'
 
-LOGIN_REDIRECT_URL = '/home'
+LOGIN_REDIRECT_URL = '/lab/computer_lab'
 LOGOUT_REDIRECT_URL = '/logout_success'
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 

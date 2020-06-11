@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     
-    <title>{{ room name }}</title>
+    <title>{{ room_name }}</title>
     <style>
         /* init html,navbar,content */
         html {
@@ -93,10 +93,10 @@
     </style>
     <script type="text/javascript">
         function Click_Sign_in_with_google() {
-            // add function here
+            location.href="{% url 'social:begin' 'google-oauth2' %}?next={{ room_name }};"
         }
         function Click_to_fill_out_the_form() {
-            // add function here
+            location.href="{% url 'kmutnbtrackapp:signup' %}?next={{ room_name }};"
         }
     </script>
 </head>
@@ -105,7 +105,7 @@
     <nav class="navbar navbar-dark" style="background-color: #355C7D;">
         <a class="navbar-brand" href="#">
             <img src="{% static 'images/desktop.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
-            {{ room name }}
+            {{ room_name }}
         </a>
     </nav>
 
@@ -119,8 +119,9 @@
                 <button class="register_btn" onclick="Click_to_fill_out_the_form()">กรอกรายละเอียด</button>
                 <button class="google_btn" onclick="Click_Sign_in_with_google()">
                     <img id="google_img" src="{% static 'images/google.png' %}" alt="google_pic">
-                    Sign in with KMUTNB
+                    Checkin with KMUTNB
                 </button>
+                <button><a href="{% url 'kmutnbtrackapp:login' %}">Login</a></button>
             </div>
         </div>
     </div>

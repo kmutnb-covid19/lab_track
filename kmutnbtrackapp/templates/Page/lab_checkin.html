@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    <button><a href="{% url 'kmutnbtrackapp:logout' %}?lab={{ room_name }}">Logout</a></button>
+<center>
+    <form method="post" action="{% url 'kmutnbtrackapp:check_in' room_name %}" >
+        {% csrf_token %}
+        <h2>ห้อง : {{ room_name }}</h2>
+        <h4>จำนวนคน :</h4> <h4 style="color: aquamarine;">{{ room_amount }}</h4>
+        <button name="room" type="submit" value="{{ room_name }}">Check in</button>
+    </form>
+</center>
+</body>
+</html>

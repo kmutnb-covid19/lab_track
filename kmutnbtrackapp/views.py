@@ -13,7 +13,7 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib.auth import logout, authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.core.paginator import Paginator
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
@@ -23,7 +23,31 @@ from kmutnbtrackapp.forms import SignUpForm
 
 # Create your views here.
 
-def signup(request):
+def home(request): 
+    if request.GET:
+        lab_name = request.GET.get('next')
+        amount = Lab.objects.get(name=lab_name)
+        if not request.user.is_authenticated:  # check if user do not login
+            return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_name,)))
+
+        return render(request, 'home.html', {"room_name": lab_name, 'room_amount': amount})
+    else:
+        error_message = "กรุณาสเเกน QR code หน้าห้อง หรือติดต่ออาจารย์ผู้สอน"
+        return render(request, 'home.html', {"error_message": error_message})
+
+
+def lab_home_page(request, room_name):  # this function is used when user get in home page
+    if not request.user.is_authenticated: # if user hasn't login
+        return render(request, 'Page/lab_home.html', {"room_name": room_name})  # render page for logging in in that lab
+    
+    elif Person.objects.get(user=request.user).is_checkin: # if user already login and has already checkin
+        return render(request, 'Page/check_in_success.html', {"room_name": room_name}) # render page checkin success
+        
+    else: # if user already login and not checkin yet
+        return render(request, 'Page/lab_checkin.html', {"room_name": room_name})  # render page for checkin
+
+
+def signup(request): # when stranger click 'Signup and Checkin'
     lab_name = request.GET.get('next')
     # Receive data from POST
     if request.method == "POST":
@@ -42,42 +66,30 @@ def signup(request):
             email = form.cleaned_data.get('email')
             Person.objects.create(user=user, first_name=first_name, last_name=last_name, email=email,
                                   is_student=False)
-            return HttpResponseRedirect(reverse('kmutnbtrackapp:login', args=(lab_name,)))
+            return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_name,)))
     # didn't receive POST
     else:
         form = SignUpForm()
-    return render(request, 'Page/signup.html', {'form': form})
+    return render(request, 'registration/signup.html', {'form': form})
 
 
-def login_page(request, room_name):  # this function is used when user get in home page
-    if not request.user.is_authenticated:
-        return render(request, 'Page/check_in.html', {"room_name": room_name})
-    elif Person.objects.get(user=request.user).check_in_status == 1:
-        return HttpResponseRedirect(reverse("kmutnbtrackapp:check_in", args=(room_name,)))
-    else:
-        return render(request, 'home.html', {"room_name": room_name})
+def login_api(request): # api when stranger login
+    pass
 
 
-def home(request):
-    if request.GET:
-        lab_name = request.GET.get('next')
-        amount = Lab.objects.get(name=lab_name)
-        if not request.user.is_authenticated:  # check if user do not login
-            return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_name,)))
-
-        return render(request, 'home.html', {"room_name": lab_name, 'room_amount': amount})
-    else:
-        error_message = "กรุณาสเเกน QR code หน้าห้อง หรือติดต่ออาจารย์ผู้สอน"
-        return render(request, 'home.html', {"error_message": error_message})
+def logout_api(request): # api for logging out
+    logout(request)
+    lab_name = request.GET.get("lab")
+    return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_name,)))   
 
 
-def check_in(request, lab_name):  # api
+def check_in(request, lab_name):  # api for checking in
     person = Person.objects.get(user=request.user)
     lab_obj = Lab.objects.get(name=lab_name)
-    if Person.objects.get(user=request.user).check_in_status:  # user try to check in but he forget to check out
+    if Person.objects.get(user=request.user).is_checkin:  # user try to check in but he forget to check out
         lab_name = History.objects.get(person=person, checkout=None).lab.name
         return render(request, 'home.html',
-                      {"check_in_status": Person.objects.get(user=request.user).check_in_status,
+                      {"check_in_status": Person.objects.get(user=request.user).is_checkin,
                        "room_check_in": lab_name})
     elif Lab.objects.filter(name=lab_name).exists():  # check that lab does exists
         if History.objects.filter(person=person,lab=lab_obj).count() != 0:  # เช็คอินครั้งแรก
@@ -101,17 +113,18 @@ def check_in(request, lab_name):  # api
         return render(request, 'home.html', {"error_message": error_message})
 
 
-def check_out(request, lab_name):  # api
+def check_out(request, lab_name):  # api for checking out
     person = Person.objects.get(user=request.user)
     lab_obj = Lab.objects.get(name=lab_name)
     out_local_time = datetime.datetime.now()
     log = History.objects.get(person=person, lab=lab_obj, checkout=None)
-    person.check_in_status = False
+    person.is_checkin = False
     person.save()
     if not log.checkout:
         log.checkout = out_local_time
         log.save()
     return render(request, 'Page/check_out_success.html', {"localtime": log.checkout, "room_check_in": lab_name})
+
 
 def querry_search(mode, keyword, start, stop):
     histories = History.objects.all()
@@ -181,6 +194,7 @@ def export_normal_csv(request):
     response['Content-Disposition'] = 'attachment; filename="user_data.csv"'
     return response
 
+
 def filter_risk_user(mode, keyword):
     start = 0
     stop = 0
@@ -207,6 +221,7 @@ def filter_risk_user(mode, keyword):
                                          ])
     return risk_people_data, risk_people_notify
 
+
 def risk_people_search(request):
     if request.user.is_superuser:
         if request.GET: # if request has parameter
@@ -223,6 +238,7 @@ def risk_people_search(request):
             return render(request, 'admin/risk_people_search.html',
                     {'shown_history': '',
                     })
+
 
 def notify_user(request):
     mode = request.GET.get('mode', '')
@@ -247,6 +263,7 @@ def notify_user(request):
     return render(request,'admin/notify.html',
                 {'notify_status': True,
                 })
+
 
 def export_risk_csv(request):
     mode = request.GET.get('mode', '')

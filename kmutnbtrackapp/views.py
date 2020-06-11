@@ -32,18 +32,20 @@ def home(request):
         if not request.user.is_authenticated:  # check if user do not login
             return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_hash,)))
         return HttpResponseRedirect(reverse("kmutnbtrackapp:lab_home", args=(lab_hash,)))
-    return HttpResponse('Logout Successful')
+    return HttpResponse('Waiting for beautiful homepage....')
 
 
 def lab_home_page(request, lab_hash):  # this function is used when user get in home page
     if not request.user.is_authenticated:  # if user hasn't login
         lab_name = Lab.objects.get(hash=lab_hash).name
-        return render(request, 'Page/lab_home.html', {"lab_name": lab_name, "lab_hash": lab_hash})  # render page for logging in in that lab
+        return render(request, 'Page/lab_home.html', {"lab_name": lab_name, "lab_hash": lab_hash})
+        # render page for logging in in that lab
 
-    else: # if user already login and not checkin yet
+    else:  # if user already login and not checkin yet
         time_option = compare_current_time()
         lab_name = Lab.objects.get(hash=lab_hash).name
-        return render(request, 'Page/lab_checkin.html', {"lab_name":lab_name, "lab_hash": lab_hash, "time_option":time_option})  # render page for checkin
+        return render(request, 'Page/lab_checkin.html', {"lab_name": lab_name, "lab_hash": lab_hash,
+                                                         "time_option": time_option})  # render page for checkin
 
 
 def signup(request):  # when stranger click 'Signup and Checkin'
@@ -89,21 +91,6 @@ def login_page(request, lab_hash):  # this function is used when user get in hom
         time_option = compare_current_time()
         lab_name = Lab.objects.get(hash=lab_hash).name
         return render(request, 'home.html', {"lab_hash": lab_hash, "time_option": time_option, "lab_name": lab_name})
-
-
-def compare_current_time():
-    now_datetime = datetime.datetime.now()
-    noon = now_datetime.replace(hour=12, minute=0, second=0, microsecond=0)
-    four_pm = now_datetime.replace(hour=16, minute=0, second=0, microsecond=0)
-    eight_pm = now_datetime.replace(hour=20, minute=0, second=0, microsecond=0)
-    if now_datetime < noon:
-        return 1
-    elif noon < now_datetime < four_pm:
-        return 2
-    elif noon < now_datetime < eight_pm and now_datetime > four_pm:
-        return 3
-    else:
-        return 4
 
 
 def compare_current_time():

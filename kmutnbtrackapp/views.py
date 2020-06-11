@@ -36,17 +36,15 @@ def home(request):
 
 
 def lab_home_page(request, room_name):  # this function is used when user get in home page
-    if not request.user.is_authenticated: # if user hasn't login
+    if not request.user.is_authenticated:  # if user hasn't login
         return render(request, 'Page/lab_home.html', {"room_name": room_name})  # render page for logging in in that lab
 
-    elif Person.objects.get(user=request.user).is_checkin: # if user already login and has already checkin
-        return render(request, 'Page/check_in_success.html', {"room_name": room_name}) # render page checkin success
-
     else: # if user already login and not checkin yet
-        return render(request, 'Page/lab_checkin.html', {"room_name": room_name})  # render page for checkin
+        time_option = compare_current_time()
+        return render(request, 'Page/lab_checkin.html', {"room_name": room_name, "time_option":time_option})  # render page for checkin
 
 
-def signup(request): # when stranger click 'Signup and Checkin'
+def signup(request):  # when stranger click 'Signup and Checkin'
     lab_name = request.GET.get('next')
     # Receive data from POST
     if request.method == "POST":
@@ -71,6 +69,16 @@ def signup(request): # when stranger click 'Signup and Checkin'
         form = SignUpForm()
     return render(request, 'registration/signup.html', {'form': form})
 
+
+def login_api(request):  # api when stranger login
+    pass
+
+
+def logout_api(request):  # api for logging out
+    logout(request)
+    lab_name = request.GET.get("lab")
+    return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_name,)))
+
 def login_api(request): # api when stranger login
     pass
 
@@ -86,6 +94,7 @@ def login_page(request, room_name):  # this function is used when user get in ho
         time_option = compare_current_time()
         return render(request, 'home.html', {"room_name": room_name, "time_option": time_option})
 
+
 def compare_current_time():
     now_datetime = datetime.datetime.now()
     noon = now_datetime.replace(hour=12, minute=0, second=0, microsecond=0)
@@ -99,6 +108,7 @@ def compare_current_time():
         return 3
     else:
         return 4
+
 
 def compare_current_time():
     now_datetime = datetime.datetime.now()
@@ -150,7 +160,6 @@ def query_search(mode, keyword, start, stop):
                                               "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now()
-
 
     if keyword != "":  # if have specific keyword
         histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
@@ -266,7 +275,7 @@ def notify_user(request):
 def export_risk_csv(request):
     mode = request.GET.get('mode', '')
     keyword = request.GET.get('keyword', '')
-    risk_people_data,not_use = filter_risk_user(mode, keyword)
+    risk_people_data, not_use = filter_risk_user(mode, keyword)
     response = HttpResponse(content_type='text/csv')
     writer = csv.writer(response)
     writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])

@@ -15,16 +15,16 @@
                 <label for="check_out_time">เลือกเวลา check out :</label>
                 <select name="check_out_time" id="time" onchange='OtherTime(this.value);'>
                     {% if time_option == 1 %}
-                        <option selected="selected" value="12:00">12:00 PM</option>
-                        <option value="16:00">04:00 PM</option>
-                        <option value="20:00">08:00 PM</option>
+                        <option selected="selected" value="12:00">12:00</option>
+                        <option value="16:00">16:00</option>
+                        <option value="20:00">20:00</option>
                         <option value="others">อื่นๆ</option>
                     {% elif time_option == 2 %}
                         <option selected="selected" value="16:00">04:00 PM</option>
-                        <option value="20:00">08:00 PM</option>
+                        <option value="20:00">20:00</option>
                         <option value="others">อื่นๆ</option>
                     {% elif time_option == 3 %}
-                        <option selected="selected" value="20:00">08:00 PM</option>
+                        <option selected="selected" value="20:00">20:00</option>
                         <option value="others">อื่นๆ</option>
                     {% elif time_option == 4 %}
                         <option selected="selected" value="others">อื่นๆ</option>

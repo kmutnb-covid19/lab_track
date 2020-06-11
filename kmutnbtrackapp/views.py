@@ -79,6 +79,13 @@ def logout_api(request):  # api for logging out
     lab_name = request.GET.get("lab")
     return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_name,)))
 
+def login_api(request): # api when stranger login
+    pass
+
+def logout_api(request): # api for logging out
+    logout(request)
+    lab_name = request.GET.get("lab")
+    return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_name,)))
 
 def login_page(request, room_name):  # this function is used when user get in home page
     if not request.user.is_authenticated:
@@ -138,7 +145,6 @@ def check_in(request, lab_name):  # api
         error_message = "QR code ไม่ถูกต้อง"
         return render(request, 'home.html', {"error_message": error_message})
 
-
 def query_search(mode, keyword, start, stop):
     histories = History.objects.all()
     if not isinstance(type(start), type(datetime.datetime.now())):
@@ -170,7 +176,6 @@ def query_search(mode, keyword, start, stop):
     else:
         return "EMPTY"
 
-
 def history_search(request, page=1):
     keyword = request.GET.get('keyword', '')
     if request.user.is_superuser:
@@ -189,7 +194,6 @@ def history_search(request, page=1):
                        # 'page_number': page,
                        # 'page_range': page_range,
                        })
-
 
 def export_normal_csv(request):
     mode = request.GET.get('mode', '')
@@ -250,7 +254,6 @@ def risk_people_search(request):
                           {'shown_history': '',
                            })
 
-
 def notify_user(request):
     mode = request.GET.get('mode', '')
     keyword = request.GET.get('keyword', '')
@@ -268,7 +271,6 @@ def notify_user(request):
                                                         })
         email = EmailMessage(subject, message, to=[user_email])
         email.send()
-
 
 def export_risk_csv(request):
     mode = request.GET.get('mode', '')

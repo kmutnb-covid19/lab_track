@@ -5,8 +5,8 @@ import datetime
 
 # Create your models here.
 class Lab(models.Model):
-    name = models.CharField(max_length=300, null=True)
-    amount = models.IntegerField(blank=True)
+    name = models.CharField(max_length=300)
+    amount = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -14,22 +14,22 @@ class Lab(models.Model):
 
 class Person(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=50, null=True)
-    last_name = models.CharField(max_length=50, null=True)
-    email = models.EmailField(blank=True, null=True)
-    student_id = models.CharField(max_length=13, blank=True)
-    check_in_status = models.BooleanField(blank=True, default=False)
-    is_student = models.BooleanField(blank=True, default=True)
+    first_name = models.CharField(max_length=50, default="", blank=True)
+    last_name = models.CharField(max_length=50, default="", blank=True)
+    email = models.EmailField(default="", blank=True)
+    student_id = models.CharField(max_length=13, default="", blank=True)
+    is_checkin = models.BooleanField(default=False)
+    is_student = models.BooleanField(default=False)
 
     def __str__(self):
         return self.first_name + " " + self.last_name
 
     def check_in(self):
-        self.check_in_status = True
+        self.is_checkin = True
         self.save()
 
     def check_out(self):
-        self.check_in_status = False
+        self.is_checkin = False
         self.save()
 
 

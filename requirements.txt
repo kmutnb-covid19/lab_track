@@ -4,3 +4,4 @@ social-auth-app-django==3.4.0
 django-dbbackup==3.3.0
 django-storages==1.9.1
 celery==4.4.5
+selenium==3.141.0

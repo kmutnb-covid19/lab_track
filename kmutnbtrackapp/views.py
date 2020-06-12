@@ -206,14 +206,14 @@ def filter_risk_user(mode, keyword):
         for user in target_history:
             session_history = query_search('lab', user.lab, user.checkin, user.checkout)
             for session in session_history:
-                risk_people_data.append([str(session.person.student_id),
+                risk_people_data.append((session.person.student_id,
                                          session.person.first_name + ' ' + session.person.last_name,
                                          '',
                                          session.lab,
                                          session.checkin,
                                          session.checkout,
-                                         ])
-                risk_people_notify.append([str(session.person.student_id),
+                                        ))
+                risk_people_notify.append([session.person.student_id,
                                            session.person.first_name + ' ' + session.person.last_name,
                                            session.lab,
                                            session.person.email,
@@ -228,7 +228,7 @@ def risk_people_search(request):
             keyword = request.GET.get('keyword', '')
             risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
             return render(request, 'admin/risk_people_search.html',
-                          {'shown_history': risk_people_data,
+                          {'shown_history': list(set(risk_people_data)),
                            'keyword': keyword,
                            })
         else:

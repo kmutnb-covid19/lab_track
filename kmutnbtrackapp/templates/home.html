@@ -10,7 +10,7 @@
             <h1>เวลา check out ที่ระบุ : {{ check_out }}</h1>
         {% elif lab_hash %}
                 <h2>ห้อง : {{ lab_name }}</h2>
-                <h4>จำนวนคน :</h4> <h4 style="color: aquamarine;">{{ room_amount }}</h4>
+                <h4>จำนวนคน :</h4>
             <form method="post" action="{% url 'kmutnbtrackapp:check_in' lab_hash  %}" >
             {% csrf_token %}
                 <label for="check_out_time">เลือกเวลา check out :</label>

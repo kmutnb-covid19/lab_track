@@ -197,28 +197,26 @@ def export_normal_csv(request):
 
 
 def filter_risk_user(mode, keyword):
-    start = 0
-    stop = 0
     risk_people_data = []
     risk_people_notify = []
-    target_history = query_search(mode, keyword, start, stop)
+    target_history = query_search(mode, keyword, 0, 0)
     if target_history != 'EMPTY':
         for user in target_history:
             session_history = query_search('lab', user.lab, user.checkin, user.checkout)
             for session in session_history:
-                risk_people_data.append([str(session.person.student_id),
+                risk_people_data.append((session.person.student_id,
                                          session.person.first_name + ' ' + session.person.last_name,
                                          '',
                                          session.lab,
                                          session.checkin,
                                          session.checkout,
-                                         ])
-                risk_people_notify.append([str(session.person.student_id),
+                                        ))
+                risk_people_notify.append([session.person.student_id,
                                            session.person.first_name + ' ' + session.person.last_name,
                                            session.lab,
                                            session.person.email,
                                            ])
-    return risk_people_data, risk_people_notify
+    return list(set(risk_people_data)), risk_people_notify
 
 
 def risk_people_search(request):
@@ -264,6 +262,7 @@ def export_risk_csv(request):
     writer = csv.writer(response)
     writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
     for user in risk_people_data:
+        user = list(user)
         user[4] = user[4] + timedelta(hours=7)
         user[5] = user[5] + timedelta(hours=7)
         writer.writerow(user)

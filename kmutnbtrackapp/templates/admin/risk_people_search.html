@@ -49,7 +49,7 @@
             </tr>
         </thead>
         <tbody id="table_body">
-            {% if shown_history %}
+            {% if shown_history != "EMPTY" %}
                 {% for each_user in shown_history %}  
                     <tr>
                     {% for each_data in each_user %}

@@ -25,6 +25,7 @@ function CheckTime(hour, minute){
             document.getElementById("status").innerHTML = "คุณไม่สามารถเลือกเวลาย้อนหลังได้";
         }
     } else {
+        document.getElementById('time_value').value = UserMode
         document.getElementById("TimeFrom").submit();
     }
 }
@@ -37,7 +38,7 @@ function CheckTime(hour, minute){
             <form id="TimeFrom" method="post" action="{% url 'kmutnbtrackapp:check_in' lab_hash  %}" >
             {% csrf_token %}
                 <label for="check_out_time">เลือกเวลา check out :</label>
-                <select name="check_out_time" id="time" onchange='OtherTime(this.value);'>
+                <select name="check_out_select_time" id="time" onchange='OtherTime(this.value);'>
                     {% if time_option == 1 %}
                         <option selected="selected" value="12:00">12:00</option>
                         <option value="16:00">16:00</option>

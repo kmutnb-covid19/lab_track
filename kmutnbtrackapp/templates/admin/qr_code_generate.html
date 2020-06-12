@@ -1,18 +1,51 @@
-{% load qr_code %}
 <!DOCTYPE html>
+{% load qr_code %}
 <html lang="en">
 <body>
-<h2><a href="/admin">กลับสู่หน้า Admin</a></h2>
-<form method="post">
-    {% csrf_token %}
-    <label for="check_out_time">เลือก Lab ที่ต้องการสร้าง QR Code :</label>
-    <select name="lab_selector" id="select_lab">
-        {% for lab in all_lab_name %}
-            <option {%if selected_lab == forloop.counter0|stringformat:"i" %} selected {% endif %} value="{{ forloop.counter0 }}">{{ lab }}</option>
-        {% endfor %}
-    </select>
-    <button type="submit">สร้าง QR Code</button>
-</form>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+          margin: 0;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+        .topnav {
+          overflow: hidden;
+          background-color: #417690;
+        }
+        .topnav a {
+          float: left;
+          color: #f2f2f2;
+          text-align: center;
+          padding: 14px 16px;
+          text-decoration: none;
+          font-size: 20px;
+        }
+        .topnav a:hover {
+          background-color: #ddd;
+          color: black;
+        }
+        .topnav a.active {
+          background-color: #0F587D;
+          color: white;
+        }
+    </style>
+    <div class="topnav">
+        <a href="{% url 'admin:index' %}">Labtrack Admin Dashboard</a>
+        <a href="{% url 'risk_people_search' %}">Risk People Search</a>
+        <a href="{% url 'history_search' %}">History Search</a>
+        <a class="active"  href="{% url 'generate_qr_code' %}">Generate lab's QR Code</a>
+    </div>
+    <h1 align="center">History search</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="check_out_time">เลือก Lab ที่ต้องการสร้าง QR Code :</label>
+        <select name="lab_selector" id="select_lab">
+            {% for lab in all_lab_name %}
+                <option {%if selected_lab == forloop.counter0|stringformat:"i" %} selected {% endif %} value="{{ forloop.counter0 }}">{{ lab }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">สร้าง QR Code</button>
+    </form>
 {% if selected_lab %}
     <p>Lab : {{ selected_lab_name }}</p>
     {% qr_from_text "http://"|add:domain|add:"/lab/"|add:selected_lab_hash size="s" image_format="png" error_correction="H" %}<br>

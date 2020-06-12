@@ -1,8 +1,36 @@
 {% extends 'admin/index.html' %}
 {% block branding %}
-    <div class="head">
-        <h1 id="name">Labtrack Admin Dashboard</h1>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+          margin: 0;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+        .topnav {
+          overflow: hidden;
+          background-color: #417690;
+        }
+        .topnav a {
+          float: left;
+          color: #f2f2f2;
+          text-align: center;
+          padding: 14px 16px;
+          text-decoration: none;
+          font-size: 20px;
+        }
+        .topnav a:hover {
+          background-color: #ddd;
+          color: black;
+        }
+        .topnav a.active {
+          background-color: #0F587D;
+          color: white;
+        }
+    </style>
+    <div class="topnav">
+        <a class="active" href="{% url 'admin:index' %}">Labtrack Admin Dashboard</a>
+        <a href="{% url 'risk_people_search' %}">Risk People Search</a>
+        <a href="{% url 'history_search' %}">History Search</a>
+        <a href="{% url 'generate_qr_code' %}">Generate lab's QR Code</a>
     </div>
-    <a href="{% url 'admin_search' %}"><button>History Search Engine</button></a>
-    <a href="{% url 'generate_qr_code' %}"><button>Generate lab's QR Code</button></a>
 {% endblock %}

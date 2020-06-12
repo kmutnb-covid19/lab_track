@@ -10,18 +10,13 @@ before_install:
  - tar -xzf geckodriver-v0.26.0-linux64.tar.gz -C geckodriver
  - export PATH=$PATH:$PWD/geckodriver
  - geckodriver --version
- - export MOZ_HEADLESS=1
 install:
  - pip install -r requirements.txt
-before_script:
- - "export DISPLAY=:99.0"
- - "sh -e /etc/init.d/xvfb start"
- - sleep 3 # give xvfb some time to start
 script:
  - python manage.py makemigrations
  - python manage.py migrate
  - python manage.py test functional_test
-sudo: false
+sudo: True
 dist: xenial
 services:
   - xvfb

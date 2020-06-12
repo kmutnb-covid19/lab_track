@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'social_django',
     'qr_code',
+    'dbbackup',
 ]
 
 MIDDLEWARE = [
@@ -173,3 +174,7 @@ EMAIL_HOST = 'smtp.zoho.com'
 EMAIL_HOST_USER = 'noreply@cony.codes'
 EMAIL_HOST_PASSWORD = 'qwertyuiopQWERTYUIOP123'
 EMAIL_PORT = 587
+
+# Back up Database
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = {'location': os.path.join(BASE_DIR, 'backups')}

@@ -135,17 +135,18 @@ def check_in(request, lab_hash):  # when user checkin record in history
 def query_search(mode, keyword, start, stop):
     histories = History.objects.all()
     if not isinstance(type(start), type(datetime.datetime.now())):
+        print(start)
         try:
             start = datetime.datetime.strptime(start,
                                                "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
-        except ValueError:
+        except TypeError:
             start = datetime.datetime.fromtimestamp(0)
 
     if not isinstance(type(stop), type(datetime.datetime.now())):
         try:
             stop = datetime.datetime.strptime(stop,
                                               "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
-        except ValueError:
+        except TypeError:
             stop = datetime.datetime.now()
 
     if keyword != "":  # if have specific keyword

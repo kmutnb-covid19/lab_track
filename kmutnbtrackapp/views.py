@@ -43,12 +43,18 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
 
     else:  # if user already login and not check in yet
         time_option = compare_current_time()
-        lab_name = Lab.objects.get(hash=lab_hash).name
+        lab_object = Lab.objects.get(hash=lab_hash)
+        lab_name = lab_object.name
+        now_datetime = datetime.datetime.now()
+        midnight_time = now_datetime.replace(hour=23, minute=59, second=59, microsecond=0)
+        current_people = History.objects.filter(lab=lab_object, checkout__gte=now_datetime,
+                                                checkout__lte=midnight_time).count()
         return render(request, 'Page/lab_checkin.html', {"lab_name": lab_name,
                                                          "lab_hash": lab_hash,
                                                          "time_option": time_option,
                                                          "time_now_hour": datetime.datetime.now().hour,
-                                                         "time_now_minute": datetime.datetime.now().minute
+                                                         "time_now_minute": datetime.datetime.now().minute,
+                                                         "current_people": current_people
                                                          })  # render page for checkin
 
 
@@ -88,11 +94,11 @@ def logout_api(request):  # api for logging out
     return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
 
 
-def compare_current_time():# make check out valid
+def compare_current_time():  # make check out valid
     now_datetime = datetime.datetime.now()
-    noon = now_datetime.replace(hour=12, minute=0, second=0, microsecond=0) # noon time value
-    four_pm = now_datetime.replace(hour=16, minute=0, second=0, microsecond=0)#evening time value
-    eight_pm = now_datetime.replace(hour=20, minute=0, second=0, microsecond=0)# night time value
+    noon = now_datetime.replace(hour=12, minute=0, second=0, microsecond=0)  # noon time value
+    four_pm = now_datetime.replace(hour=16, minute=0, second=0, microsecond=0)  # evening time value
+    eight_pm = now_datetime.replace(hour=20, minute=0, second=0, microsecond=0)  # night time value
     if now_datetime < noon:  # return for use in templates
         return 1
     elif noon < now_datetime < four_pm:
@@ -106,11 +112,12 @@ def compare_current_time():# make check out valid
 def check_in(request, lab_hash):  # when user checkin record in history
     person = Person.objects.get(user=request.user)
     lab_obj = Lab.objects.get(hash=lab_hash)
-    time_checkout = request.POST.get('check_out_time') #get check out time
+    time_checkout = request.POST.get('check_out_time')  # get check out time
     now_datetime = datetime.datetime.now()
     lab_name = Lab.objects.get(hash=lab_hash).name
     datetime_checkout = now_datetime.replace(hour=int(time_checkout.split(":")[0]),
-                                             minute=int(time_checkout.split(":")[1])) #get check out time in object datetime
+                                             minute=int(
+                                                 time_checkout.split(":")[1]))  # get check out time in object datetime
     if datetime_checkout < now_datetime:
         return HttpResponse('''<script>alert("ไม่สามารถเลือกเวลาในอดีตได้!");history.go(-1);</script>''')
     if Lab.objects.filter(hash=lab_hash).exists():  # check that lab does exists
@@ -131,14 +138,14 @@ def query_search(mode, keyword, start, stop):
         try:
             start = datetime.datetime.strptime(start,
                                                "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
-        except:
+        except ValueError:
             start = datetime.datetime.fromtimestamp(0)
 
     if not isinstance(type(stop), type(datetime.datetime.now())):
         try:
             stop = datetime.datetime.strptime(stop,
                                               "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
-        except:
+        except ValueError:
             stop = datetime.datetime.now()
 
     if keyword != "":  # if have specific keyword
@@ -157,7 +164,7 @@ def query_search(mode, keyword, start, stop):
         return "EMPTY"
 
 
-def history_search(request, page=1):
+def history_search(request):
     keyword = request.GET.get('keyword', '')
     if request.user.is_superuser:
         histories = "EMPTY"
@@ -210,7 +217,7 @@ def filter_risk_user(mode, keyword):
                                          session.lab,
                                          session.checkin,
                                          session.checkout,
-                                        ))
+                                         ))
                 risk_people_notify.append([session.person.student_id,
                                            session.person.first_name + ' ' + session.person.last_name,
                                            session.lab,

@@ -34,22 +34,22 @@ function CheckTime(hour, minute){
     <button><a href="{% url 'kmutnbtrackapp:logout' %}?lab={{ lab_hash }}">Logout</a></button>
 <center>
     <h2>ห้อง : {{ lab_name }}</h2>
-                <h4>จำนวนคน :</h4> <h4 style="color: aquamarine;">{{ room_amount }}</h4>
+                <h4>จำนวนคนในแลปขณะนี้ : {{ current_people }} คน</h4>
             <form id="TimeFrom" method="post" action="{% url 'kmutnbtrackapp:check_in' lab_hash  %}" >
             {% csrf_token %}
                 <label for="check_out_time">เลือกเวลา check out :</label>
                 <select name="check_out_select_time" id="time" onchange='OtherTime();'>
                     {% if time_option == 1 %}
-                        <option selected="selected" value="12:00">12:00</option>
-                        <option value="16:00">16:00</option>
-                        <option value="20:00">20:00</option>
+                        <option selected="selected" value="12:00">12:00 PM</option>
+                        <option value="16:00">04:00 PM</option>
+                        <option value="20:00">08:00 PM</option>
                         <option value="others">อื่นๆ</option>
                     {% elif time_option == 2 %}
                         <option selected="selected" value="16:00">04:00 PM</option>
-                        <option value="20:00">20:00</option>
+                        <option value="20:00">08:00 PM</option>
                         <option value="others">อื่นๆ</option>
                     {% elif time_option == 3 %}
-                        <option selected="selected" value="20:00">20:00</option>
+                        <option selected="selected" value="20:00">08:00 PM</option>
                         <option value="others">อื่นๆ</option>
                     {% elif time_option == 4 %}
                         <option selected="selected" value="others">อื่นๆ</option>

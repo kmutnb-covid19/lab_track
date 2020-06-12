@@ -264,6 +264,7 @@ def export_risk_csv(request):
     writer = csv.writer(response)
     writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
     for user in risk_people_data:
+        user = list(user)
         user[4] = user[4] + timedelta(hours=7)
         user[5] = user[5] + timedelta(hours=7)
         writer.writerow(user)

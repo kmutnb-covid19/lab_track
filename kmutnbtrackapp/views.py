@@ -139,14 +139,14 @@ def query_search(mode, keyword, start, stop):
         try:
             start = datetime.datetime.strptime(start,
                                                "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
-        except TypeError:
+        except:
             start = datetime.datetime.fromtimestamp(0)
 
     if not isinstance(type(stop), type(datetime.datetime.now())):
         try:
             stop = datetime.datetime.strptime(stop,
                                               "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
-        except TypeError:
+        except:
             stop = datetime.datetime.now()
 
     if keyword != "":  # if have specific keyword

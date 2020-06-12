@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <script type="text/javascript">
-function OtherTime(val){
+function OtherTime(){
     const Mode = document.getElementById('time').value;
     const element = document.getElementById('time_value');
     if ( Mode == "others" ){
@@ -16,7 +16,7 @@ function CheckTime(hour, minute){
     var SelectTime = UserTime.value.split(":");
     if (UserMode == "others"){
         if (SelectTime[0] >= hour){
-            if (SelectTime[1] >= minute){
+            if (((SelectTime[1] > minute) && (SelectTime[0] == hour)) || SelectTime[0] > hour){
                 document.getElementById("TimeFrom").submit();
             } else {
                 document.getElementById("status").innerHTML = "คุณไม่สามารถเลือกเวลาย้อนหลังได้";
@@ -38,7 +38,7 @@ function CheckTime(hour, minute){
             <form id="TimeFrom" method="post" action="{% url 'kmutnbtrackapp:check_in' lab_hash  %}" >
             {% csrf_token %}
                 <label for="check_out_time">เลือกเวลา check out :</label>
-                <select name="check_out_select_time" id="time" onchange='OtherTime(this.value);'>
+                <select name="check_out_select_time" id="time" onchange='OtherTime();'>
                     {% if time_option == 1 %}
                         <option selected="selected" value="12:00">12:00</option>
                         <option value="16:00">16:00</option>

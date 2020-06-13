@@ -46,10 +46,22 @@
     <h1 align="center">Risky people search</h1>
     <div>
         <form class="form-inline" action="{% url 'risk_people_search' %}" method="GET" enctype="multipart/form-data">
-            <select name="mode" id="mode">
-                <option value="id">id</option>
-                <option value="name" selected="selected">name</option>
-            </select>
+            {% if select_mode == "id" %}
+                <select name="mode" id="mode">
+                    <option value="id" selected="selected">id</option>
+                    <option value="name">name</option>
+                </select>
+            {% elif select_mode == "name" %}
+                <select name="mode" id="mode">
+                    <option value="id">id</option>
+                    <option value="name" selected="selected">name</option>
+                </select>
+            {% else %}
+                <select name="mode" id="mode">
+                    <option value="id">id</option>
+                    <option value="name">name</option>
+                </select>
+            {% endif %}
 
             <input name="keyword" placeholder="keyword here" value="{{ keyword }}">
             <input type="submit" value="search">

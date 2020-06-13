@@ -229,18 +229,16 @@ def filter_risk_user(mode, keyword):
 
 def risk_people_search(request):
     if request.user.is_superuser:
+        risk_people_data = "EMPTY"
         if request.GET:  # if request has parameter
             mode = request.GET.get('mode', '')
             keyword = request.GET.get('keyword', '')
             risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
-            return render(request, 'admin/risk_people_search.html',
-                          {'shown_history': risk_people_data,
-                           'keyword': keyword,
-                           })
-        else:
-            return render(request, 'admin/risk_people_search.html',
-                          {'shown_history': '',
-                           })
+        
+        return render(request, 'admin/risk_people_search.html',
+                        {'shown_history': risk_people_data,
+                        'keyword': keyword,
+                        })
 
 
 def notify_user(request):
@@ -260,8 +258,10 @@ def notify_user(request):
                                                         })
         email = EmailMessage(subject, message, to=[user_email])
         email.send()
-
-
+    
+        return render(request,'admin/notify.html',
+                            {'notify_status': True,
+                            })
 def export_risk_csv(request):
     mode = request.GET.get('mode', '')
     keyword = request.GET.get('keyword', '')

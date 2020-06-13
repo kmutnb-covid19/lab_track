@@ -221,37 +221,53 @@ def filter_risk_user(mode, keyword):
                                          ))
                 risk_people_notify.append([session.person.student_id,
                                            session.person.first_name + ' ' + session.person.last_name,
-                                           session.lab,
                                            session.person.email,
+                                           session.lab,
                                            ])
+
     return list(set(risk_people_data)), risk_people_notify
 
 
 def risk_people_search(request):
     if request.user.is_superuser:
+        risk_people_data = "EMPTY"
+        keyword = ""
         if request.GET:  # if request has parameter
             mode = request.GET.get('mode', '')
             keyword = request.GET.get('keyword', '')
             risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
-            return render(request, 'admin/risk_people_search.html',
-                          {'shown_history': risk_people_data,
-                           'keyword': keyword,
-                           })
-        else:
-            return render(request, 'admin/risk_people_search.html',
-                          {'shown_history': '',
-                           })
+        
+        return render(request, 'admin/risk_people_search.html',
+                        {'shown_history': risk_people_data,
+                        'keyword': keyword,
+                        })
 
 
 def notify_user(request):
     mode = request.GET.get('mode', '')
     keyword = request.GET.get('keyword', '')
     risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
+    #remove duplicate user'info
+    user_info =[]
+    for each_list in risk_people_notify:
+        std_id = each_list[0]
+        name = each_list[1]
+        email = each_list[2]
+        temp_list = [std_id,name,email]
+        for each in risk_people_notify:
+            if each[1] == name and each[3] not in temp_list : 
+                temp_list.append(each[3])
+        user_info.append(tuple(temp_list))
+    risk_people_notify = set(user_info)
+
     for each_user in risk_people_notify:
         student_id = each_user[0]
         first_last_name = each_user[1]
-        lab_name = each_user[2]
-        user_email = each_user[3]
+        user_email = each_user[2]
+        lab_name = []
+        for each_lab in each_user[3:]:
+            lab_name.append(each_lab)
+
         subject = 'เทสการแจ้งเตือน'
         message = render_to_string('admin/email.html', {'student_id': student_id,
                                                         'user_email': user_email,
@@ -260,7 +276,10 @@ def notify_user(request):
                                                         })
         email = EmailMessage(subject, message, to=[user_email])
         email.send()
-
+    
+        return render(request,'admin/notify.html',
+                            {'notify_status': True,
+                            })
 
 def export_risk_csv(request):
     mode = request.GET.get('mode', '')

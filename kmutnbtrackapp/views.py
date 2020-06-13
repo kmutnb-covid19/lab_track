@@ -167,6 +167,7 @@ def query_search(mode, keyword, start, stop):
 
 def history_search(request):
     keyword = request.GET.get('keyword', '')
+    mode = ""
     if request.user.is_superuser:
         histories = "EMPTY"
         if request.GET:  # if request has parameter
@@ -180,6 +181,7 @@ def history_search(request):
         return render(request, 'admin/history_search.html',
                       {'shown_history': histories,
                        'keyword': keyword,
+                       'select_mode': mode,
                        # 'page_number': page,
                        # 'page_range': page_range,
                        })
@@ -232,14 +234,15 @@ def risk_people_search(request):
     if request.user.is_superuser:
         risk_people_data = "EMPTY"
         keyword = ""
+        mode = ""
         if request.GET:  # if request has parameter
             mode = request.GET.get('mode', '')
             keyword = request.GET.get('keyword', '')
             risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
-        
+
         return render(request, 'admin/risk_people_search.html',
                         {'shown_history': risk_people_data,
-                        'keyword': keyword,
+                        'keyword': keyword,'select_mode' : mode,
                         })
 
 

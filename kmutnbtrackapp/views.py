@@ -230,6 +230,7 @@ def filter_risk_user(mode, keyword):
 def risk_people_search(request):
     if request.user.is_superuser:
         risk_people_data = "EMPTY"
+        keyword = ""
         if request.GET:  # if request has parameter
             mode = request.GET.get('mode', '')
             keyword = request.GET.get('keyword', '')

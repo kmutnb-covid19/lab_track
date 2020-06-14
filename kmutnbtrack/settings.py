@@ -71,6 +71,8 @@ TEMPLATES = [
     },
 ]
 
+
+
 WSGI_APPLICATION = 'kmutnbtrack.wsgi.application'
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 
@@ -168,6 +170,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_root/')
 STATICFILES_DIRS = (
   os.path.join(BASE_DIR, 'static/'),
 )
+
 
 DEFAULT_FROM_EMAIL = 'KMUTNB labtrack <noreply@cony.codes>'
 EMAIL_USE_TLS = True

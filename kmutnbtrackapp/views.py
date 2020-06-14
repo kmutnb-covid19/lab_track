@@ -163,7 +163,7 @@ def query_search(mode, keyword, start, stop):
         return histories
     else:
         return "EMPTY"
-    
+
 
 
 def history_search(request):
@@ -233,7 +233,7 @@ def filter_risk_user(mode, keyword):
                                         ])
 
     return list(set(risk_people_data)), risk_people_notify
-    
+
 
 
 def risk_people_search(request):
@@ -267,7 +267,7 @@ def notify_user(request):
             email = each_list[2]
             temp_list = [std_id,name,email]
             for each in risk_people_notify:
-                if each[1] == name and each[3] not in temp_list : 
+                if each[1] == name and each[3] not in temp_list :
                     temp_list.append(each[3])
             user_info.append(tuple(temp_list))
         risk_people_notify = set(user_info)
@@ -288,7 +288,7 @@ def notify_user(request):
                                                             })
             email = EmailMessage(subject, message, to=[user_email])
             email.send()
-        
+
             return render(request,'admin/notify.html',
                                 {'notify_status': True,
                                 })
@@ -332,4 +332,3 @@ def generate_qr_code(request):
                                                             "selected_lab": selected_lab, 'domain': site_url.domain})
     else:
         return HttpResponse("Permission Denined")
-                                               

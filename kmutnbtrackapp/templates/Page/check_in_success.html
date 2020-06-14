@@ -1,240 +1,233 @@
+{% extends 'Page/page_base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="HandheldFriendly" content="true">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;500;600&display=swap" rel="stylesheet">
 
-    <title>Check-in Successful - Check out</title>
-    <!-- navbar -->
-    <nav class="navbar navbar-dark" style="background-color: #355C7D;">
-        <a class="navbar-brand" href="#">
-            <img src="{% static 'images/desktop.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
-            {{ lab_name }}
-        </a>
-    </nav>
-    <style>
-        /* Init html, body */
-        html {
-            height: 100%;
-            width: 100%;
-        }
-        body {
-            margin: 0%;
-            min-height: 100%;
-            min-width: 100%;
-            display: grid;
-            justify-content: center;
-            align-content: center;
-        }        
-        .container{
-            width: 100%;
-            height: 100%;
-            padding: 0;
-            position: relative;
-        }
-        p {
-            font-family: 'Kanit', sans-serif;
-        }
-        .navbar-brand {
-            cursor: default;
-        }   
-        @media screen and (max-width: 375px) {
-            html, body {
-                width: 375px
-            }
-            .container {
-                width: 375px
-            }
-        }
+{% block title %}Check-in Successful - Check out{% endblock %}
+{% block head %}
+<!-- navbar -->
+<nav class="navbar navbar-dark" style="background-color: #355C7D;">
+    <a class="navbar-brand" href="#">
+        <img src="{% static 'images/desktop.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
+        {{ lab_name }}
+    </a>
+</nav>
+{% endblock %}
 
-        /* Check-in Successful - Check out */
-        div.Main-Check-in-Successful {
-            opacity: 1; /* button click => Comfirm Check out */
+{% block style %}
+    /* Init html, body */
+    html {
+        height: 100%;
+        width: 100%;
+    }
+    body {
+        margin: 0%;
+        min-height: 100%;
+        min-width: 100%;
+        display: grid;
+        justify-content: center;
+        align-content: center;
+    }        
+    .container{
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        position: relative;
+    }
+    p {
+        font-family: 'Kanit', sans-serif;
+    }
+    .navbar-brand {
+        cursor: default;
+    }   
+    @media screen and (max-width: 375px) {
+        html, body {
+            width: 375px
         }
-        img.displayed {          
-            width: calc(100% - 80px);
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            opacity: 1; /* button click => Comfirm Check out */
+        .container {
+            width: 375px
         }
-        p.Check-in-Successful-Text-1 {
-            margin-top: 20px;
-            text-align: center;
-            color: #355C7D;
-            font-size: calc(25px + (50 - 25) * ((100vw - 375px) / (1600 - 375)));
-            margin-bottom: 0%;
-        }
-        hr.new1 {
-            border-top: 1px solid #355C7D;
-            width: calc(100% - 200px);
-            margin-top: 0%;
-        }
-        a.btn-checkout {
-            padding: 10px 50px;   
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: white;
-            color: black; 
-            border: 2px solid #f44336;
-            border-radius: 8px;
-            box-sizing: border-box;
-            text-align:center;
-            font-weight:400;            
-        }
-        p.Text-Check-out {
-            color: red;
-            font-size: calc(25px + (50 - 25) * ((100vw - 375px) / (1600 - 375)));
-            margin-bottom: 0%;
-        }
-        i.icon-Check-out {
-            color: red;
-            align-self: center;
-            margin-right: 10px;
-            size: 20px;
-        }
+    }
 
-        /* Confirm Check out */
-        div.Confirm-Check-out-class {
-            width: 100%;
-            height: 100%;            
-            position: absolute;
-            top: 0;
-            left: 0;
-            opacity: 0; /* button click => Comfirm Check out */
-            margin: 0px;
-        }
-        p.Confirm-Check-out-Text-1 {
-            margin-left: calc(50px);
-            text-align: start;
-            color: #000000;
-            font-size: calc(40px + (50 - 40) * ((100vw - 375px) / (1600 - 375)));
-            margin-bottom: 0%;
-        }
-        hr.new2 {
-            border-top: 1px solid #355C7D;
-            width: calc(100% - 250px);
-            margin-left: 0%;
-            margin-top: 0%;
-            margin-bottom: 5%;
-        }
-        div.Confirm-Check-out-pop-up {
-            right: 0;
-            position: absolute;
-            margin-right: 13px;
-        }
-        p.Confirm-Check-out-Text-2 {
-            margin-left: calc(50px);
-            text-align: right;
-            color: #000000;
-            font-size: calc(25px + (50 - 25) * ((100vw - 375px) / (1600 - 375)));
-            margin-right: 0%;
-        }
-        button.Confirm-Check-out-1 {
-            background-color: #FF5D5D;
-        }
-        button.Confirm-Check-out-2 {
-            background-color: #63B860;
-        }
+    /* Check-in Successful - Check out */
+    div.Main-Check-in-Successful {
+        opacity: 1; /* button click => Comfirm Check out */
+    }
+    img.displayed {          
+        width: calc(100% - 80px);
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        opacity: 1; /* button click => Comfirm Check out */
+    }
+    p.Check-in-Successful-Text-1 {
+        margin-top: 20px;
+        text-align: center;
+        color: #355C7D;
+        font-size: calc(25px + (50 - 25) * ((100vw - 375px) / (1600 - 375)));
+        margin-bottom: 0%;
+    }
+    hr.new1 {
+        border-top: 1px solid #355C7D;
+        width: calc(100% - 200px);
+        margin-top: 0%;
+    }
+    a.btn-checkout {
+        padding: 10px 50px;   
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: white;
+        color: black; 
+        border: 2px solid #f44336;
+        border-radius: 8px;
+        box-sizing: border-box;
+        text-align:center;
+        font-weight:400;            
+    }
+    p.Text-Check-out {
+        color: red;
+        font-size: calc(25px + (50 - 25) * ((100vw - 375px) / (1600 - 375)));
+        margin-bottom: 0%;
+    }
+    i.icon-Check-out {
+        color: red;
+        align-self: center;
+        margin-right: 10px;
+        size: 20px;
+    }
+
+    /* Confirm Check out */
+    div.Confirm-Check-out-class {
+        width: 100%;
+        height: 100%;            
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0; /* button click => Comfirm Check out */
+        margin: 0px;
+    }
+    p.Confirm-Check-out-Text-1 {
+        margin-left: calc(50px);
+        text-align: start;
+        color: #000000;
+        font-size: calc(40px + (50 - 40) * ((100vw - 375px) / (1600 - 375)));
+        margin-bottom: 0%;
+    }
+    hr.new2 {
+        border-top: 1px solid #355C7D;
+        width: calc(100% - 250px);
+        margin-left: 0%;
+        margin-top: 0%;
+        margin-bottom: 5%;
+    }
+    div.Confirm-Check-out-pop-up {
+        right: 0;
+        position: absolute;
+        margin-right: 13px;
+    }
+    p.Confirm-Check-out-Text-2 {
+        margin-left: calc(50px);
+        text-align: right;
+        color: #000000;
+        font-size: calc(25px + (50 - 25) * ((100vw - 375px) / (1600 - 375)));
+        margin-right: 0%;
+    }
+    button.Confirm-Check-out-1 {
+        background-color: #FF5D5D;
+    }
+    button.Confirm-Check-out-2 {
+        background-color: #63B860;
+    }
+    
+    /* Animation of Action Click button to Page Logout confirm */        
+    /* visible => Hidden */
+    .ToConfirmLogOut-Opacity-1-0 {
+        width: calc(100% - 80px);
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
         
-        /* Animation of Action Click button to Page Logout confirm */        
-        /* visible => Hidden */
-        .ToConfirmLogOut-Opacity-1-0 {
-            width: calc(100% - 80px);
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            
-            animation-name: AnimationToConfirmLogout-1-0;
-            animation-duration:0.5s;
-            animation-timing-function: ease;
-            animation-fill-mode: forwards;
+        animation-name: AnimationToConfirmLogout-1-0;
+        animation-duration:0.5s;
+        animation-timing-function: ease;
+        animation-fill-mode: forwards;
+    }
+    @keyframes AnimationToConfirmLogout-1-0 {
+        from {
+            opacity: 1;
         }
-        @keyframes AnimationToConfirmLogout-1-0 {
-            from {
-                opacity: 1;
-            }
-            to {            
-                opacity: 0;
-            }
+        to {            
+            opacity: 0;
         }
+    }
 
-        /* Hidden => visible */
-        .ToConfirmLogOut-Opacity-0-1-Main {
+    /* Hidden => visible */
+    .ToConfirmLogOut-Opacity-0-1-Main {
+        width: 100%;
+        height: 100%;            
+        position: absolute;
+        top: 0;
+        left: 0;
+        margin: 0px;
+
+        animation-name: AnimationToConfirmLogout-0-1-Main;
+        animation-duration:2s;
+        animation-timing-function: ease;
+        animation-fill-mode: forwards;
+    }
+    .ToConfirmLogOut-Opacity-0-1-TOP {
+        margin-right: 0%;
+        overflow: hidden;
+
+        animation-name: AnimationToConfirmLogout-0-1-Log-1-TOP;
+        animation-duration:1s;
+        animation-timing-function: ease;
+        animation-fill-mode: forwards;
+    }
+    .ToConfirmLogOut-Opacity-0-1-BOT {
+        right: 0;
+        position: absolute;
+        margin-right: 13px;
+
+        animation-name: AnimationToConfirmLogout-0-1-Log-1-BOT;
+        animation-duration:1s;
+        animation-timing-function: ease;
+        animation-fill-mode: forwards;
+    }
+    @keyframes AnimationToConfirmLogout-0-1-Main {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    /* slide left to right */
+    @keyframes AnimationToConfirmLogout-0-1-Log-1-TOP {
+        from {
+            opacity: 0;
+            width: 300%;
+        }            
+        to {
+            opacity: 1;
             width: 100%;
-            height: 100%;            
-            position: absolute;
-            top: 0;
-            left: 0;
-            margin: 0px;
+        }
+    }
+    /* slide bottom to top */
+    @keyframes AnimationToConfirmLogout-0-1-Log-1-BOT {
+        from {
+            opacity: 0;
+            width: 0%;
+        }
+        to {
+            opacity: 1;
+            width: 300%;
+        }
+    } 
+{% endblock %}
 
-            animation-name: AnimationToConfirmLogout-0-1-Main;
-            animation-duration:2s;
-            animation-timing-function: ease;
-            animation-fill-mode: forwards;
-        }
-        .ToConfirmLogOut-Opacity-0-1-TOP {
-            margin-right: 0%;
-            overflow: hidden;
-
-            animation-name: AnimationToConfirmLogout-0-1-Log-1-TOP;
-            animation-duration:1s;
-            animation-timing-function: ease;
-            animation-fill-mode: forwards;
-        }
-        .ToConfirmLogOut-Opacity-0-1-BOT {
-            right: 0;
-            position: absolute;
-            margin-right: 13px;
-
-            animation-name: AnimationToConfirmLogout-0-1-Log-1-BOT;
-            animation-duration:1s;
-            animation-timing-function: ease;
-            animation-fill-mode: forwards;
-        }
-        @keyframes AnimationToConfirmLogout-0-1-Main {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-        /* slide left to right */
-        @keyframes AnimationToConfirmLogout-0-1-Log-1-TOP {
-            from {
-                opacity: 0;
-                width: 300%;
-            }            
-            to {
-                opacity: 1;
-                width: 100%;
-            }
-        }
-        /* slide bottom to top */
-        @keyframes AnimationToConfirmLogout-0-1-Log-1-BOT {
-            from {
-                opacity: 0;
-                width: 0%;
-            }
-            to {
-                opacity: 1;
-                width: 300%;
-            }
-        } 
-    </style>
-
+{% block script %}
     <script type="text/javascript">
         function Click_To_Confirm_Check_Out() {
             // ใส่ Function พวกมึงมาเลย
@@ -267,9 +260,9 @@
 
         }
     </script>
-</head>
+{% endblock %}
 
-<body>
+{% block content %}
     <!-- Page => Check-in Successful - Check out -->
     <div class="container">
         <!-- Component => Check-in Successful - Check out - 1 -->
@@ -308,5 +301,4 @@
         </div>
     </div>
 
-</body>
-</html>
+{% block content %}

@@ -19,8 +19,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
-
-from kmutnbtrackapp import views
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from kmutnbtrackapp import views    
 
 urlpatterns = [
     path('', include('kmutnbtrackapp.urls')),
@@ -40,3 +40,4 @@ urlpatterns = [
     
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)
+urlpatterns += staticfiles_urlpatterns()

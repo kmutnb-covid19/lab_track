@@ -1,0 +1,12 @@
+{% extends 'Page/page_base.html' %}
+{% load static %}
+
+{% block content %}
+    <center>
+        <button><a href="{% url 'kmutnbtrackapp:logout' %}?lab={{ lab_hash }}">Logout</a></button>
+            <h1>คุณได้ check in ไปแล้ว</h1>
+            <h1>ห้อง {{ lab_name }}</h1>
+            <h1>เวลา check in : {{ check_in }}</h1>
+            <h1 id="check_out_time_id">เวลา check out ที่ระบุ : {{ check_out }}</h1>
+    </center>
+{% endblock %}

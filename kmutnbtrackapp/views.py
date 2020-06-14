@@ -36,11 +36,13 @@ def home(request):
 
 
 def lab_home_page(request, lab_hash):  # this function is used when user get in home page
+    if not Lab.objects.filter(hash=lab_hash).exists():  # lab does not exists
+        error_message = "QR code ไม่ถูกต้อง"
+        return render(request, 'Page/error.html', {"error_message": error_message})
     if not request.user.is_authenticated:  # if user hasn't login
         lab_name = Lab.objects.get(hash=lab_hash).name
         return render(request, 'Page/lab_home.html', {"lab_name": lab_name, "lab_hash": lab_hash})
         # render page for logging in in that lab
-
     else:  # if user already login and not check in yet
         time_option = compare_current_time()
         lab_object = Lab.objects.get(hash=lab_hash)
@@ -120,34 +122,28 @@ def check_in(request, lab_hash):  # when user checkin record in history
                                                  time_checkout.split(":")[1]))  # get check out time in object datetime
     if Lab.objects.filter(hash=lab_hash).exists():  # check that lab does exists
         last_lab_obj = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
-        # ตรงนี้นะจ๊ะ
         if last_lab_obj.exists():
-            if last_lab_obj[0].lab.hash != lab_hash:#ไปแลปอื่นแล้วแล็ปเดิมยังไม่ check out
-                check_out_first = 1
-                return render(request,'home.html',{"check_out_first":check_out_first,"lab_hash_check_out":last_lab_obj[0].lab})
-            else:#มาแลปเดิมแล้วถ้าจะ check in ซ้ำจะเลือกให้ check out ก่อนเวลา
-                check_out = 1
-                last_lab_obj = History.objects.get(person=person,lab__hash=lab_hash, checkin__lte=now_datetime, checkout__gte=now_datetime)
-                return render(request, 'home.html', {"check_out": check_out,"lab_hash_check_out":last_lab_obj.lab})
+            if last_lab_obj[0].lab.hash != lab_hash:  # ไปแลปอื่นแล้วแล็ปเดิมยังไม่ check out
+                return render(request, 'Page/lab_checkout.html', {"lab_hash_check_out": last_lab_obj[0].lab})
+            else:  # มาแลปเดิมแล้วถ้าจะ check in ซ้ำจะเลือกให้ check out ก่อนเวลา
+                last_lab_obj = History.objects.get(person=person, lab__hash=lab_hash, checkin__lte=now_datetime,
+                                                   checkout__gte=now_datetime)
+                return render(request, 'Page/check_out_before_due.html', {"lab_hash_check_out": last_lab_obj.lab})
         log = History.objects.create(person=person, lab=lab_obj, checkin=datetime.datetime.now(),
                                      checkout=datetime_checkout)
-        return render(request, 'home.html',
-                      {"lab_hash": lab_hash, "already_checkin": 1, "lab_name": lab_name,
+        return render(request, 'Page/lab_checkin_successful.html',
+                      {"lab_hash": lab_hash, "lab_name": lab_name,
                        "check_in": (log.checkin + timedelta(hours=7)).strftime("%A, %d %B %Y, %I:%M %p"),
                        "check_out": log.checkout.strftime("%A, %d %B %Y, %I:%M %p")})
-
-    else:  # lab does not exists
-        error_message = "QR code ไม่ถูกต้อง"
-        return render(request, 'home.html', {"error_message": error_message})
 
 
 def check_out(request, lab_hash):  # api
     person = Person.objects.get(user=request.user)
     out_local_time = datetime.datetime.now()
-    log = History.objects.filter(person=person,lab__hash=lab_hash).order_by('checkin').last()
+    log = History.objects.filter(person=person, lab__hash=lab_hash).order_by('checkin').last()
     log.checkout = out_local_time
     log.save()
-    return render(request, 'Page/check_out_success.html', {"localtime": log.checkout, "room_check_in": log.lab.name})
+    return render(request, 'Page/check_out_success.html', {"lab_name": log.lab.name})
 
 
 def query_search(mode, keyword, start, stop):

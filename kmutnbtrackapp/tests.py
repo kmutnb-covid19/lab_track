@@ -25,27 +25,29 @@ class Searching_test(LiveServerTestCase):
         This function will return a random datetime between two datetime 
         objects.
         """
-        start = datetime.strptime('1/1/2020 9:00 AM', '%m/%d/%Y %I:%M %p')
-        end = datetime.strptime('3/1/2020 6:00 PM', '%m/%d/%Y %I:%M %p')
+        start = datetime.strptime('1/1/2020 9:00', '%d/%m/%Y %H:%M')
+        end = datetime.strptime('1/1/2020 16:00', '%d/%m/%Y %H:%M')
         delta = end - start
-        int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
-        random_second = randrange(int_delta)
-        return start + timedelta(seconds=random_second)
+        int_delta = (delta.days * 24 * 60) + (delta.seconds / 60)
+        random_minute = randrange(int_delta)
+        return start + timedelta(minutes=random_minute)
 
     def setUp(self):
         labA = Lab.objects.create(name="computer", amount=10)
         labB = Lab.objects.create(name="ece", amount=10)
         labC = Lab.objects.create(name="physic", amount=10)
         lablist = [labA, labB, labC]
-        firstname = "abcd"
-        lastname = "efgh"
-        u = User.objects.create(username=firstname,password=lastname)
-        p = Person.objects.create(user=u, first_name=firstname, last_name=lastname)
-        for i in range(500):
+        for i in range(50):
+            firstname = names.get_first_name() + str(randrange(100))
+            lastname = names.get_last_name()
+            u = User.objects.create(username=firstname,email='',password=lastname)
+            p = Person.objects.create(user=u, first_name=firstname, last_name=lastname)
             checkin_time = self.random_datetime()
             checkout_time = checkin_time + timedelta(hours=random.choice([1,2,3]))
-            History.objects.create(person=p, lab=random.choice(lablist), checkin=checkin_time, checkout=checkout_time)
-    
+            a = History.objects.create( person=p, lab=random.choice(lablist), checkin=checkin_time, checkout=checkout_time)
+            a.checkin=checkin_time
+            a.save()
+
     def test_can_query_by_name(self):
         pass
     def test_can_query_by_lab_name(self):

@@ -1,29 +1,26 @@
+{% extends 'Page/page_base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="HandheldFriendly" content="true">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{% static '/css/check_in_success.css'%}">
-    
-    <title>Check-in Successful - Check out</title>
-    <!-- navbar -->
-    <nav class="navbar navbar-dark" style="background-color: #355C7D;">
-        <a class="navbar-brand" href="#">
-            <img src="{% static 'images/desktop.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
-            {{ lab_name }}
-        </a>
-    </nav>
-    <script type="text/javascript" src="{% static '/js/check_in_success.js' %}"></script>
-</head>
-<body>
+
+{% block title %}Check-in Successful - Check out{% endblock %}
+{% block head %}
+<!-- navbar -->
+<nav class="navbar navbar-dark" style="background-color: #355C7D;">
+    <a class="navbar-brand" href="#">
+        <img src="{% static 'images/desktop.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
+        {{ lab_name }}
+    </a>
+</nav>
+{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/check_in_success.css'%}">
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="{% static '/js/check_in_success.js' %}"></script>
+{% endblock %}
+
+{% block content %}
     <!-- Page => Check-in Successful - Check out -->
     <div class="container">
         <!-- Component => Check-in Successful - Check out - 1 -->
@@ -62,5 +59,4 @@
         </div>
     </div>
 
-</body>
-</html>
+{% block content %}

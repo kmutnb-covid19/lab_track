@@ -90,7 +90,7 @@ def login_api(request):  # api when stranger login
 
 def logout_api(request):  # api for logging out
     logout(request)
-    lab_hash = request.GET.get("lab")
+    lab_hash = request.GET.get("lab", '')
     return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
 
 
@@ -134,100 +134,110 @@ def check_in(request, lab_hash):  # when user checkin record in history
 
 def query_search(mode, keyword, start, stop):
     histories = History.objects.all()
-    if not isinstance(type(start), type(datetime.datetime.now())):
+    if not isinstance(start, type(datetime.datetime.now())):
         print(start)
         try:
             start = datetime.datetime.strptime(start,
-                                               "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
+                                            "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             start = datetime.datetime.fromtimestamp(0)
 
-    if not isinstance(type(stop), type(datetime.datetime.now())):
+    if not isinstance(stop, type(datetime.datetime.now())):
         try:
             stop = datetime.datetime.strptime(stop,
-                                              "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
+                                            "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now()
+     
+    histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
 
     if keyword != "":  # if have specific keyword
-        histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
         if mode == "id":
             histories = histories.filter(Q(person__student_id__startswith=keyword))
         elif mode == "name":
             histories = histories.filter(
                 Q(person__first_name__startswith=keyword) | Q(person__last_name__startswith=keyword))
         elif mode == "lab":
-            histories = histories.filter(Q(lab__name__contains=keyword))
+            histories = histories.filter(Q(lab__name__startswith=keyword))
         elif mode == "tel":
-            histories = histories.filter(Q(person__tel__contains=keyword))
-        return histories
-    else:
-        return "EMPTY"
+            histories = histories.filter(Q(person__tel__startswith=keyword))
+    
+    return histories
+
+    
 
 
 def history_search(request):
-    keyword = request.GET.get('keyword', '')
-    mode = ""
     if request.user.is_superuser:
-        histories = "EMPTY"
+        keyword = request.GET.get('keyword', '')
+        start = request.GET.get('from', '')
+        stop = request.GET.get('to', '')
+        mode = ""
+        histories = History.objects.all()
         if request.GET:  # if request has parameter
             mode = request.GET.get('mode', '')
-            start = request.GET.get('from', '')
-            stop = request.GET.get('to', '')
             histories = query_search(mode, keyword, start, stop)
         # p = Paginator(histories, 24)
         # page_range = p.page_range
         # shown_history = p.page(page)
         return render(request, 'admin/history_search.html',
-                      {'shown_history': histories,
-                       'keyword': keyword,
-                       'select_mode': mode,
-                       # 'page_number': page,
-                       # 'page_range': page_range,
-                       })
+                    {'shown_history': histories,
+                    'keyword': keyword,
+                    'select_mode': mode,
+                    'start': start,
+                    'stop':stop
+                    # 'page_number': page,
+                    # 'page_range': page_range,
+                    })
+    else:
+        return HttpResponse("Permission Denined")
 
 
 def export_normal_csv(request):
-    mode = request.GET.get('mode', '')
-    keyword = request.GET.get('keyword', '')
-    start = request.GET.get('from', '')
-    stop = request.GET.get('to', '')
-    histories = query_search(mode, keyword, start, stop)
-    response = HttpResponse(content_type='text/csv')
-    writer = csv.writer(response)
-    writer.writerow(['Student ID', 'Person Name', 'Lab Name', 'Check in time', 'Check out time'])
-    for user in histories:
-        writer.writerow([str(user.person.student_id),
-                         user.person,
-                         user.lab,
-                         user.checkin + timedelta(hours=7),
-                         user.checkout + timedelta(hours=7)])
-    response['Content-Disposition'] = 'attachment; filename="user_data.csv"'
-    return response
+    if request.user.is_superuser:
+        mode = request.GET.get('mode', '')
+        keyword = request.GET.get('keyword', '')
+        start = request.GET.get('from', '')
+        stop = request.GET.get('to', '')
+        histories = query_search(mode, keyword, start, stop)
+        response = HttpResponse(content_type='text/csv')
+        writer = csv.writer(response)
+        writer.writerow(['Student ID', 'Person Name', 'Lab Name', 'Check in time', 'Check out time'])
+        for user in histories:
+            writer.writerow([str(user.person.student_id),
+                            user.person,
+                            user.lab,
+                            user.checkin + timedelta(hours=7),
+                            user.checkout + timedelta(hours=7)])
+        response['Content-Disposition'] = 'attachment; filename="user_data.csv"'
+        return response
+    else:
+        return HttpResponse("Permission Denined")
 
 
 def filter_risk_user(mode, keyword):
     risk_people_data = []
     risk_people_notify = []
-    target_history = query_search(mode, keyword, 0, 0)
-    if target_history != 'EMPTY':
-        for user in target_history:
-            session_history = query_search('lab', user.lab, user.checkin, user.checkout)
-            for session in session_history:
+    target_historys = query_search(mode, keyword, 0, 0) # get all historys with only the infected person
+    if target_historys != 'EMPTY':
+        for user in target_historys: # for each row of infected person
+            session_historys = query_search('lab', user.lab, user.checkin, user.checkout) # 
+            for session in session_historys:
                 risk_people_data.append((session.person.student_id,
-                                         session.person.first_name + ' ' + session.person.last_name,
-                                         '',
-                                         session.lab,
-                                         session.checkin,
-                                         session.checkout,
-                                         ))
+                                        session.person.first_name + ' ' + session.person.last_name,
+                                        '',
+                                        session.lab,
+                                        session.checkin,
+                                        session.checkout,
+                                        ))
                 risk_people_notify.append([session.person.student_id,
-                                           session.person.first_name + ' ' + session.person.last_name,
-                                           session.person.email,
-                                           session.lab,
-                                           ])
+                                        session.person.first_name + ' ' + session.person.last_name,
+                                        session.person.email,
+                                        session.lab,
+                                        ])
 
     return list(set(risk_people_data)), risk_people_notify
+
 
 
 def risk_people_search(request):
@@ -244,74 +254,85 @@ def risk_people_search(request):
                         {'shown_history': risk_people_data,
                         'keyword': keyword,'select_mode' : mode,
                         })
+    else:
+        return HttpResponse("Permission Denined")
 
 
 def notify_user(request):
-    mode = request.GET.get('mode', '')
-    keyword = request.GET.get('keyword', '')
-    risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
-    #remove duplicate user'info
-    user_info =[]
-    for each_list in risk_people_notify:
-        std_id = each_list[0]
-        name = each_list[1]
-        email = each_list[2]
-        temp_list = [std_id,name,email]
-        for each in risk_people_notify:
-            if each[1] == name and each[3] not in temp_list : 
-                temp_list.append(each[3])
-        user_info.append(tuple(temp_list))
-    risk_people_notify = set(user_info)
+    if request.user.is_superuser:
+        mode = request.GET.get('mode', '')
+        keyword = request.GET.get('keyword', '')
+        risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
+        #remove duplicate user'info
+        user_info =[]
+        for each_list in risk_people_notify:
+            std_id = each_list[0]
+            name = each_list[1]
+            email = each_list[2]
+            temp_list = [std_id,name,email]
+            for each in risk_people_notify:
+                if each[1] == name and each[3] not in temp_list :
+                    temp_list.append(each[3])
+            user_info.append(tuple(temp_list))
+        risk_people_notify = set(user_info)
 
-    for each_user in risk_people_notify:
-        student_id = each_user[0]
-        first_last_name = each_user[1]
-        user_email = each_user[2]
-        lab_name = []
-        for each_lab in each_user[3:]:
-            lab_name.append(each_lab)
+        for each_user in risk_people_notify:
+            student_id = each_user[0]
+            first_last_name = each_user[1]
+            user_email = each_user[2]
+            lab_name = []
+            for each_lab in each_user[3:]:
+                lab_name.append(each_lab)
 
-        subject = 'เทสการแจ้งเตือน'
-        message = render_to_string('admin/email.html', {'student_id': student_id,
-                                                        'user_email': user_email,
-                                                        'first_last_name': first_last_name,
-                                                        'lab_name': lab_name,
-                                                        })
-        email = EmailMessage(subject, message, to=[user_email])
-        email.send()
-    
-        return render(request,'admin/notify.html',
-                            {'notify_status': True,
-                            })
+            subject = 'เทสการแจ้งเตือน'
+            message = render_to_string('admin/email.html', {'student_id': student_id,
+                                                            'user_email': user_email,
+                                                            'first_last_name': first_last_name,
+                                                            'lab_name': lab_name,
+                                                            })
+            email = EmailMessage(subject, message, to=[user_email])
+            email.send()
+
+            return render(request,'admin/notify.html',
+                                {'notify_status': True,
+                                })
+    else:
+        return HttpResponse("Permission Denined")
 
 def export_risk_csv(request):
-    mode = request.GET.get('mode', '')
-    keyword = request.GET.get('keyword', '')
-    risk_people_data, not_use = filter_risk_user(mode, keyword)
-    response = HttpResponse(content_type='text/csv')
-    writer = csv.writer(response)
-    writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
-    for user in risk_people_data:
-        user = list(user)
-        user[4] = user[4] + timedelta(hours=7)
-        user[5] = user[5] + timedelta(hours=7)
-        writer.writerow(user)
-    response['Content-Disposition'] = 'attachment; filename="risk_user_data.csv"'
-    return response
+    if request.user.is_superuser:
+        mode = request.GET.get('mode', '')
+        keyword = request.GET.get('keyword', '')
+        risk_people_data, not_use = filter_risk_user(mode, keyword)
+        response = HttpResponse(content_type='text/csv')
+        writer = csv.writer(response)
+        writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
+        for user in risk_people_data:
+            user = list(user)
+            user[4] = user[4] + timedelta(hours=7)
+            user[5] = user[5] + timedelta(hours=7)
+            writer.writerow(user)
+        response['Content-Disposition'] = 'attachment; filename="risk_user_data.csv"'
+        return response
+    else:
+        return HttpResponse("Permission Denined")
 
 
 def generate_qr_code(request):
-    site_url = get_current_site(request)
-    selected_lab = ""
-    selected_lab_name = ""
-    selected_lab_hash = ""
-    all_lab_name = Lab.objects.all().order_by("name").values_list('name', flat=True)
-    all_lab_hash = Lab.objects.all().order_by("name").values_list('hash', flat=True)
-    if request.POST.get("lab_selector"):
-        selected_lab = request.POST["lab_selector"]
-        selected_lab_name = all_lab_name[int(selected_lab)]
-        selected_lab_hash = all_lab_hash[int(selected_lab)]
-    return render(request, 'admin/qr_code_generate.html', {"all_lab_name": all_lab_name,
-                                                           "selected_lab_hash": selected_lab_hash,
-                                                           "selected_lab_name": selected_lab_name,
-                                                           "selected_lab": selected_lab, 'domain': site_url.domain})
+    if request.user.is_superuser:
+        site_url = get_current_site(request)
+        selected_lab = ""
+        selected_lab_name = ""
+        selected_lab_hash = ""
+        all_lab_name = Lab.objects.all().order_by("name").values_list('name', flat=True)
+        all_lab_hash = Lab.objects.all().order_by("name").values_list('hash', flat=True)
+        if request.POST.get("lab_selector"):
+            selected_lab = request.POST["lab_selector"]
+            selected_lab_name = all_lab_name[int(selected_lab)]
+            selected_lab_hash = all_lab_hash[int(selected_lab)]
+        return render(request, 'admin/qr_code_generate.html', {"all_lab_name": all_lab_name,
+                                                            "selected_lab_hash": selected_lab_hash,
+                                                            "selected_lab_name": selected_lab_name,
+                                                            "selected_lab": selected_lab, 'domain': site_url.domain})
+    else:
+        return HttpResponse("Permission Denined")

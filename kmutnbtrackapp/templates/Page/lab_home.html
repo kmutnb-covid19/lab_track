@@ -1,23 +1,17 @@
+{% extends 'Page/page_base.html' %}
 {% load static %}
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="HandheldFriendly" content="true">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;500;600&display=swap" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="{% static '/css/lab_home.css'%}">
-    
-    <title>{{ lab_name }}</title>
-    
-    <script type="text/javascript" src="{% static '/js/lab_home.js' %}"></script>
-</head>
-<body>
+
+{% block title %}{{ lab_name }}{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/lab_home.css'%}">
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="{% static '/js/lab_home.js' %}"></script>
+{% endblock%}
+
+{% block content %}
     <!-- navbar room name-->
     <nav class="navbar navbar-dark" style="background-color: #355C7D;">
         <a class="navbar-brand" href="#">
@@ -43,5 +37,4 @@
         </div>
     </div>
 
-</body>
-</html>
+{% endblock %}

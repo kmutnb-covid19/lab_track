@@ -118,9 +118,12 @@ def check_in(request, lab_hash):  # when user checkin record in history
     datetime_checkout = now_datetime.replace(hour=int(time_checkout.split(":")[0]),
                                              minute=int(
                                                  time_checkout.split(":")[1]))  # get check out time in object datetime
-    if datetime_checkout < now_datetime:
-        return HttpResponse('''<script>alert("ไม่สามารถเลือกเวลาในอดีตได้!");history.go(-1);</script>''')
     if Lab.objects.filter(hash=lab_hash).exists():  # check that lab does exists
+        last_lab_obj = History.objects.filter(person=person, checkin__tle=now_datetime, checkout__gte=now_datetime)
+        # ตรงนี้นะจ๊ะ
+        if last_lab_obj.exists():
+            error_message = "ไม่สามารถ Check-in ซ้ำซ้อนได้"
+            return render(request, 'home.html', {"error_message": error_message})
         log = History.objects.create(person=person, lab=lab_obj, checkin=datetime.datetime.now(),
                                      checkout=datetime_checkout)
         return render(request, 'home.html',
@@ -132,20 +135,33 @@ def check_in(request, lab_hash):  # when user checkin record in history
         return render(request, 'home.html', {"error_message": error_message})
 
 
+def check_out(request, lab_name):  # api
+    person = Person.objects.get(user=request.user)
+    lab_obj = Lab.objects.get(name=lab_name)
+    out_local_time = datetime.datetime.now()
+    log = History.objects.get(person=person, lab=lab_obj, checkout=None)
+    person.check_in_status = False
+    person.save()
+    if not log.checkout:
+        log.checkout = out_local_time
+        log.save()
+    return render(request, 'Page/check_out_success.html', {"localtime": log.checkout, "room_check_in": lab_name})
+
+
 def query_search(mode, keyword, start, stop):
     histories = History.objects.all()
     if not isinstance(type(start), type(datetime.datetime.now())):
         print(start)
         try:
             start = datetime.datetime.strptime(start,
-                                            "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
+                                               "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             start = datetime.datetime.fromtimestamp(0)
 
     if not isinstance(type(stop), type(datetime.datetime.now())):
         try:
             stop = datetime.datetime.strptime(stop,
-                                            "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
+                                              "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now()
 
@@ -165,7 +181,6 @@ def query_search(mode, keyword, start, stop):
         return "EMPTY"
 
 
-
 def history_search(request):
     if request.user.is_superuser:
         keyword = request.GET.get('keyword', '')
@@ -180,14 +195,15 @@ def history_search(request):
         # page_range = p.page_range
         # shown_history = p.page(page)
         return render(request, 'admin/history_search.html',
-                    {'shown_history': histories,
-                    'keyword': keyword,
-                    'select_mode': mode,
-                    # 'page_number': page,
-                    # 'page_range': page_range,
-                    })
+                      {'shown_history': histories,
+                       'keyword': keyword,
+                       'select_mode': mode,
+                       # 'page_number': page,
+                       # 'page_range': page_range,
+                       })
     else:
         return HttpResponse("Permission Denined")
+
 
 def export_normal_csv(request):
     if request.user.is_superuser:
@@ -201,10 +217,10 @@ def export_normal_csv(request):
         writer.writerow(['Student ID', 'Person Name', 'Lab Name', 'Check in time', 'Check out time'])
         for user in histories:
             writer.writerow([str(user.person.student_id),
-                            user.person,
-                            user.lab,
-                            user.checkin + timedelta(hours=7),
-                            user.checkout + timedelta(hours=7)])
+                             user.person,
+                             user.lab,
+                             user.checkin + timedelta(hours=7),
+                             user.checkout + timedelta(hours=7)])
         response['Content-Disposition'] = 'attachment; filename="user_data.csv"'
         return response
     else:
@@ -220,20 +236,19 @@ def filter_risk_user(mode, keyword):
             session_history = query_search('lab', user.lab, user.checkin, user.checkout)
             for session in session_history:
                 risk_people_data.append((session.person.student_id,
-                                        session.person.first_name + ' ' + session.person.last_name,
-                                        '',
-                                        session.lab,
-                                        session.checkin,
-                                        session.checkout,
-                                        ))
+                                         session.person.first_name + ' ' + session.person.last_name,
+                                         '',
+                                         session.lab,
+                                         session.checkin,
+                                         session.checkout,
+                                         ))
                 risk_people_notify.append([session.person.student_id,
-                                        session.person.first_name + ' ' + session.person.last_name,
-                                        session.person.email,
-                                        session.lab,
-                                        ])
+                                           session.person.first_name + ' ' + session.person.last_name,
+                                           session.person.email,
+                                           session.lab,
+                                           ])
 
     return list(set(risk_people_data)), risk_people_notify
-
 
 
 def risk_people_search(request):
@@ -247,9 +262,9 @@ def risk_people_search(request):
             risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
 
         return render(request, 'admin/risk_people_search.html',
-                        {'shown_history': risk_people_data,
-                        'keyword': keyword,'select_mode' : mode,
-                        })
+                      {'shown_history': risk_people_data,
+                       'keyword': keyword, 'select_mode': mode,
+                       })
     else:
         return HttpResponse("Permission Denined")
 
@@ -259,15 +274,15 @@ def notify_user(request):
         mode = request.GET.get('mode', '')
         keyword = request.GET.get('keyword', '')
         risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
-        #remove duplicate user'info
-        user_info =[]
+        # remove duplicate user'info
+        user_info = []
         for each_list in risk_people_notify:
             std_id = each_list[0]
             name = each_list[1]
             email = each_list[2]
-            temp_list = [std_id,name,email]
+            temp_list = [std_id, name, email]
             for each in risk_people_notify:
-                if each[1] == name and each[3] not in temp_list :
+                if each[1] == name and each[3] not in temp_list:
                     temp_list.append(each[3])
             user_info.append(tuple(temp_list))
         risk_people_notify = set(user_info)
@@ -289,11 +304,12 @@ def notify_user(request):
             email = EmailMessage(subject, message, to=[user_email])
             email.send()
 
-            return render(request,'admin/notify.html',
-                                {'notify_status': True,
-                                })
+            return render(request, 'admin/notify.html',
+                          {'notify_status': True,
+                           })
     else:
         return HttpResponse("Permission Denined")
+
 
 def export_risk_csv(request):
     if request.user.is_superuser:
@@ -327,8 +343,8 @@ def generate_qr_code(request):
             selected_lab_name = all_lab_name[int(selected_lab)]
             selected_lab_hash = all_lab_hash[int(selected_lab)]
         return render(request, 'admin/qr_code_generate.html', {"all_lab_name": all_lab_name,
-                                                            "selected_lab_hash": selected_lab_hash,
-                                                            "selected_lab_name": selected_lab_name,
-                                                            "selected_lab": selected_lab, 'domain': site_url.domain})
+                                                               "selected_lab_hash": selected_lab_hash,
+                                                               "selected_lab_name": selected_lab_name,
+                                                               "selected_lab": selected_lab, 'domain': site_url.domain})
     else:
         return HttpResponse("Permission Denined")

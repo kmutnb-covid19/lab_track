@@ -179,7 +179,6 @@ def query_search(mode, keyword, start, stop):
     return histories
 
 
-
 def history_search(request):
     if request.user.is_superuser:
         keyword = request.GET.get('keyword', '')
@@ -194,14 +193,14 @@ def history_search(request):
         # page_range = p.page_range
         # shown_history = p.page(page)
         return render(request, 'admin/history_search.html',
-                    {'shown_history': histories,
-                    'keyword': keyword,
-                    'select_mode': mode,
-                    'start': start,
-                    'stop':stop
-                    # 'page_number': page,
-                    # 'page_range': page_range,
-                    })
+                      {'shown_history': histories,
+                       'keyword': keyword,
+                       'select_mode': mode,
+                       'start': start,
+                       'stop': stop
+                       # 'page_number': page,
+                       # 'page_range': page_range,
+                       })
     else:
         return HttpResponse("Permission Denined")
 
@@ -225,16 +224,16 @@ def export_normal_csv(request):
         response['Content-Disposition'] = 'attachment; filename="user_data.csv"'
         return response
     else:
-        return HttpResponse("Permission Denined")
+        return HttpResponse("Permission Denied")
 
 
 def filter_risk_user(mode, keyword):
     risk_people_data = []
     risk_people_notify = []
-    target_historys = query_search(mode, keyword, 0, 0) # get all historys with only the infected person
+    target_historys = query_search(mode, keyword, 0, 0)  # get all history with only the infected person
     if target_historys != 'EMPTY':
-        for user in target_historys: # for each row of infected person
-            session_historys = query_search('lab', user.lab, user.checkin, user.checkout) #
+        for user in target_historys:  # for each row of infected person
+            session_historys = query_search('lab', user.lab, user.checkin, user.checkout)  #
             for session in session_historys:
                 risk_people_data.append((session.person.student_id,
                                          session.person.first_name + ' ' + session.person.last_name,

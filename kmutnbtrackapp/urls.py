@@ -15,5 +15,5 @@ urlpatterns = [
     path('lab/<str:lab_hash>/', views.lab_home_page, name='lab_home'),
     path('home/', views.home, name='home'),
     path('check_in/<str:lab_hash>/', views.check_in, name='check_in'),
-
+    path('check_out/<str:lab_hash>/', views.check_out, name='check_out'),
 ]

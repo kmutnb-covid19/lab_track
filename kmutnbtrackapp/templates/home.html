@@ -36,8 +36,19 @@
             </form>
         {% elif error_message %}
             <h2>{{ error_message }}</h2>
-        {% elif already_checkin %}
-            <h1>คุณได้ check in ไปแล้ว</h1>
+        {% elif check_out_first %}
+            <h1>กรุณา check out ออกจาก lab นี้ก่อน {{ lab_hash_check_out.name }}</h1>
+            <h2>เมื่อ check out แล้วกรุณา Scan Qr code ใหม่</h2>
+            <form method="post" action="{% url 'kmutnbtrackapp:check_out' lab_hash_check_out.hash  %}">
+            <button name="checkout" type="submit" value="check_out">Check out</button>
+            {% csrf_token %}
+            </form>
+        {% elif check_out %}
+            <h1>คุณต้องการ check out ที่ {{ lab_hash_check_out.name }} ก่อนเวลา?</h1>
+            <form method="post" action="{% url 'kmutnbtrackapp:check_out' lab_hash_check_out.hash  %}">
+            <button name="checkout" type="submit" value="check_out">Check out</button>
+            {% csrf_token %}
+            </form>
         {% endif %}
     </center>
 </body>

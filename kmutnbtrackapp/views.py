@@ -119,33 +119,35 @@ def check_in(request, lab_hash):  # when user checkin record in history
                                              minute=int(
                                                  time_checkout.split(":")[1]))  # get check out time in object datetime
     if Lab.objects.filter(hash=lab_hash).exists():  # check that lab does exists
-        last_lab_obj = History.objects.filter(person=person, checkin__tle=now_datetime, checkout__gte=now_datetime)
+        last_lab_obj = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
         # ตรงนี้นะจ๊ะ
         if last_lab_obj.exists():
-            error_message = "ไม่สามารถ Check-in ซ้ำซ้อนได้"
-            return render(request, 'home.html', {"error_message": error_message})
+            if last_lab_obj[0].lab.hash != lab_hash:#ไปแลปอื่นแล้วแล็ปเดิมยังไม่ check out
+                check_out_first = 1
+                return render(request,'home.html',{"check_out_first":check_out_first,"lab_hash_check_out":last_lab_obj[0].lab})
+            else:#มาแลปเดิมแล้วถ้าจะ check in ซ้ำจะเลือกให้ check out ก่อนเวลา
+                check_out = 1
+                last_lab_obj = History.objects.get(person=person,lab__hash=lab_hash, checkin__lte=now_datetime, checkout__gte=now_datetime)
+                return render(request, 'home.html', {"check_out": check_out,"lab_hash_check_out":last_lab_obj.lab})
         log = History.objects.create(person=person, lab=lab_obj, checkin=datetime.datetime.now(),
                                      checkout=datetime_checkout)
         return render(request, 'home.html',
                       {"lab_hash": lab_hash, "already_checkin": 1, "lab_name": lab_name,
                        "check_in": (log.checkin + timedelta(hours=7)).strftime("%A, %d %B %Y, %I:%M %p"),
                        "check_out": log.checkout.strftime("%A, %d %B %Y, %I:%M %p")})
+
     else:  # lab does not exists
         error_message = "QR code ไม่ถูกต้อง"
         return render(request, 'home.html', {"error_message": error_message})
 
 
-def check_out(request, lab_name):  # api
+def check_out(request, lab_hash):  # api
     person = Person.objects.get(user=request.user)
-    lab_obj = Lab.objects.get(name=lab_name)
     out_local_time = datetime.datetime.now()
-    log = History.objects.get(person=person, lab=lab_obj, checkout=None)
-    person.check_in_status = False
-    person.save()
-    if not log.checkout:
-        log.checkout = out_local_time
-        log.save()
-    return render(request, 'Page/check_out_success.html', {"localtime": log.checkout, "room_check_in": lab_name})
+    log = History.objects.filter(person=person,lab__hash=lab_hash).order_by('checkin').last()
+    log.checkout = out_local_time
+    log.save()
+    return render(request, 'Page/check_out_success.html', {"localtime": log.checkout, "room_check_in": log.lab.name})
 
 
 def query_search(mode, keyword, start, stop):

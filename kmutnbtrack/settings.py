@@ -71,6 +71,8 @@ TEMPLATES = [
     },
 ]
 
+
+
 WSGI_APPLICATION = 'kmutnbtrack.wsgi.application'
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 
@@ -153,9 +155,11 @@ TIME_ZONE = 'Asia/Bangkok'
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
+DATETIME_FORMAT = 'N j, Y, H:i'
 
 USE_TZ = True
+
 
 
 # Static files (CSS, JavaScript, Images)
@@ -166,6 +170,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_root/')
 STATICFILES_DIRS = (
   os.path.join(BASE_DIR, 'static/'),
 )
+
 
 DEFAULT_FROM_EMAIL = 'KMUTNB labtrack <noreply@cony.codes>'
 EMAIL_USE_TLS = True

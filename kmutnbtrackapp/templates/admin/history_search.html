@@ -85,9 +85,9 @@
             
             <input name="keyword" placeholder="keyword here" value="{{ keyword }}">
             from 
-            <input type="datetime-local" name="from">
+            <input type="datetime-local" value="{{ start }}" name="from">
             to
-            <input type="datetime-local" name="to">
+            <input type="datetime-local" value="{{ stop }}" name="to">
             <input type="submit" value="search">
             <button type="submit" formaction="{% url 'download_normal_csv' %}">download csv file</button>
         </form>

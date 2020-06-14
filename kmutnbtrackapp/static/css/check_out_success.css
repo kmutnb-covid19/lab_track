@@ -1,0 +1,44 @@
+/* Init html, body */
+html {
+    height: 100%;
+    width: 100%;
+    padding:0;
+    margin:0;
+}
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;            
+    display: flex;
+    align-items: center;
+}
+p {
+    font-family: 'Kanit', sans-serif;
+    margin: 0;
+}
+
+/* Check out Successful */
+.square-Check-out {
+    padding: 0%;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: #355C7D;
+    color: white;
+    border: 2px solid #355C7D;
+    text-align:center;
+    font-weight:400;
+    height: calc(100% - 500px);
+    font-size: calc(25px + (50 - 25) * ((100vw - 375px) / (1600 - 375)));
+    display: grid;
+    justify-content: center;
+    align-content: center;
+}
+#icon-logout {
+    max-width: calc(100% - 250px);
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: calc(20px);;
+}

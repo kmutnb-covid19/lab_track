@@ -1,0 +1,53 @@
+/* Init html, body */
+html {
+    height: 100%;
+    width: 100%;
+}
+body {
+    min-height: 100%;
+    min-width: 100%;
+    display: grid;
+}        
+p {
+    font-weight: light;
+    font-size: x-large;
+    margin-top: 50px;
+    margin-left: 5px;
+    color: white;
+}
+p span {
+    background-color: #355C7D; 
+}       
+@media screen and (max-width: 375px) {
+    html, body {
+        width: 375px
+    }
+    .container {
+        width: 375px
+    }
+}
+
+/* Register Form */
+div.register_form {
+    font-family: 'Kanit',sans-serif;
+    margin-left: 10%;
+}
+div.form-content {
+    margin-top: 30px auto;  
+    width: auto;
+    line-height: 25px;
+    color: #355C7D;
+}
+div.btn-submit-for-register {
+    margin-top: 2%;
+}
+.btn-primary {
+    background-color: green;
+    border: none;
+    width: 80%;
+    font-size: larger;
+    border-radius: 10px;
+}
+.form-control {
+    border-color: #355C7D;
+}

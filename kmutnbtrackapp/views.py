@@ -148,7 +148,7 @@ def check_out(request, lab_hash):  # api
 
 def query_search(mode, keyword, start, stop):
     histories = History.objects.all()
-    if not isinstance(type(start), type(datetime.datetime.now())):
+    if not isinstance(start, type(datetime.datetime.now())):
         print(start)
         try:
             start = datetime.datetime.strptime(start,
@@ -156,49 +156,52 @@ def query_search(mode, keyword, start, stop):
         except:
             start = datetime.datetime.fromtimestamp(0)
 
-    if not isinstance(type(stop), type(datetime.datetime.now())):
+    if not isinstance(stop, type(datetime.datetime.now())):
         try:
             stop = datetime.datetime.strptime(stop,
                                               "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now()
 
+    histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
+
     if keyword != "":  # if have specific keyword
-        histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
         if mode == "id":
             histories = histories.filter(Q(person__student_id__startswith=keyword))
         elif mode == "name":
             histories = histories.filter(
                 Q(person__first_name__startswith=keyword) | Q(person__last_name__startswith=keyword))
         elif mode == "lab":
-            histories = histories.filter(Q(lab__name__contains=keyword))
+            histories = histories.filter(Q(lab__name__startswith=keyword))
         elif mode == "tel":
-            histories = histories.filter(Q(person__tel__contains=keyword))
-        return histories
-    else:
-        return "EMPTY"
+            histories = histories.filter(Q(person__tel__startswith=keyword))
+
+    return histories
+
 
 
 def history_search(request):
     if request.user.is_superuser:
         keyword = request.GET.get('keyword', '')
+        start = request.GET.get('from', '')
+        stop = request.GET.get('to', '')
         mode = ""
         histories = History.objects.all()
         if request.GET:  # if request has parameter
             mode = request.GET.get('mode', '')
-            start = request.GET.get('from', '')
-            stop = request.GET.get('to', '')
             histories = query_search(mode, keyword, start, stop)
         # p = Paginator(histories, 24)
         # page_range = p.page_range
         # shown_history = p.page(page)
         return render(request, 'admin/history_search.html',
-                      {'shown_history': histories,
-                       'keyword': keyword,
-                       'select_mode': mode,
-                       # 'page_number': page,
-                       # 'page_range': page_range,
-                       })
+                    {'shown_history': histories,
+                    'keyword': keyword,
+                    'select_mode': mode,
+                    'start': start,
+                    'stop':stop
+                    # 'page_number': page,
+                    # 'page_range': page_range,
+                    })
     else:
         return HttpResponse("Permission Denined")
 
@@ -228,11 +231,11 @@ def export_normal_csv(request):
 def filter_risk_user(mode, keyword):
     risk_people_data = []
     risk_people_notify = []
-    target_history = query_search(mode, keyword, 0, 0)
-    if target_history != 'EMPTY':
-        for user in target_history:
-            session_history = query_search('lab', user.lab, user.checkin, user.checkout)
-            for session in session_history:
+    target_historys = query_search(mode, keyword, 0, 0) # get all historys with only the infected person
+    if target_historys != 'EMPTY':
+        for user in target_historys: # for each row of infected person
+            session_historys = query_search('lab', user.lab, user.checkin, user.checkout) #
+            for session in session_historys:
                 risk_people_data.append((session.person.student_id,
                                          session.person.first_name + ' ' + session.person.last_name,
                                          '',

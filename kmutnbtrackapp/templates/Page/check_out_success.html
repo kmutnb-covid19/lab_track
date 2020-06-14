@@ -1,68 +1,56 @@
+{% extends 'Page/page_base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="HandheldFriendly" content="true">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;500;600&display=swap" rel="stylesheet">
+{% block title%}Check out Successful{% endblock %}
+{% block style %}
+    /* Init html, body */
+    html {
+        height: 100%;
+        width: 100%;
+        padding:0;
+        margin:0;
+    }
+    body {
+        height: 100%;
+        margin: 0;
+        padding: 0;            
+        display: flex;
+        align-items: center;
+    }
+    p {
+        font-family: 'Kanit', sans-serif;
+        margin: 0;
+    }
 
-    <title>Check out Successful</title>
-    <style>
-        /* Init html, body */
-        html {
-            height: 100%;
-            width: 100%;
-            padding:0;
-            margin:0;
-        }
-        body {
-            height: 100%;
-            margin: 0;
-            padding: 0;            
-            display: flex;
-            align-items: center;
-        }
-        p {
-            font-family: 'Kanit', sans-serif;
-            margin: 0;
-        }
+    /* Check out Successful */
+    .square-Check-out {
+        padding: 0%;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        background-color: #355C7D;
+        color: white;
+        border: 2px solid #355C7D;
+        text-align:center;
+        font-weight:400;
+        height: calc(100% - 500px);
+        font-size: calc(25px + (50 - 25) * ((100vw - 375px) / (1600 - 375)));
+        display: grid;
+        justify-content: center;
+        align-content: center;
+    }
+    #icon-logout {
+        max-width: calc(100% - 250px);
+        height: auto;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: calc(20px);;
+    }
+    
+{% endblock %}
 
-        /* Check out Successful */
-        .square-Check-out {
-            padding: 0%;
-            text-align: center;
-            text-decoration: none;
-            cursor: pointer;
-            background-color: #355C7D;
-            color: white;
-            border: 2px solid #355C7D;
-            text-align:center;
-            font-weight:400;
-            height: calc(100% - 500px);
-            font-size: calc(25px + (50 - 25) * ((100vw - 375px) / (1600 - 375)));
-            display: grid;
-            justify-content: center;
-            align-content: center;
-        }
-        #icon-logout {
-            max-width: calc(100% - 250px);
-            height: auto;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: calc(20px);;
-        }
-        
-    </style>
-</head>
 
-<body>
+{% block content %}
     <!-- Page => Check out Successful -->
     <div class="square-Check-out">
         <img id="icon-logout" src="{% static 'images/logout_2.png' %}">
@@ -70,5 +58,4 @@
         <p>เช็คเอาท์แล้ว</p>
         <p>{{lab_name}}</p>
     </div>    
-</body>
-</html>
+{% endblock %}

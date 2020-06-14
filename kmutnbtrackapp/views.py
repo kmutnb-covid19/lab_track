@@ -169,7 +169,7 @@ def history_search(request):
     keyword = request.GET.get('keyword', '')
     mode = ""
     if request.user.is_superuser:
-        histories = "EMPTY"
+        histories = "EMPTY" 
         if request.GET:  # if request has parameter
             mode = request.GET.get('mode', '')
             start = request.GET.get('from', '')

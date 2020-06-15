@@ -1,0 +1,12 @@
+{% extends 'Page/page_base.html' %}
+{% load static %}
+
+{% block content %}
+    <center>
+        <h2>คุณต้องการ check out {{ lab_hash_check_out.name }} ก่อนเวลาหรือไม่? เวลา check out จะถูกเปลี่ยนเป็นเวลา ณ ขณะนี้</h2>
+            <form method="post" action="{% url 'kmutnbtrackapp:check_out' lab_hash_check_out.hash  %}">
+            <button name="checkout" type="submit" value="check_out">Check out</button>
+            {% csrf_token %}
+            </form>
+    </center>
+{% endblock %}

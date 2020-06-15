@@ -1,0 +1,13 @@
+{% extends 'Page/page_base.html' %}
+{% load static %}
+
+{% block content %}
+    <center>
+        <h1>กรุณา check out ออกจาก lab นี้ก่อน : {{ lab_hash_check_out.name }}</h1>
+            <h2>เมื่อ check out จาก lab ก่อนหน้าแล้ว แล้วกรุณา Scan Qr code เพื่อ check in lab นี้ใหม่</h2>
+            <form method="post" action="{% url 'kmutnbtrackapp:check_out' lab_hash_check_out.hash  %}">
+            <button name="checkout" type="submit" value="check_out">Check out {{ lab_hash_check_out.name }}</button>
+            {% csrf_token %}
+            </form>
+    </center>
+{% endblock %}

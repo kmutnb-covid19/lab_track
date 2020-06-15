@@ -1,97 +1,21 @@
 {% extends 'Page/page_base.html' %}
 {% load static %}
+
 {% block title %}{{ lab_name }}{% endblock %}
 
 {% block style %}
-<style>
-    /* init html,navbar,content */
-    html {
-        height: 100%;
-        width: 100%;
-    }
-    .navbar-brand {
-        cursor: default;
-    }
-    div.Main-Check-in {
-        margin: 0%;
-        min-height: 100%;
-        min-width: 100%;
-        justify-content: center;
-        align-content: center;
-        font-family: 'Kanit',sans-serif;
-    }
-    p {
-        font-family: 'Kanit', sans-serif;
-    }
-    
-    /* Check-in */
-    button {
-        font-weight: light;
-        font-size: calc(16px + (50 - 40) * ((100vw - 375px) / (1600 - 375)));
-        border-radius: 10px;
-        border: none;
-        background-color: white;
-        color: #355C7D;
-        transform: translate(-50%, -50%);
-        cursor: pointer;
-    }
-    button:hover {
-        background-color: #E2E1E1;
-    }
-    p.chooseCheckin-text {
-        text-align: center;
-        color : #355C7D;
-        font-weight: light;
-        font-size: calc(25px + (50 - 40) * ((100vw - 375px) / (1600 - 375)));
-        position: relative;
-        margin: 40px;
-    }
-    .container {
-        position: relative;
-    }
-    #check-in {
-        width: calc(100% - 5px);
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    p.text_overimg {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        color: white;
-        font-weight: normal;
-        font-size: calc(22px + (50 - 40) * ((100vw - 375px) / (1600 - 375)));
-        transform: translate(-50%)
-    }
-    .register_btn {
-        position: absolute;
-        top: 87%;
-        left: 50%;
-        width: 60%;
-    }
-    .google_btn {
-        position: absolute;
-        top: 70%;
-        left: 50%;
-        width: 60%;
-    }
-    #google_img{
-        width: 30px;
-        height: auto;
-    }
-</style>
+<link rel="stylesheet" type="text/css" href="{% static '/css/lab_home.css'%}">
 {% endblock %}
 
 {% block script %}
-    <script type="text/javascript">
-        function Click_Sign_in_with_google() {
-            location.href="{% url 'social:begin' 'google-oauth2' %}?next={{ lab_hash }};"
-        }
-        function Click_to_fill_out_the_form() {
-            location.href="{% url 'kmutnbtrackapp:signup' %}?next={{ lab_hash }};"
-        }
-    </script>
+<script type="text/javascript">
+    function Click_Sign_in_with_google() {
+        location.href="{% url 'social:begin' 'google-oauth2' %}?next={{ lab_hash }};"
+    }
+    function Click_to_Sign_Up_form() {
+        location.href="{% url 'kmutnbtrackapp:signup' %}?next={{ lab_hash }};"
+    }
+</script>
 {% endblock%}
 
 {% block content %}
@@ -110,7 +34,7 @@
             <img id="check-in" src="{% static 'images/checkin_botton.png' %}" alt="checkin_pic">
             <div class="over-img">
                 <p class="text_overimg">เช็คอินเข้าแล็บ</p>
-                <button class="register_btn" onclick="Click_to_fill_out_the_form()">กรอกรายละเอียด</button>
+                <button class="register_btn" onclick="Click_to_Sign_Up_form()">กรอกรายละเอียด</button>
                 <button id="google_sign_in_button" class="google_btn" onclick="Click_Sign_in_with_google()">
                     <img id="google_img" src="{% static 'images/google.png' %}" alt="google_pic">
                     Checkin with KMUTNB

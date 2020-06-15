@@ -124,7 +124,8 @@ def check_in(request, lab_hash):  # when user checkin record in history
         last_lab_obj = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
         if last_lab_obj.exists():
             if last_lab_obj[0].lab.hash != lab_hash:  # ไปแลปอื่นแล้วแล็ปเดิมยังไม่ check out
-                return render(request, 'Page/lab_checkout.html', {"lab_hash_check_out": last_lab_obj[0].lab})
+                return render(request, 'Page/lab_checkout.html', {"lab_hash_check_out": last_lab_obj[0].lab,
+                                                                  "new_lab": lab_obj})
             else:  # มาแลปเดิมแล้วถ้าจะ check in ซ้ำจะเลือกให้ check out ก่อนเวลา
                 last_lab_obj = History.objects.get(person=person, lab__hash=lab_hash, checkin__lte=now_datetime,
                                                    checkout__gte=now_datetime)
@@ -143,6 +144,8 @@ def check_out(request, lab_hash):  # api
     log = History.objects.filter(person=person, lab__hash=lab_hash).order_by('checkin').last()
     log.checkout = out_local_time
     log.save()
+    if request.GET.get('next_lab'):
+        return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(request.GET['next_lab'],)))
     return render(request, 'Page/check_out_success.html', {"lab_name": log.lab.name})
 
 

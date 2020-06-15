@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="HandheldFriendly" content="true">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;500;600&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static '/css/signup_form.css'%}">
+    
+    <title>Register Form</title>
+
+    <script type="text/javascript"src="{% static '/js/signup_form.js' %}"></script>
+</head>
+<body>
+    <div class="SignUp_form">
+        <p><span>Sign Up LabTrack</span></p>
+        <div class="form-content" >
+            <form>
+                <div class="name_and_surname">
+                    <div class="form-row" style="width: 83%;">
+                        <div class="form-group col-md-6">
+                          <label for="name">First Name</label>
+                          <input type="text" class="form-control" id="name" placeholder="สมหมาย">
+                        </div>
+                        <div class="form-group col-md-6">
+                          <label for="surname">Last Name</label>
+                          <input type="text" class="form-control" id="surname" placeholder="รักเรียน">
+                        </div>
+                    </div>
+                </div>
+                
+                <label for="email">Email address</label>
+                    <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Email" style="width: 80%;">
+                   
+                <label for="username">Username</label>
+                    <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Username" style="width: 80%;">
+                
+                <label for="password">Password</label>
+                    <input type="password" id="inputPassword" class="form-control" aria-describedby="passwordHelpBlock" placeholder="Password" style="width: 80%;">
+
+                <label for="confirm_password">Confirm password</label>
+                    <input type="password" id="rePassword" class="form-control" aria-describedby="passwordHelpBlock" placeholder="Confirm password" style="width: 80%;">
+                
+                <div class="btn-submit-for-register">
+                    <input onclick="Click_check_in()" class="btn btn-primary" type="submit" value="Sign up and Check in">
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

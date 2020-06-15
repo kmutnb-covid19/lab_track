@@ -157,17 +157,15 @@ def query_search(mode, keyword, start, stop):
     if not isinstance(start, type(datetime.datetime.now())):
         try:
             start = datetime.datetime.strptime(start,
-                                               "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
+                                               "%Y-%m-%dT%H:%M:%S.%f")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             start = datetime.datetime.fromtimestamp(0)
     if not isinstance(stop, type(datetime.datetime.now())):
         try:
             stop = datetime.datetime.strptime(stop,
-                                              "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
+                                              "%Y-%m-%dT%H:%M:%S.%f")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now()
-    print(start)
-    print(stop)
     histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
 
     if keyword != "":  # if have specific keyword
@@ -359,6 +357,7 @@ def call_dashboard(request):
     """load and manage metadata"""
     meta_data = get_data_metadata()
     dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now())
+
     for user in dataset:
         if str(user.lab) in meta_data['pie data']:
             meta_data['pie data'][str(user.lab)] += 1
@@ -370,8 +369,6 @@ def call_dashboard(request):
     """prepare data before sent to template"""
     data = [['Task', 'Hours per Day']]
     for lab in meta_data['pie data']:
-        print(lab)
-        print(meta_data['pie data'][lab])
         data.append([lab, meta_data['pie data'][lab]])
     return render(request, 'admin/dashboard.html', {
         'data':  json.dumps(data),

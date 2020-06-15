@@ -1,0 +1,76 @@
+/* init html,navbar,content */
+html {
+    height: 100%;
+    width: 100%;
+}
+.navbar-brand {
+    cursor: default;
+}
+div.Main-Check-in {
+    margin: 0%;
+    min-height: 100%;
+    min-width: 100%;
+    justify-content: center;
+    align-content: center;
+    font-family: 'Kanit',sans-serif;
+}
+p {
+    font-family: 'Kanit', sans-serif;
+}
+
+/* Check-in */
+button {
+    font-weight: light;
+    font-size: calc(16px + (50 - 40) * ((100vw - 375px) / (1600 - 375)));
+    border-radius: 10px;
+    border: none;
+    background-color: white;
+    color: #355C7D;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+button:hover {
+    background-color: #E2E1E1;
+}
+p.chooseCheckin-text {
+    text-align: center;
+    color : #355C7D;
+    font-weight: light;
+    font-size: calc(25px + (50 - 40) * ((100vw - 375px) / (1600 - 375)));
+    position: relative;
+    margin: 40px;
+}
+.container {
+    position: relative;
+}
+#check-in {
+    width: calc(100% - 5px);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+p.text_overimg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    color: white;
+    font-weight: normal;
+    font-size: calc(22px + (50 - 40) * ((100vw - 375px) / (1600 - 375)));
+    transform: translate(-50%)
+}
+.register_btn {
+    position: absolute;
+    top: 87%;
+    left: 50%;
+    width: 60%;
+}
+.google_btn {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    width: 60%;
+}
+#google_img{
+    width: 30px;
+    height: auto;
+}

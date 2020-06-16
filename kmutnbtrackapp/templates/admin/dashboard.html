@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Statistic Dashboard</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+      console.log({{data|safe}})
+        var data = google.visualization.arrayToDataTable({{data|safe}});
+
+        var options = {
+          fontSize: 20,
+          bold: true,
+          title: 'Proportion of users per lab'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+</head>
+<body>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+          margin: 0;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+        .topnav {
+          overflow: hidden;
+          background-color: #417690;
+        }
+        .topnav a {
+          float: left;
+          color: #f2f2f2;
+          text-align: center;
+          padding: 14px 16px;
+          text-decoration: none;
+          font-size: 18px;
+        }
+        .topnav a:hover {
+          background-color: #ddd;
+          color: black;
+        }
+        .topnav a.active {
+          background-color: #0F587D;
+          color: white;
+        }
+    </style>
+    <div class="topnav">
+        <a href="{% url 'admin:index' %}">Labtrack Admin Dashboard</a>
+        <a href="{% url 'risk_people_search' %}">Risk People Search</a>
+        <a href="{% url 'history_search' %}">History Search</a>
+        <a href="{% url 'generate_qr_code' %}">Generate lab's QR Code</a>
+        <a class="active" href="{% url 'dashboard' %}">Statistic Dashboard</a>
+    </div>
+    <h1 align="center">Dashboard</h1>
+    <div id="piechart" style="width: 900px; height: 500px;"></div>
+</body>
+</html>

@@ -166,7 +166,7 @@ def query_search(mode, keyword, start, stop):
                                               "%Y-%m-%dT%H:%M:%S.%f")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now()
-    histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
+    histories = histories.exclude(Q(checkout__gt=stop) | Q(checkout__lt=start))
 
     if keyword != "":  # if have specific keyword
         if mode == "id":

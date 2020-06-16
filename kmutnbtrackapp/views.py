@@ -6,6 +6,7 @@ Imports should be grouped in the following order:
 3.Local application/library specific imports.
 """
 import csv
+import time
 from datetime import datetime, timedelta
 
 
@@ -361,19 +362,27 @@ def call_dashboard(request):
     dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now())
 
     for user in dataset:
-        if str(user.lab) in meta_data['pie data']:
-            meta_data['pie data'][str(user.lab)] += 1
+        if str(user.lab) in meta_data['lab']:
+            if (str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)) in \
+                    meta_data['lab'][str(user.lab)]:
+                meta_data['lab'][str(user.lab)][
+                    str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] += 1
+            else:
+                meta_data['lab'][str(user.lab)][
+                    str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] = 1
         else:
-            meta_data['pie data'][str(user.lab)] = 1
+            meta_data['lab'][str(user.lab)] = {}
+            meta_data['lab'][str(user.lab)][
+                str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] = 1
     meta_data["latest time"] = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
     write_metadata(meta_data)
 
     """prepare data before sent to template"""
-    data = [['Task', 'Hours per Day']]
-    for lab in meta_data['pie data']:
-        data.append([lab, meta_data['pie data'][lab]])
+    pie_data = prepare_pie_data(meta_data)
+    liner_data = prepare_liner_data(meta_data)
     return render(request, 'admin/dashboard.html', {
-        'data':  json.dumps(data),
+        'pie_data':  json.dumps(pie_data),
+        'liner_data': json.dumps(liner_data)
     })
 
 def backup(request):

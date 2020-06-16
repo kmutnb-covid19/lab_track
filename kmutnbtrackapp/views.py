@@ -5,8 +5,9 @@ Imports should be grouped in the following order:
 2.Related third party imports.
 3.Local application/library specific imports.
 """
-from datetime import datetime, timedelta
 import csv
+from datetime import datetime, timedelta
+
 
 from django.core.exceptions import ValidationError
 from django.db.models import F
@@ -22,6 +23,7 @@ from django.template.loader import render_to_string
 
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.forms import SignUpForm
+from kmutnbtrackapp.dashboard import *
 
 
 # Create your views here.
@@ -151,22 +153,20 @@ def check_out(request, lab_hash):  # api
 
 def query_search(mode, keyword, start, stop):
     histories = History.objects.all()
+
     if not isinstance(start, type(datetime.datetime.now())):
-        print(start)
         try:
             start = datetime.datetime.strptime(start,
-                                               "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
+                                               "%Y-%m-%dT%H:%M:%S.%f")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             start = datetime.datetime.fromtimestamp(0)
-
     if not isinstance(stop, type(datetime.datetime.now())):
         try:
             stop = datetime.datetime.strptime(stop,
-                                              "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
+                                              "%Y-%m-%dT%H:%M:%S.%f")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now()
-
-    histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
+    histories = histories.exclude(Q(checkout__gt=stop) | Q(checkout__lt=start))
 
     if keyword != "":  # if have specific keyword
         if mode == "id":
@@ -351,3 +351,25 @@ def generate_qr_code(request):
                                                                "selected_lab": selected_lab, 'domain': site_url.domain})
     else:
         return HttpResponse("Permission Denined")
+
+
+def call_dashboard(request):
+    """load and manage metadata"""
+    meta_data = get_data_metadata()
+    dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now())
+
+    for user in dataset:
+        if str(user.lab) in meta_data['pie data']:
+            meta_data['pie data'][str(user.lab)] += 1
+        else:
+            meta_data['pie data'][str(user.lab)] = 1
+    meta_data["latest time"] = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
+    write_metadata(meta_data)
+
+    """prepare data before sent to template"""
+    data = [['Task', 'Hours per Day']]
+    for lab in meta_data['pie data']:
+        data.append([lab, meta_data['pie data'][lab]])
+    return render(request, 'admin/dashboard.html', {
+        'data':  json.dumps(data),
+    })

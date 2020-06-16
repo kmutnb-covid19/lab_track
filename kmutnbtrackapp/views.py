@@ -25,6 +25,8 @@ from kmutnbtrackapp.models import *
 from kmutnbtrackapp.forms import SignUpForm
 from kmutnbtrackapp.dashboard import *
 
+from django.core import management
+from django.contrib import messages
 
 # Create your views here.
 
@@ -373,3 +375,12 @@ def call_dashboard(request):
     return render(request, 'admin/dashboard.html', {
         'data':  json.dumps(data),
     })
+
+def backup(request):
+    """ manually back up database """
+
+    # call command python manage.py dbbackup
+    management.call_command('dbbackup') 
+
+    messages.info(request, 'Database has been backed up successfully!')
+    return HttpResponseRedirect('/admin')

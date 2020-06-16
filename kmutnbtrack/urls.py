@@ -37,7 +37,8 @@ urlpatterns = [
     path('admin/history/search/history/', views.history_search, name='history_search'),
     path('admin/history/search/history/<int:page>', views.history_search),
     path('admin/history/search/history/download_normal_csv/', views.export_normal_csv, name='download_normal_csv'),
-    path('admin/', admin.site.urls),
+    path('admin/backup', views.backup, name='backup'),
+    path('admin/', admin.site.urls, name='admin'),
     
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)

@@ -7,10 +7,10 @@
     <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
+      google.charts.setOnLoadCallback(drawLineChart);
 
       function drawChart() {
-      console.log({{data|safe}})
-        var data = google.visualization.arrayToDataTable({{data|safe}});
+        var data = google.visualization.arrayToDataTable({{pie_data|safe}});
 
         var options = {
           fontSize: 20,
@@ -18,9 +18,55 @@
           title: 'Proportion of users per lab'
         };
 
-        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+        var chart = new google.visualization.PieChart(document.getElementById('pie_chart'));
 
         chart.draw(data, options);
+      }
+
+
+      function drawLineChart() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'Time of Day');
+        data.addColumn('number', 'Number of user');
+
+        var liner_data_list = []
+        for (var i = 0; i < {{liner_data}}.length; i++) {
+            liner_data_list.push([new Date({{liner_data}}[i][0]), {{liner_data}}[i][1]]);
+        }
+        data.addRows(liner_data_list);
+
+        var options = {
+          title: 'Number of users each day',
+          fontSize: 18,
+          width: 1300,
+          height: 500,
+          hAxis: {
+            format: 'M/d/yy',
+            gridlines: {count: 15}
+          },
+          vAxis: {
+            gridlines: {color: 'none'},
+            minValue: 0
+          }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+
+        var button = document.getElementById('change');
+
+        button.onclick = function () {
+
+          // If the format option matches, change it to the new option,
+          // if not, reset it to the original format.
+          options.hAxis.format === 'M/d/yy' ?
+          options.hAxis.format = 'MMM dd, yyyy' :
+          options.hAxis.format = 'M/d/yy';
+
+          chart.draw(data, options);
+        };
       }
     </script>
 </head>
@@ -60,6 +106,9 @@
         <a class="active" href="{% url 'dashboard' %}">Statistic Dashboard</a>
     </div>
     <h1 align="center">Dashboard</h1>
-    <div id="piechart" style="width: 900px; height: 500px;"></div>
+
+    <div id="chart_div" style="width: 60%;"></div>
+    <div id="pie_chart" style="width: 900px; height: 500px;"></div>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </body>
 </html>

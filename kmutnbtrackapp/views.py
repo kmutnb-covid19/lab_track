@@ -155,6 +155,7 @@ def check_out(request, lab_hash):  # api
 
 
 def query_search(mode, keyword, start, stop):
+    """search data in DB by time and keyword and return query set"""
     histories = History.objects.all()
 
     if not isinstance(start, type(datetime.datetime.now())):
@@ -186,12 +187,13 @@ def query_search(mode, keyword, start, stop):
 
 
 def history_search(request):
+    """Received from the client and searched for information from the server and then sent back to the client"""
     if request.user.is_superuser:
         keyword = request.GET.get('keyword', '')
         start = request.GET.get('from', '')
         stop = request.GET.get('to', '')
         mode = ""
-        histories = History.objects.all()
+        histories = "EMPTY"
         if request.GET:  # if request has parameter
             mode = request.GET.get('mode', '')
             histories = query_search(mode, keyword, start, stop)
@@ -212,6 +214,7 @@ def history_search(request):
 
 
 def export_normal_csv(request):
+    """export file csv log to user"""
     if request.user.is_superuser:
         mode = request.GET.get('mode', '')
         keyword = request.GET.get('keyword', '')
@@ -227,13 +230,14 @@ def export_normal_csv(request):
                              user.lab,
                              user.checkin + timedelta(hours=7),
                              user.checkout + timedelta(hours=7)])
-        response['Content-Disposition'] = 'attachment; filename="user_data.csv"'
+        response['Content-Disposition'] = 'attachment; filename="file_log.csv"'
         return response
     else:
         return HttpResponse("Permission Denied")
 
 
 def filter_risk_user(mode, keyword):
+    """filter user if there near by infected in time"""
     risk_people_data = []
     risk_people_notify = []
     target_historys = query_search(mode, keyword, 0, 0)  # get all history with only the infected person
@@ -258,6 +262,7 @@ def filter_risk_user(mode, keyword):
 
 
 def risk_people_search(request):
+    """Received from the client filter data and sent back to client"""
     if request.user.is_superuser:
         risk_people_data = "EMPTY"
         keyword = ""
@@ -271,6 +276,26 @@ def risk_people_search(request):
                       {'shown_history': risk_people_data,
                        'keyword': keyword, 'select_mode': mode,
                        })
+    else:
+        return HttpResponse("Permission Denined")
+
+
+def export_risk_csv(request):
+    """export file risk user csv log to user"""
+    if request.user.is_superuser:
+        mode = request.GET.get('mode', '')
+        keyword = request.GET.get('keyword', '')
+        risk_people_data, not_use = filter_risk_user(mode, keyword)
+        response = HttpResponse(content_type='text/csv')
+        writer = csv.writer(response)
+        writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
+        for user in risk_people_data:
+            user = list(user)
+            user[4] = user[4] + timedelta(hours=7)
+            user[5] = user[5] + timedelta(hours=7)
+            writer.writerow(user)
+        response['Content-Disposition'] = 'attachment; filename="Risk Log.csv"'
+        return response
     else:
         return HttpResponse("Permission Denined")
 
@@ -317,25 +342,6 @@ def notify_user(request):
         return HttpResponse("Permission Denined")
 
 
-def export_risk_csv(request):
-    if request.user.is_superuser:
-        mode = request.GET.get('mode', '')
-        keyword = request.GET.get('keyword', '')
-        risk_people_data, not_use = filter_risk_user(mode, keyword)
-        response = HttpResponse(content_type='text/csv')
-        writer = csv.writer(response)
-        writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
-        for user in risk_people_data:
-            user = list(user)
-            user[4] = user[4] + timedelta(hours=7)
-            user[5] = user[5] + timedelta(hours=7)
-            writer.writerow(user)
-        response['Content-Disposition'] = 'attachment; filename="risk_user_data.csv"'
-        return response
-    else:
-        return HttpResponse("Permission Denined")
-
-
 def generate_qr_code(request):
     if request.user.is_superuser:
         site_url = get_current_site(request)
@@ -357,33 +363,38 @@ def generate_qr_code(request):
 
 
 def call_dashboard(request):
-    """load and manage metadata"""
-    meta_data = get_data_metadata()
-    dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now())
+    """load metadata check update and format it before send data to dashboard"""
+    if request.user.is_superuser:
+        """load and manage metadata"""
+        meta_data = get_data_metadata()
+        dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now())
 
-    for user in dataset:
-        if str(user.lab) in meta_data['lab']:
-            if (str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)) in \
-                    meta_data['lab'][str(user.lab)]:
-                meta_data['lab'][str(user.lab)][
-                    str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] += 1
+        for user in dataset:
+            if str(user.lab) in meta_data['lab']:
+                if (str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)) in \
+                        meta_data['lab'][str(user.lab)]:
+                    meta_data['lab'][str(user.lab)][
+                        str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] += 1
+                else:
+                    meta_data['lab'][str(user.lab)][
+                        str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] = 1
             else:
+                meta_data['lab'][str(user.lab)] = {}
                 meta_data['lab'][str(user.lab)][
                     str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] = 1
-        else:
-            meta_data['lab'][str(user.lab)] = {}
-            meta_data['lab'][str(user.lab)][
-                str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] = 1
-    meta_data["latest time"] = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
-    write_metadata(meta_data)
+        meta_data["latest time"] = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
+        write_metadata(meta_data)
 
-    """prepare data before sent to template"""
-    pie_data = prepare_pie_data(meta_data)
-    liner_data = prepare_liner_data(meta_data)
-    return render(request, 'admin/dashboard.html', {
-        'pie_data':  json.dumps(pie_data),
-        'liner_data': json.dumps(liner_data)
-    })
+        """prepare data before sent to template"""
+        pie_data = prepare_pie_data(meta_data)
+        liner_data = prepare_liner_data(meta_data)
+        return render(request, 'admin/dashboard.html', {
+            'pie_data':  json.dumps(pie_data),
+            'liner_data': json.dumps(liner_data)
+        })
+    else:
+        return HttpResponse("Permission Denined")
+
 
 def backup(request):
     """ manually back up database """

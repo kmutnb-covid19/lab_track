@@ -1,0 +1,27 @@
+
+.navbar-brand {
+    cursor: default;
+}
+#checkin_img {
+    width: 30px;
+}
+#checkout_img {
+    width: 30px;
+}
+.container {
+    text-align: center;
+    font-family: 'Kanit',sans-serif;
+    margin-top: 2% ;
+}
+h4 {
+    font-size: 40px;
+}
+p {
+    font-size: 25px;
+}
+.alert-primary {
+    background-color: #355C7D;
+    border-color: #355C7D;
+    color: #ffffff;
+    font-weight: lighter;
+}

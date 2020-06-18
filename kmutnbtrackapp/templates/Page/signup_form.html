@@ -21,34 +21,36 @@
     <div class="SignUp_form">
         <p><span>Sign Up LabTrack</span></p>
         <div class="form-content" >
-            <form>
+            <form action="{% url 'kmutnbtrackapp:signup' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input value="{{lab_hash}}" name="next" hidden>
                 <div class="name_and_surname">
                     <div class="form-row" style="width: 83%;">
                         <div class="form-group col-md-6">
                           <label for="name">First Name</label>
-                          <input type="text" class="form-control" id="name" placeholder="สมหมาย">
+                          <input type="text" class="form-control" name="first_name" id="name" placeholder="สมหมาย">
                         </div>
                         <div class="form-group col-md-6">
                           <label for="surname">Last Name</label>
-                          <input type="text" class="form-control" id="surname" placeholder="รักเรียน">
+                          <input type="text" class="form-control" name="last_name" id="surname" placeholder="รักเรียน">
                         </div>
                     </div>
                 </div>
                 
                 <label for="email">Email address</label>
-                    <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Email" style="width: 80%;">
+                    <input type="email" name="email" class="form-control" aria-describedby="emailHelp" placeholder="Email" style="width: 80%;">
                    
                 <label for="username">Username</label>
-                    <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Username" style="width: 80%;">
+                    <input type="text" name="username" class="form-control" aria-describedby="emailHelp" placeholder="Username" style="width: 80%;">
                 
                 <label for="password">Password</label>
-                    <input type="password" id="inputPassword" class="form-control" aria-describedby="passwordHelpBlock" placeholder="Password" style="width: 80%;">
+                    <input type="password" name="password" id="inputPassword" class="form-control" aria-describedby="passwordHelpBlock" placeholder="Password" style="width: 80%;">
 
                 <label for="confirm_password">Confirm password</label>
                     <input type="password" id="rePassword" class="form-control" aria-describedby="passwordHelpBlock" placeholder="Confirm password" style="width: 80%;">
                 
                 <div class="btn-submit-for-register">
-                    <input onclick="Click_check_in()" class="btn btn-primary" type="submit" value="Sign up and Check in">
+                    <input class="btn btn-primary" type="submit" value="Sign up">
                 </div>
             </form>
         </div>

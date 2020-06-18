@@ -1,0 +1,59 @@
+{% extends 'Page/page_base.html' %}
+{% load static %}
+
+{% block title %}Check in{% endblock %}
+
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/lab_checkin.css'%}">
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="{% static '/js/lab_checkin.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<!-- navbar room name-->
+<nav class="navbar navbar-dark" style="background-color: #355C7D;">
+    <a class="navbar-brand" href="#">
+        <img src="{% static 'images/desktop.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
+        {{ room name }}
+    </a>
+    <button class="btn btn-danger my-2 my-sm-0" type="submit" onclick="Click_to_logout()">Logout</button>
+</nav>
+
+<!-- check out before due -->
+<div class="container">
+    <div class="card w-70 mx-auto" style="text-align: center;">
+        <div class="card-body">
+            <h5 class="card-title">
+              <img src="{% static 'images/desktop.png' %}"  width="30" alt="lab_pic">
+               {{ lab_name }}
+            </h5>
+            <p class="card-text">
+                <img src="{% static 'images/people.png' %}"  width="30" alt="lab_pic">
+                จำนวนคนในแลปขณะนี้ : {{ current_people }} คน</p>
+            <label for="check_out_time">เลือกเวลา check out :</label> 
+            <div class="dropdown">
+                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                select
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu2">
+                    <button class="dropdown-item" type="button">12:00 PM</button>
+                    <button class="dropdown-item" type="button">04:00 PM</button>
+                    <button class="dropdown-item" type="button">08:00 PM</button>
+                    <button class="dropdown-item" type="button">อื่นๆ</button>
+                </div>
+                <div class="container-fluid col-12 col-sm-4">
+                    <div class="form-group">
+                      <input type="time" class="form-control"/>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button type="button" class="btn btn-success" onclick="Click_to_check_in()">Check in</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

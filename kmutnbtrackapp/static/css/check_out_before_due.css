@@ -1,0 +1,19 @@
+
+.navbar-brand {
+    cursor: default;
+}
+.alert {
+    text-align: center;
+    font-family: 'Kanit',sans-serif;
+    margin-top: 2% ;
+}   
+#checkout_img{
+    width: 25px;
+}
+button {
+    font-weight: normal;
+    font-family: 'Kanit',sans-serif;
+}
+p {
+    font-size: 20px;
+}

@@ -159,7 +159,7 @@ def check_out(request, lab_hash):  # api
     return render(request, 'Page/check_out_success.html', {"lab_name": log.lab.name})
 
 
-def query_search(mode, keyword, start, stop):
+def query_search(mode, keyword, start, stop, search_mode):
     """search data in DB by time and keyword and return query set"""
     histories = History.objects.all()
 
@@ -175,7 +175,10 @@ def query_search(mode, keyword, start, stop):
                                               "%Y-%m-%dT%H:%M:%S.%f")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now()
-    histories = histories.exclude(Q(checkout__gt=stop) | Q(checkout__lt=start))
+    if search_mode == "normal":
+        histories = histories.exclude(Q(checkout__gt=stop) | Q(checkout__lt=start))
+    else:
+        histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
 
     if keyword != "":  # if have specific keyword
         if mode == "id":
@@ -201,7 +204,7 @@ def history_search(request):
         histories = "EMPTY"
         if request.GET:  # if request has parameter
             mode = request.GET.get('mode', '')
-            histories = query_search(mode, keyword, start, stop)
+            histories = query_search(mode, keyword, start, stop, "normal")
         # p = Paginator(histories, 24)
         # page_range = p.page_range
         # shown_history = p.page(page)
@@ -225,7 +228,7 @@ def export_normal_csv(request):
         keyword = request.GET.get('keyword', '')
         start = request.GET.get('from', '')
         stop = request.GET.get('to', '')
-        histories = query_search(mode, keyword, start, stop)
+        histories = query_search(mode, keyword, start, stop, "normal")
         response = HttpResponse(content_type='text/csv')
         writer = csv.writer(response)
         writer.writerow(['Student ID', 'Person Name', 'Lab Name', 'Check in time', 'Check out time'])
@@ -245,10 +248,10 @@ def filter_risk_user(mode, keyword):
     """filter user if there near by infected in time"""
     risk_people_data = []
     risk_people_notify = []
-    target_historys = query_search(mode, keyword, 0, 0)  # get all history with only the infected person
+    target_historys = query_search(mode, keyword, 0, 0, "risk")  # get all history with only the infected person
     if target_historys != 'EMPTY':
         for user in target_historys:  # for each row of infected person
-            session_historys = query_search('lab', user.lab, user.checkin, user.checkout)  #
+            session_historys = query_search('lab', user.lab, user.checkin, user.checkout, "risk")  #
             for session in session_historys:
                 risk_people_data.append((session.person.student_id,
                                          session.person.first_name + ' ' + session.person.last_name,
@@ -372,7 +375,7 @@ def call_dashboard(request):
     if request.user.is_superuser:
         """load and manage metadata"""
         meta_data = get_data_metadata()
-        dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now())
+        dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(), "normal")
 
         for user in dataset:
             if str(user.lab) in meta_data['lab']:

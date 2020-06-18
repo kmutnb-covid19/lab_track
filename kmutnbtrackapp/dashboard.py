@@ -20,6 +20,7 @@ def write_metadata(update_data):
 
 
 def date_hook(json_dict):
+    """Check data in json and cast type to datetime"""
     for (key, value) in json_dict.items():
         try:
             json_dict[key] = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
@@ -29,6 +30,7 @@ def date_hook(json_dict):
 
 
 def prepare_pie_data(meta_data):
+    """Prepare pie chart data before send to template"""
     # ['Task', 'Hours per Day'] เอาไว้ทำอะไรก็ไม่รู้แต่ไม่มีทำกราฟไม่ได้ 55555555
     data = [['Task', 'Hours per Day']]
     for lab_name in meta_data['lab']:
@@ -37,6 +39,7 @@ def prepare_pie_data(meta_data):
 
 
 def prepare_liner_data(meta_data):
+    """Prepare liner chart data before send to template"""
     # format example [new Date(2015, 0, 1), 5]
     duplicate = {}
     data = []

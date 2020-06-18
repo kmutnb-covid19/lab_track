@@ -375,7 +375,7 @@ def call_dashboard(request):
     if request.user.is_superuser:
         """load and manage metadata"""
         meta_data = get_data_metadata()
-        dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now())
+        dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(), "normal")
 
         for user in dataset:
             if str(user.lab) in meta_data['lab']:

@@ -4,9 +4,9 @@
 {% block script %}
 <script type="text/javascript">
     function OtherTime(){
-        const Mode = document.getElementById('time').value;
+        const selectedMode = document.getElementById('time').value;
         const element = document.getElementById('time_value');
-        if ( Mode == "others" ){
+        if ( selectedMode == "others" ){
             element.style.display='block';
         } else {
             element.style.display='none';

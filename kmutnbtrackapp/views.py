@@ -44,18 +44,29 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
     if not Lab.objects.filter(hash=lab_hash).exists():  # lab does not exists
         error_message = "QR code ไม่ถูกต้อง"
         return render(request, 'Page/error.html', {"error_message": error_message})
+    
+    this_lab = Lab.objects.get(hash=lab_hash)
+
     if not request.user.is_authenticated:  # if user hasn't login
-        lab_name = Lab.objects.get(hash=lab_hash).name
+        lab_name = this_lab.name
         return render(request, 'Page/lab_home.html', {"lab_name": lab_name, "lab_hash": lab_hash})
         # render page for logging in in that lab
-    else:  # if user already login 
+    else:  # if user already login
         person = Person.objects.get(user=request.user)
         now_datetime = datetime.datetime.now()
         
-        if History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime).exists():
+        if History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime).exists(): # if have lastest history which checkout not at time
             last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
-            return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_lab_hist[0].lab})
-        
+            last_lab_hist = last_lab_hist[0]
+
+            if last_lab_hist.lab.hash == lab_hash: # if latest lab is same as the going lab
+                return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_lab_hist.lab})
+            
+            else: # if be another lab
+                return render(request, 'Page/lab_checkout.html', {"last_lab": last_lab_hist.lab,
+                                                                  "new_lab": this_lab})
+
+
         else:
             time_option = compare_current_time()
             lab_object = Lab.objects.get(hash=lab_hash)

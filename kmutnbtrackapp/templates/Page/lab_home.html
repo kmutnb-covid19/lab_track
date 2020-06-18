@@ -15,6 +15,9 @@
     function Click_to_Sign_Up_form() {
         location.href="{% url 'kmutnbtrackapp:signup' %}?next={{ lab_hash }};"
     }
+    function Click_to_Log_in() {
+        location.href="{% url 'kmutnbtrackapp:login' %}?next={{ lab_hash }};"
+    }
 </script>
 {% endblock%}
 
@@ -31,17 +34,23 @@
     <div class="Main-Check-in">
         <p class="chooseCheckin-text">กรุณาเลือกเช็คอินก่อนเข้าใช้งานห้องแล็บ</p>
         <div class="container" style="text-align: center;">
-            <img id="check-in" src="{% static 'images/checkin_botton.png' %}" alt="checkin_pic">
+            <div class="checkin_bg"></div>
+            <img id="checkin_img" src="{% static 'images/check in.png' %}">
             <div class="over-img">
                 <p class="text_overimg">เช็คอินเข้าแล็บ</p>
-                <button class="register_btn" onclick="Click_to_Sign_Up_form()">กรอกรายละเอียด</button>
                 <button id="google_sign_in_button" class="google_btn" onclick="Click_Sign_in_with_google()">
                     <img id="google_img" src="{% static 'images/google.png' %}" alt="google_pic">
-                    Checkin with KMUTNB
+                    Checkin with KMUTNB account
                 </button>
-                <button><a href="{% url 'kmutnbtrackapp:login' %}">Login</a></button>
+                <button class="login_btn" onclick="Click_to_Log_in()">Log In</button>
+                <button class="register_btn" onclick="Click_to_Sign_Up_form()">Sign Up</button>
             </div>
         </div>
+    </div>
+
+    <!-- About LabTrack -->
+    <div class="contact" style="text-align: center;bottom: 0%;">
+        <a id="contact" href="" target="_blank">About Lab Track</a> <!-- เหลือเพิ่มหน้าเว็บ about LabTrack -->
     </div>
 
 {% endblock %}

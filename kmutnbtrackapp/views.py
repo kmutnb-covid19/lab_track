@@ -49,6 +49,11 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
         return render(request, 'Page/lab_home.html', {"lab_name": lab_name, "lab_hash": lab_hash})
         # render page for logging in in that lab
     else:  # if user already login and not check in yet
+        person = Person.objects.get(user=request.user)
+        now_datetime = datetime.datetime.now()
+        if History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime).exists():
+            last_lab_obj = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
+            return render(request, 'Page/check_out_before_due.html', {"lab_hash_check_out": last_lab_obj[0].lab})
         time_option = compare_current_time()
         lab_object = Lab.objects.get(hash=lab_hash)
         lab_name = lab_object.name

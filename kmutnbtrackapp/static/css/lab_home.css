@@ -60,9 +60,9 @@ p.text_overimg {
 }
 .register_btn {
     position: absolute;
-    top: 87%;
+    top: 95%;
     left: 50%;
-    width: 60%;
+    width: 30%;
 }
 .google_btn {
     position: absolute;
@@ -70,7 +70,32 @@ p.text_overimg {
     left: 50%;
     width: 60%;
 }
+.login_btn {
+    position: absolute;
+    top: 85%;
+    left: 50%;
+    width: 60%;
+}
 #google_img{
     width: 30px;
     height: auto;
+}
+#contact {
+    cursor: default;
+    color: #5A5B5B;
+    text-align: center;
+}
+.checkin_bg {
+    background-color: #355C7D;
+    border-radius: 15px;
+    padding: 50%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+#checkin_img {
+    position: absolute;
+    top: 30%;
+    width: 40%;
+    transform: translate(-50%, -50%)
 }

@@ -38,23 +38,11 @@
         <a href="{% url 'admin:index' %}">Labtrack Admin Dashboard</a>
         <a href="{% url 'risk_people_search' %}">Risk People Search</a>
         <a href="{% url 'history_search' %}">History Search</a>
-        <a class="active"  href="{% url 'generate_qr_code' %}">Generate lab's QR Code</a>
+
     </div>
 
     <h1 style="color: #569ec1;font-family: Adamina, serif;margin: 10px;" align="center">Generate lab's QR Code</h1>
 
-    <form method="post">
-        {% csrf_token %}
-        <label  style="color: #407690;font-size: 18px;margin: 5px;margin-left: 20px;" for="check_out_time">เลือก Lab ที่ต้องการสร้าง QR Code :</label>
-        <select style="height: 35px;background-color: #407690;color: rgb(255,255,255);margin: 5px;margin-left: 10px" name="lab_selector" id="select_lab">
-            {% for lab in all_lab_name %}
-                <option {%if selected_lab == forloop.counter0|stringformat:"i" %} selected {% endif %} value="{{ forloop.counter0 }}">{{ lab }}</option>
-            {% endfor %}
-        </select>
-       <button class="btn btn-primary" type="submit" style="height: 35px;background-color: #407690;color: rgb(255,255,255);margin: 5px;">สร้าง QR Code</button>
-    </form>
-
-{% if selected_lab %}
     <div align="center">
       <div style="width: 600px;background-color: #407690;" align="center">
         <span style="font-size: 50px;color: rgb(255,255,255);" >
@@ -75,7 +63,7 @@
       </h2>
 
     </div>
-{% endif %}
+
 
 </body>
 </html>

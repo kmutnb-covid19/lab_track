@@ -1,0 +1,76 @@
+{% extends 'Page/page_base.html' %}
+{% load static %}
+
+{% block title%}Login{% endblock %}
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/log_in.css'%}">
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="{% static '/js/log_in.js' %}"></script>
+<script type="text/javascript">
+    function Click_Sign_in_with_google() {
+        location.href="{% url 'social:begin' 'google-oauth2' %}?next={{ lab_hash }};"
+    }
+    function Click_to_Sign_Up_form() {
+        location.href="{% url 'kmutnbtrackapp:signup' %}?next={{ lab_hash }};"
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- navbar LabTrack -->
+<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+    <a class="navbar-brand" href="#">
+        <img src="{% static 'images/Logo_LabTrack.png' %}" width="auto" height="40px" class="d-inline-block align-top" loading="lazy">
+    </a>
+</nav>
+
+<!-- log in form -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-5 mx-auto">
+        <div id="first">
+            <div class="myform form ">
+                <div class="logo mb-3">
+                    <div class="col-md-12 text-center">
+                        <h1>Login</h1>
+                    </div>
+                </div>
+                <form action="{% url 'kmutnbtrackapp:login' %}" method="post" name="login">
+                    {% csrf_token %}
+                    <input value="{{lab_hash}}" name="next" hidden>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Username</label>
+                        <input type="text" name="username"  class="form-control" id="username" aria-describedby="emailHelp" placeholder="Enter Username">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Password</label>
+                        <input type="password" name="password" id="password" class="form-control" aria-describedby="emailHelp" placeholder="Enter Password">
+                    </div>
+                    <div class="col-md-12 text-center ">
+                        <button type="submit" class=" btn btn-block mybtn btn-primary tx-tfm">Login</button>
+                    </div>
+                    <div class="col-md-12 ">
+                        <div class="login-or">
+                            <hr class="hr-or">
+                            <span class="span-or">or</span>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <p class="text-center">
+                            <a onclick="Click_Sign_in_with_google()" class="google btn mybtn"><i class="fa fa-google-plus"> 
+                            </i> Sign in using KMUTNB account
+                            </a>
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <p class="text-center">Don't have account? <a onclick="Click_to_Sign_Up_form()" id="signup">Sign up here</a></p>  <!-- เหลือใส่ href -->
+                    </div>
+                </form> 
+            </div>
+        </div>
+        </div>
+    </div>
+</div>   
+{% endblock %}

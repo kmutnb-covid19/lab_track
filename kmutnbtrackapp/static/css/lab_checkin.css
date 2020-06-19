@@ -1,0 +1,34 @@
+
+
+
+.navbar-brand {
+    cursor: default;
+}
+.dropdown {
+    display: inline;
+}
+.container {
+    font-family: 'Kanit',sans-serif;
+    color: #ffffff
+}
+.card {
+    border-color: #355C7D;
+    background-color:#355C7D;
+    margin-top: 2% ;
+}
+p,label,button {
+    font-size: 25px;
+    font-weight: lighter;
+}
+h5 {
+    font-size: 30px;
+}
+#dropdownMenu2 {
+    background-color: #ffffff;
+    color: black;
+    font-size: 17px;
+}
+.dropdown-menu button {
+    font-size: 17px;
+}
+

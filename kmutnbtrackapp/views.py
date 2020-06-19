@@ -447,22 +447,14 @@ def notify_user(request):
         return HttpResponse("Permission Denined")
 
 
-def generate_qr_code(request):
+def generate_qr_code(request,lab_hash,lab_name):
     if request.user.is_superuser:
         site_url = get_current_site(request)
-        selected_lab = ""
-        selected_lab_name = ""
-        selected_lab_hash = ""
-        all_lab_name = Lab.objects.all().order_by("name").values_list('name', flat=True)
-        all_lab_hash = Lab.objects.all().order_by("name").values_list('hash', flat=True)
-        if request.POST.get("lab_selector"):
-            selected_lab = request.POST["lab_selector"]
-            selected_lab_name = all_lab_name[int(selected_lab)]
-            selected_lab_hash = all_lab_hash[int(selected_lab)]
-        return render(request, 'admin/qr_code_generate.html', {"all_lab_name": all_lab_name,
-                                                               "selected_lab_hash": selected_lab_hash,
-                                                               "selected_lab_name": selected_lab_name,
-                                                               "selected_lab": selected_lab, 'domain': site_url.domain})
+
+        return render(request, 'admin/qr_code_generate.html', {
+                                                               "selected_lab_hash": lab_hash,
+                                                               "selected_lab_name": lab_name,
+                                                                'domain': site_url.domain})
     else:
         return HttpResponse("Permission Denined")
 

@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.utils.html import format_html
+
 from .models import History, Lab, Person
 
 
@@ -6,8 +8,15 @@ from .models import History, Lab, Person
 
 
 class LabAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name','my_url_field',)
     readonly_fields = ["hash"]
+
+    def my_url_field(self, obj):
+
+        return format_html('<a href=" %s/admin/qrcode/%s%s">%s</a>' % ( "http://127.0.0.1:8000", obj.hash+"/",obj.name , obj.name))
+
+    my_url_field.allow_tags = True
+    my_url_field.short_description = 'QR generate'
 
 
 class HistoryAdmin(admin.ModelAdmin):

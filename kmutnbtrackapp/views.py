@@ -44,66 +44,105 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
     if not Lab.objects.filter(hash=lab_hash).exists():  # lab does not exists
         error_message = "QR code ไม่ถูกต้อง"
         return render(request, 'Page/error.html', {"error_message": error_message})
+    
+    this_lab = Lab.objects.get(hash=lab_hash)
+
     if not request.user.is_authenticated:  # if user hasn't login
-        lab_name = Lab.objects.get(hash=lab_hash).name
+        lab_name = this_lab.name
         return render(request, 'Page/lab_home.html', {"lab_name": lab_name, "lab_hash": lab_hash})
         # render page for logging in in that lab
-    else:  # if user already login and not check in yet
+    else:  # if user already login
         person = Person.objects.get(user=request.user)
         now_datetime = datetime.datetime.now()
-        if History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime).exists():
-            last_lab_obj = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
-            return render(request, 'Page/check_out_before_due.html', {"lab_hash_check_out": last_lab_obj[0].lab})
-        time_option = compare_current_time()
-        lab_object = Lab.objects.get(hash=lab_hash)
-        lab_name = lab_object.name
-        now_datetime = datetime.datetime.now()
-        midnight_time = now_datetime.replace(hour=23, minute=59, second=59, microsecond=0)
-        current_people = History.objects.filter(lab=lab_object, checkout__gte=now_datetime,
-                                                checkout__lte=midnight_time).count()
-        return render(request, 'Page/lab_checkin.html', {"lab_name": lab_name,
-                                                         "lab_hash": lab_hash,
-                                                         "time_option": time_option,
-                                                         "time_now_hour": datetime.datetime.now().hour,
-                                                         "time_now_minute": datetime.datetime.now().minute,
-                                                         "current_people": current_people
-                                                         })  # render page for checkin
+        
+        if History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime).exists(): # if have lastest history which checkout not at time
+            last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
+            last_lab_hist = last_lab_hist[0]
+
+            if last_lab_hist.lab.hash == lab_hash: # if latest lab is same as the going lab
+                return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_lab_hist.lab})
+            
+            else: # if be another lab
+                return render(request, 'Page/lab_checkout.html', {"last_lab": last_lab_hist.lab,
+                                                                  "new_lab": this_lab})
 
 
-def signup(request):  # when stranger click 'Signup and Checkin'
-    lab_name = request.GET.get('next')
+        else:
+            time_option = compare_current_time()
+            lab_object = Lab.objects.get(hash=lab_hash)
+            lab_name = lab_object.name
+            now_datetime = datetime.datetime.now()
+            midnight_time = now_datetime.replace(hour=23, minute=59, second=59, microsecond=0)
+            current_people = History.objects.filter(lab=lab_object, checkout__gte=now_datetime,
+                                                    checkout__lte=midnight_time).count()
+            return render(request, 'Page/lab_checkin_new.html', {"lab_name": lab_name,
+                                                            "lab_hash": lab_hash,
+                                                            "time_option": time_option,
+                                                            "time_now_hour": datetime.datetime.now().hour,
+                                                            "time_now_minute": datetime.datetime.now().minute,
+                                                            "current_people": current_people
+                                                            })  # render page for checkin
+
+def username_check_api(request):
+    username = request.GET.get('username')
+    if User.objects.filter(username=username).count() is 0:
+        return JsonResponse({"status":"available"})
+    else:
+        return JsonResponse({"status":"already_taken"})
+
+def signup_api(request):  # when stranger click 'Signup and Checkin'
+    if request.method == "GET":
+        lab_hash = request.GET.get('next','')
+        return render(request, 'Page/signup_form.html', {'lab_hash':lab_hash})
     # Receive data from POST
     if request.method == "POST":
-        form = SignUpForm(request.POST)
+        lab_hash = request.POST.get('next','')
+        username = request.POST["username"]
+        email = request.POST['email']
+        password = request.POST['password']
+        firstname = request.POST.get('first_name','')
+        lastname = request.POST.get('last_name', '')
         # Form is valid
-        if form.is_valid():
-            # create new user object and save it
-            user = form.save()
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            # authenticate user then login
-            login(request, authenticate(username=username, password=password))
-            # Save user's value into Person object
-            first_name = form.cleaned_data.get('first_name')
-            last_name = form.cleaned_data.get('last_name')
-            email = form.cleaned_data.get('email')
-            Person.objects.create(user=user, first_name=first_name, last_name=last_name, email=email,
-                                  is_student=False)
-            return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_name,)))
-    # didn't receive POST
-    else:
-        form = SignUpForm()
-    return render(request, 'registration/signup.html', {'form': form})
+        if User.objects.filter(username=username).count() is 0:   # if username is available
+            # create new User object and save it
+            u = User.objects.create(username=username, email=email)
+            u.set_password(password) # bypassing Django password format check 
+            u.save()
+            # create new Person object
+            Person.objects.create(user=u, first_name=firstname, last_name=lastname, email=email, is_student=False)
+            # then login
+            login(request, u, backend='django.contrib.auth.backends.ModelBackend')
 
-
+            return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
+        else:
+            return JsonResponse({"status":"fail"})
+    
+    
 def login_api(request):  # api when stranger login
-    pass
+    if request.method == "GET":
+        lab_hash = request.GET.get('next','')
+        return render(request, 'Page/log_in.html', {'lab_hash':lab_hash})
 
+    if request.method == "POST":
+        lab_hash = request.POST.get('next','')
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password) # auth username and password 
+        if user is not None:
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend') 
+            return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
+        else:
+            return JsonResponse({"status":"fail"})
+    # didn't receive POST        
+    
 
 def logout_api(request):  # api for logging out
     logout(request)
-    lab_hash = request.GET.get("lab", '')
-    return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
+    try:
+        lab_hash = request.GET.get("lab")
+        return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
+    except:
+        return HttpResponseRedirect("/")
 
 
 def compare_current_time():  # make check out valid
@@ -123,29 +162,35 @@ def compare_current_time():  # make check out valid
 
 def check_in(request, lab_hash):  # when user checkin record in history
     person = Person.objects.get(user=request.user)
-    lab_obj = Lab.objects.get(hash=lab_hash)
-    time_checkout = request.POST.get('check_out_time')  # get check out time
+    this_lab = Lab.objects.get(hash=lab_hash)
+    
+    checkout_time_str = request.POST.get('check_out_time')  # get check out time
     now_datetime = datetime.datetime.now()
-    lab_name = Lab.objects.get(hash=lab_hash).name
-    datetime_checkout = now_datetime.replace(hour=int(time_checkout.split(":")[0]),
-                                             minute=int(
-                                                 time_checkout.split(":")[1]))  # get check out time in object datetime
+    
+    checkout_datetime = now_datetime.replace(hour=int(checkout_time_str.split(":")[0]),
+                                             minute=int(checkout_time_str.split(":")[1]))  # get check out time in object datetime
     if Lab.objects.filter(hash=lab_hash).exists():  # check that lab does exists
-        last_lab_obj = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
-        if last_lab_obj.exists():
-            if last_lab_obj[0].lab.hash != lab_hash:  # ไปแลปอื่นแล้วแล็ปเดิมยังไม่ check out
-                return render(request, 'Page/lab_checkout.html', {"lab_hash_check_out": last_lab_obj[0].lab,
-                                                                  "new_lab": lab_obj})
+        last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
+        if last_lab_hist.exists(): # if have a history that intersect between now
+            if last_lab_hist[0].lab.hash != lab_hash:  # ไปแลปอื่นแล้วแล็ปเดิมยังไม่ check out
+                return render(request, 'Page/lab_checkout.html', {"lab_hash_check_out": last_lab_hist[0].lab,
+                                                                  "new_lab": this_lab})
             else:  # มาแลปเดิมแล้วถ้าจะ check in ซ้ำจะเลือกให้ check out ก่อนเวลา
-                last_lab_obj = History.objects.get(person=person, lab__hash=lab_hash, checkin__lte=now_datetime,
+                last_hist = History.objects.get(person=person, lab=this_lab, checkin__lte=now_datetime,
                                                    checkout__gte=now_datetime)
-                return render(request, 'Page/check_out_before_due.html', {"lab_hash_check_out": last_lab_obj.lab})
-        log = History.objects.create(person=person, lab=lab_obj, checkin=datetime.datetime.now(),
-                                     checkout=datetime_checkout)
-        return render(request, 'Page/lab_checkin_successful.html',
-                      {"lab_hash": lab_hash, "lab_name": lab_name,
-                       "check_in": (log.checkin + timedelta(hours=7)).strftime("%A, %d %B %Y, %I:%M %p"),
-                       "check_out": log.checkout.strftime("%A, %d %B %Y, %I:%M %p")})
+                return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_hist.lab})
+        
+        else:
+            new_hist = History.objects.create(person=person, 
+                                        lab=this_lab, 
+                                        checkin=now_datetime,
+                                        checkout=checkout_datetime)
+            
+            return render(request, 'Page/lab_checkin_successful_new.html',
+                        {"lab_hash": this_lab.hash, 
+                        "lab_name": this_lab.name,
+                        "check_in": (new_hist.checkin + timedelta(hours=7)).strftime("%A, %d %B %Y, %H:%M"),
+                        "check_out": new_hist.checkout.strftime("%A, %d %B %Y, %H:%M")})
 
 
 def check_out(request, lab_hash):  # api

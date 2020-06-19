@@ -17,7 +17,12 @@
 <nav class="navbar navbar-dark" style="background-color: #355C7D;">
     <a class="navbar-brand" href="#">
         <img src="{% static 'images/desktop.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
-        {{ room name }}
+        {{ lab_name }}
+    </a>
+    <a href="{% url 'kmutnbtrackapp:logout' %}?lab={{lab_hash}}">
+        <button class="btn btn-danger my-2 my-sm-0">
+            Logout
+        </button>
     </a>
 </nav>
 
@@ -38,10 +43,12 @@
         </p>
     </div>
     <div style="display: flex; justify-content: center; align-items: center;">
-        <button type="button" class="btn btn-danger" onclick="Click_to_check_out()">
+        <a href="{% url 'kmutnbtrackapp:check_out' lab_hash %}">
+        <button type="button" class="btn btn-danger">
             <img id="checkout_img" src="{% static 'images/logout_2.png' %}" alt="checkout_pic">
-            Logout
+                Check out now
         </button>
+        </a>
     </div>
 </div>
 {% endblock %}

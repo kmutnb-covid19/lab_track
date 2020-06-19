@@ -1,0 +1,43 @@
+{% extends 'Page/page_base.html' %}
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/check_out_before_due.css'%}">
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="{% static '/js/check_out_before_due.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<!-- navbar room name -->
+<nav class="navbar navbar-dark" style="background-color: #355C7D;">
+    <a class="navbar-brand" href="#">
+        <img src="{% static 'images/desktop.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
+        {{ last_lab.name }}
+    </a>
+    <a href="{% url 'kmutnbtrackapp:logout' %}?lab={{ last_lab.hash }}">
+        <button class="btn btn-danger my-2 my-sm-0">
+            Logout
+        </button>
+    </a>
+</nav>
+
+<!-- check out before due -->
+<div class="container">
+    <div class="alert alert-warning" role="alert">
+        <h4 class="alert-heading">คุณต้องการ check out {{ lab_hash_check_out.name }} ก่อนเวลาหรือไม่?</h4>
+        <p></p>
+        <hr>
+        <p class="mb-0">เวลา check out จะถูกเปลี่ยนเป็นเวลา ณ ขณะนี้</p>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center;">
+        <a href="{% url 'kmutnbtrackapp:check_out' last_lab.hash %}">
+            <button type="button" class="btn btn-danger">
+                <img id="checkout_img" src="{% static 'images/logout_2.png' %}" alt="checkout_pic">
+                Check out
+            </button>
+        </a>
+    </div>
+</div>
+{% endblock %}

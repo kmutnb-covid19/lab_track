@@ -1,0 +1,54 @@
+{% extends 'Page/page_base.html' %}
+{% load static %}
+
+{% block title %}Checkin Successful{% endblock %}
+
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/lab_checkin_successful.css'%}">
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="{% static '/js/lab_checkin_successful.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<!-- navbar room name -->
+<nav class="navbar navbar-dark" style="background-color: #355C7D;">
+    <a class="navbar-brand" href="#">
+        <img src="{% static 'images/desktop.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
+        {{ lab_name }}
+    </a>
+    <a href="{% url 'kmutnbtrackapp:logout' %}?lab={{lab_hash}}">
+        <button class="btn btn-danger my-2 my-sm-0">
+            Logout
+        </button>
+    </a>
+</nav>
+
+<!-- lab checkin successful! -->
+<div class="container">
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Check in successful!</h4>
+        <p><img src="{% static 'images/desktop.png' %}"  width="30" alt="lab_pic"> Room : {{ lab_name }}</p>
+    </div>
+    <div class="alert alert-primary" role="alert">
+        <p class="mb-0">
+            <img id="checkin_img" src="{% static 'images/check in.png' %}" alt="checkin_pic">
+            เวลา check in : {{ check_in }}
+        </p>
+        <p class="mb-0">
+            <img id="checkout_img" src="{% static 'images/logout_2.png' %}" alt="checkout_pic">
+            เวลา check out ที่ระบุ : {{ check_out }}
+        </p>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center;">
+        <a href="{% url 'kmutnbtrackapp:check_out' lab_hash %}">
+        <button type="button" class="btn btn-danger">
+            <img id="checkout_img" src="{% static 'images/logout_2.png' %}" alt="checkout_pic">
+                Check out now
+        </button>
+        </a>
+    </div>
+</div>
+{% endblock %}

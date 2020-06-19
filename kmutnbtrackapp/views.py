@@ -5,8 +5,10 @@ Imports should be grouped in the following order:
 2.Related third party imports.
 3.Local application/library specific imports.
 """
-from datetime import datetime, timedelta
 import csv
+import time
+from datetime import datetime, timedelta
+
 
 from django.core.exceptions import ValidationError
 from django.db.models import F
@@ -22,7 +24,10 @@ from django.template.loader import render_to_string
 
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.forms import SignUpForm
+from kmutnbtrackapp.dashboard import *
 
+from django.core import management
+from django.contrib import messages
 
 # Create your views here.
 
@@ -36,62 +41,108 @@ def home(request):
 
 
 def lab_home_page(request, lab_hash):  # this function is used when user get in home page
+    if not Lab.objects.filter(hash=lab_hash).exists():  # lab does not exists
+        error_message = "QR code ไม่ถูกต้อง"
+        return render(request, 'Page/error.html', {"error_message": error_message})
+    
+    this_lab = Lab.objects.get(hash=lab_hash)
+
     if not request.user.is_authenticated:  # if user hasn't login
-        lab_name = Lab.objects.get(hash=lab_hash).name
+        lab_name = this_lab.name
         return render(request, 'Page/lab_home.html', {"lab_name": lab_name, "lab_hash": lab_hash})
         # render page for logging in in that lab
-
-    else:  # if user already login and not check in yet
-        time_option = compare_current_time()
-        lab_object = Lab.objects.get(hash=lab_hash)
-        lab_name = lab_object.name
+    else:  # if user already login
+        person = Person.objects.get(user=request.user)
         now_datetime = datetime.datetime.now()
-        midnight_time = now_datetime.replace(hour=23, minute=59, second=59, microsecond=0)
-        current_people = History.objects.filter(lab=lab_object, checkout__gte=now_datetime,
-                                                checkout__lte=midnight_time).count()
-        return render(request, 'Page/lab_checkin.html', {"lab_name": lab_name,
-                                                         "lab_hash": lab_hash,
-                                                         "time_option": time_option,
-                                                         "time_now_hour": datetime.datetime.now().hour,
-                                                         "time_now_minute": datetime.datetime.now().minute,
-                                                         "current_people": current_people
-                                                         })  # render page for checkin
+        
+        if History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime).exists(): # if have lastest history which checkout not at time
+            last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
+            last_lab_hist = last_lab_hist[0]
+
+            if last_lab_hist.lab.hash == lab_hash: # if latest lab is same as the going lab
+                return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_lab_hist.lab})
+            
+            else: # if be another lab
+                return render(request, 'Page/lab_checkout.html', {"last_lab": last_lab_hist.lab,
+                                                                  "new_lab": this_lab})
 
 
-def signup(request):  # when stranger click 'Signup and Checkin'
-    lab_name = request.GET.get('next')
+        else:
+            time_option = compare_current_time()
+            lab_object = Lab.objects.get(hash=lab_hash)
+            lab_name = lab_object.name
+            now_datetime = datetime.datetime.now()
+            midnight_time = now_datetime.replace(hour=23, minute=59, second=59, microsecond=0)
+            current_people = History.objects.filter(lab=lab_object, checkout__gte=now_datetime,
+                                                    checkout__lte=midnight_time).count()
+            return render(request, 'Page/lab_checkin_new.html', {"lab_name": lab_name,
+                                                            "lab_hash": lab_hash,
+                                                            "time_option": time_option,
+                                                            "time_now_hour": datetime.datetime.now().hour,
+                                                            "time_now_minute": datetime.datetime.now().minute,
+                                                            "current_people": current_people
+                                                            })  # render page for checkin
+
+def username_check_api(request):
+    username = request.GET.get('username')
+    if User.objects.filter(username=username).count() is 0:
+        return JsonResponse({"status":"available"})
+    else:
+        return JsonResponse({"status":"already_taken"})
+
+def signup_api(request):  # when stranger click 'Signup and Checkin'
+    if request.method == "GET":
+        lab_hash = request.GET.get('next','')
+        return render(request, 'Page/signup_form.html', {'lab_hash':lab_hash})
     # Receive data from POST
     if request.method == "POST":
-        form = SignUpForm(request.POST)
+        lab_hash = request.POST.get('next','')
+        username = request.POST["username"]
+        email = request.POST['email']
+        password = request.POST['password']
+        firstname = request.POST.get('first_name','')
+        lastname = request.POST.get('last_name', '')
         # Form is valid
-        if form.is_valid():
-            # create new user object and save it
-            user = form.save()
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            # authenticate user then login
-            login(request, authenticate(username=username, password=password))
-            # Save user's value into Person object
-            first_name = form.cleaned_data.get('first_name')
-            last_name = form.cleaned_data.get('last_name')
-            email = form.cleaned_data.get('email')
-            Person.objects.create(user=user, first_name=first_name, last_name=last_name, email=email,
-                                  is_student=False)
-            return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_name,)))
-    # didn't receive POST
-    else:
-        form = SignUpForm()
-    return render(request, 'registration/signup.html', {'form': form})
+        if User.objects.filter(username=username).count() is 0:   # if username is available
+            # create new User object and save it
+            u = User.objects.create(username=username, email=email)
+            u.set_password(password) # bypassing Django password format check 
+            u.save()
+            # create new Person object
+            Person.objects.create(user=u, first_name=firstname, last_name=lastname, email=email, is_student=False)
+            # then login
+            login(request, u, backend='django.contrib.auth.backends.ModelBackend')
 
-
+            return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
+        else:
+            return JsonResponse({"status":"fail"})
+    
+    
 def login_api(request):  # api when stranger login
-    pass
+    if request.method == "GET":
+        lab_hash = request.GET.get('next','')
+        return render(request, 'Page/log_in.html', {'lab_hash':lab_hash})
 
+    if request.method == "POST":
+        lab_hash = request.POST.get('next','')
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password) # auth username and password 
+        if user is not None:
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend') 
+            return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
+        else:
+            return JsonResponse({"status":"fail"})
+    # didn't receive POST        
+    
 
 def logout_api(request):  # api for logging out
     logout(request)
-    lab_hash = request.GET.get("lab", '')
-    return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
+    try:
+        lab_hash = request.GET.get("lab")
+        return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
+    except:
+        return HttpResponseRedirect("/")
 
 
 def compare_current_time():  # make check out valid
@@ -111,45 +162,68 @@ def compare_current_time():  # make check out valid
 
 def check_in(request, lab_hash):  # when user checkin record in history
     person = Person.objects.get(user=request.user)
-    lab_obj = Lab.objects.get(hash=lab_hash)
-    time_checkout = request.POST.get('check_out_time')  # get check out time
+    this_lab = Lab.objects.get(hash=lab_hash)
+    
+    checkout_time_str = request.POST.get('check_out_time')  # get check out time
     now_datetime = datetime.datetime.now()
-    lab_name = Lab.objects.get(hash=lab_hash).name
-    datetime_checkout = now_datetime.replace(hour=int(time_checkout.split(":")[0]),
-                                             minute=int(
-                                                 time_checkout.split(":")[1]))  # get check out time in object datetime
-    if datetime_checkout < now_datetime:
-        return HttpResponse('''<script>alert("ไม่สามารถเลือกเวลาในอดีตได้!");history.go(-1);</script>''')
+    
+    checkout_datetime = now_datetime.replace(hour=int(checkout_time_str.split(":")[0]),
+                                             minute=int(checkout_time_str.split(":")[1]))  # get check out time in object datetime
     if Lab.objects.filter(hash=lab_hash).exists():  # check that lab does exists
-        log = History.objects.create(person=person, lab=lab_obj, checkin=datetime.datetime.now(),
-                                     checkout=datetime_checkout)
-        return render(request, 'home.html',
-                      {"lab_hash": lab_hash, "already_checkin": 1, "lab_name": lab_name,
-                       "check_in": (log.checkin + timedelta(hours=7)).strftime("%A, %d %B %Y, %I:%M %p"),
-                       "check_out": log.checkout.strftime("%A, %d %B %Y, %I:%M %p")})
-    else:  # lab does not exists
-        error_message = "QR code ไม่ถูกต้อง"
-        return render(request, 'home.html', {"error_message": error_message})
+        last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
+        if last_lab_hist.exists(): # if have a history that intersect between now
+            if last_lab_hist[0].lab.hash != lab_hash:  # ไปแลปอื่นแล้วแล็ปเดิมยังไม่ check out
+                return render(request, 'Page/lab_checkout.html', {"lab_hash_check_out": last_lab_hist[0].lab,
+                                                                  "new_lab": this_lab})
+            else:  # มาแลปเดิมแล้วถ้าจะ check in ซ้ำจะเลือกให้ check out ก่อนเวลา
+                last_hist = History.objects.get(person=person, lab=this_lab, checkin__lte=now_datetime,
+                                                   checkout__gte=now_datetime)
+                return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_hist.lab})
+        
+        else:
+            new_hist = History.objects.create(person=person, 
+                                        lab=this_lab, 
+                                        checkin=now_datetime,
+                                        checkout=checkout_datetime)
+            
+            return render(request, 'Page/lab_checkin_successful_new.html',
+                        {"lab_hash": this_lab.hash, 
+                        "lab_name": this_lab.name,
+                        "check_in": (new_hist.checkin + timedelta(hours=7)).strftime("%A, %d %B %Y, %H:%M"),
+                        "check_out": new_hist.checkout.strftime("%A, %d %B %Y, %H:%M")})
 
 
-def query_search(mode, keyword, start, stop):
+def check_out(request, lab_hash):  # api
+    person = Person.objects.get(user=request.user)
+    out_local_time = datetime.datetime.now()
+    log = History.objects.filter(person=person, lab__hash=lab_hash).order_by('checkin').last()
+    log.checkout = out_local_time
+    log.save()
+    if request.GET.get('next_lab'):
+        return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(request.GET['next_lab'],)))
+    return render(request, 'Page/check_out_success.html', {"lab_name": log.lab.name})
+
+
+def query_search(mode, keyword, start, stop, search_mode):
+    """search data in DB by time and keyword and return query set"""
     histories = History.objects.all()
+
     if not isinstance(start, type(datetime.datetime.now())):
-        print(start)
         try:
             start = datetime.datetime.strptime(start,
-                                            "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
+                                               "%Y-%m-%dT%H:%M:%S.%f")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             start = datetime.datetime.fromtimestamp(0)
-
     if not isinstance(stop, type(datetime.datetime.now())):
         try:
             stop = datetime.datetime.strptime(stop,
-                                            "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
+                                              "%Y-%m-%dT%H:%M:%S.%f")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now()
-     
-    histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
+    if search_mode == "normal":
+        histories = histories.exclude(Q(checkout__gt=stop) | Q(checkout__lt=start))
+    else:
+        histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
 
     if keyword != "":  # if have specific keyword
         if mode == "id":
@@ -161,86 +235,87 @@ def query_search(mode, keyword, start, stop):
             histories = histories.filter(Q(lab__name__startswith=keyword))
         elif mode == "tel":
             histories = histories.filter(Q(person__tel__startswith=keyword))
-    
-    return histories
 
-    
+    return histories
 
 
 def history_search(request):
+    """Received from the client and searched for information from the server and then sent back to the client"""
     if request.user.is_superuser:
         keyword = request.GET.get('keyword', '')
         start = request.GET.get('from', '')
         stop = request.GET.get('to', '')
         mode = ""
-        histories = History.objects.all()
+        histories = "EMPTY"
         if request.GET:  # if request has parameter
             mode = request.GET.get('mode', '')
-            histories = query_search(mode, keyword, start, stop)
+            histories = query_search(mode, keyword, start, stop, "normal")
         # p = Paginator(histories, 24)
         # page_range = p.page_range
         # shown_history = p.page(page)
         return render(request, 'admin/history_search.html',
-                    {'shown_history': histories,
-                    'keyword': keyword,
-                    'select_mode': mode,
-                    'start': start,
-                    'stop':stop
-                    # 'page_number': page,
-                    # 'page_range': page_range,
-                    })
+                      {'shown_history': histories,
+                       'keyword': keyword,
+                       'select_mode': mode,
+                       'start': start,
+                       'stop': stop
+                       # 'page_number': page,
+                       # 'page_range': page_range,
+                       })
     else:
         return HttpResponse("Permission Denined")
 
 
 def export_normal_csv(request):
+    """export file csv log to user"""
     if request.user.is_superuser:
         mode = request.GET.get('mode', '')
         keyword = request.GET.get('keyword', '')
         start = request.GET.get('from', '')
         stop = request.GET.get('to', '')
-        histories = query_search(mode, keyword, start, stop)
+        histories = query_search(mode, keyword, start, stop, "normal")
         response = HttpResponse(content_type='text/csv')
         writer = csv.writer(response)
         writer.writerow(['Student ID', 'Person Name', 'Lab Name', 'Check in time', 'Check out time'])
         for user in histories:
             writer.writerow([str(user.person.student_id),
-                            user.person,
-                            user.lab,
-                            user.checkin + timedelta(hours=7),
-                            user.checkout + timedelta(hours=7)])
-        response['Content-Disposition'] = 'attachment; filename="user_data.csv"'
+                             user.person,
+                             user.lab,
+                             user.checkin + timedelta(hours=7),
+                             user.checkout + timedelta(hours=7)])
+        response['Content-Disposition'] = 'attachment; filename="file_log.csv"'
         return response
     else:
-        return HttpResponse("Permission Denined")
+        return HttpResponse("Permission Denied")
 
 
 def filter_risk_user(mode, keyword):
+    """filter user if there near by infected in time"""
     risk_people_data = []
     risk_people_notify = []
-    target_historys = query_search(mode, keyword, 0, 0) # get all historys with only the infected person
+    target_historys = query_search(mode, keyword, 0, 0, "risk")  # get all history with only the infected person
     if target_historys != 'EMPTY':
-        for user in target_historys: # for each row of infected person
-            session_historys = query_search('lab', user.lab, user.checkin, user.checkout) # 
+        for user in target_historys:  # for each row of infected person
+            session_historys = query_search('lab', user.lab, user.checkin, user.checkout, "risk")  #
             for session in session_historys:
                 risk_people_data.append((session.person.student_id,
-                                        session.person.first_name + ' ' + session.person.last_name,
-                                        '',
-                                        session.lab,
-                                        session.checkin,
-                                        session.checkout,
-                                        ))
+                                         session.person.first_name + ' ' + session.person.last_name,
+                                         '',
+                                         session.lab,
+                                         session.checkin,
+                                         session.checkout,
+                                         ))
                 risk_people_notify.append([session.person.student_id,
-                                        session.person.first_name + ' ' + session.person.last_name,
-                                        session.person.email,
-                                        session.lab,
-                                        ])
+                                           session.person.first_name + ' ' + session.person.last_name,
+                                           session.person.email,
+                                           session.lab,
+                                           ])
 
     return list(set(risk_people_data)), risk_people_notify
 
 
-
 def risk_people_search(request):
+    """Received from the client filter data and sent back to client"""
     if request.user.is_superuser:
         risk_people_data = "EMPTY"
         keyword = ""
@@ -251,9 +326,29 @@ def risk_people_search(request):
             risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
 
         return render(request, 'admin/risk_people_search.html',
-                        {'shown_history': risk_people_data,
-                        'keyword': keyword,'select_mode' : mode,
-                        })
+                      {'shown_history': risk_people_data,
+                       'keyword': keyword, 'select_mode': mode,
+                       })
+    else:
+        return HttpResponse("Permission Denined")
+
+
+def export_risk_csv(request):
+    """export file risk user csv log to user"""
+    if request.user.is_superuser:
+        mode = request.GET.get('mode', '')
+        keyword = request.GET.get('keyword', '')
+        risk_people_data, not_use = filter_risk_user(mode, keyword)
+        response = HttpResponse(content_type='text/csv')
+        writer = csv.writer(response)
+        writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
+        for user in risk_people_data:
+            user = list(user)
+            user[4] = user[4] + timedelta(hours=7)
+            user[5] = user[5] + timedelta(hours=7)
+            writer.writerow(user)
+        response['Content-Disposition'] = 'attachment; filename="Risk Log.csv"'
+        return response
     else:
         return HttpResponse("Permission Denined")
 
@@ -263,15 +358,15 @@ def notify_user(request):
         mode = request.GET.get('mode', '')
         keyword = request.GET.get('keyword', '')
         risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
-        #remove duplicate user'info
-        user_info =[]
+        # remove duplicate user'info
+        user_info = []
         for each_list in risk_people_notify:
             std_id = each_list[0]
             name = each_list[1]
             email = each_list[2]
-            temp_list = [std_id,name,email]
+            temp_list = [std_id, name, email]
             for each in risk_people_notify:
-                if each[1] == name and each[3] not in temp_list :
+                if each[1] == name and each[3] not in temp_list:
                     temp_list.append(each[3])
             user_info.append(tuple(temp_list))
         risk_people_notify = set(user_info)
@@ -293,27 +388,9 @@ def notify_user(request):
             email = EmailMessage(subject, message, to=[user_email])
             email.send()
 
-            return render(request,'admin/notify.html',
-                                {'notify_status': True,
-                                })
-    else:
-        return HttpResponse("Permission Denined")
-
-def export_risk_csv(request):
-    if request.user.is_superuser:
-        mode = request.GET.get('mode', '')
-        keyword = request.GET.get('keyword', '')
-        risk_people_data, not_use = filter_risk_user(mode, keyword)
-        response = HttpResponse(content_type='text/csv')
-        writer = csv.writer(response)
-        writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
-        for user in risk_people_data:
-            user = list(user)
-            user[4] = user[4] + timedelta(hours=7)
-            user[5] = user[5] + timedelta(hours=7)
-            writer.writerow(user)
-        response['Content-Disposition'] = 'attachment; filename="risk_user_data.csv"'
-        return response
+            return render(request, 'admin/notify.html',
+                          {'notify_status': True,
+                           })
     else:
         return HttpResponse("Permission Denined")
 
@@ -331,8 +408,52 @@ def generate_qr_code(request):
             selected_lab_name = all_lab_name[int(selected_lab)]
             selected_lab_hash = all_lab_hash[int(selected_lab)]
         return render(request, 'admin/qr_code_generate.html', {"all_lab_name": all_lab_name,
-                                                            "selected_lab_hash": selected_lab_hash,
-                                                            "selected_lab_name": selected_lab_name,
-                                                            "selected_lab": selected_lab, 'domain': site_url.domain})
+                                                               "selected_lab_hash": selected_lab_hash,
+                                                               "selected_lab_name": selected_lab_name,
+                                                               "selected_lab": selected_lab, 'domain': site_url.domain})
     else:
         return HttpResponse("Permission Denined")
+
+
+def call_dashboard(request):
+    """load metadata check update and format it before send data to dashboard"""
+    if request.user.is_superuser:
+        """load and manage metadata"""
+        meta_data = get_data_metadata()
+        dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(), "normal")
+
+        for user in dataset:
+            if str(user.lab) in meta_data['lab']:
+                if (str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)) in \
+                        meta_data['lab'][str(user.lab)]:
+                    meta_data['lab'][str(user.lab)][
+                        str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] += 1
+                else:
+                    meta_data['lab'][str(user.lab)][
+                        str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] = 1
+            else:
+                meta_data['lab'][str(user.lab)] = {}
+                meta_data['lab'][str(user.lab)][
+                    str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] = 1
+        meta_data["latest time"] = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
+        write_metadata(meta_data)
+
+        """prepare data before sent to template"""
+        pie_data = prepare_pie_data(meta_data)
+        liner_data = prepare_liner_data(meta_data)
+        return render(request, 'admin/dashboard.html', {
+            'pie_data':  json.dumps(pie_data),
+            'liner_data': json.dumps(liner_data)
+        })
+    else:
+        return HttpResponse("Permission Denined")
+
+
+def backup(request):
+    """ manually back up database """
+
+    # call command python manage.py dbbackup
+    management.call_command('dbbackup') 
+
+    messages.info(request, 'Database has been backed up successfully!')
+    return HttpResponseRedirect('/admin')

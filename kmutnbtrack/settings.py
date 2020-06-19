@@ -172,13 +172,16 @@ STATICFILES_DIRS = (
 )
 
 
-DEFAULT_FROM_EMAIL = 'KMUTNB labtrack <noreply@cony.codes>'
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.zoho.com'
-EMAIL_HOST_USER = 'noreply@cony.codes'
-EMAIL_HOST_PASSWORD = 'qwertyuiopQWERTYUIOP123'
+DEFAULT_FROM_EMAIL = 'KMUTNB labtrack <noreply@labtrack.cony.codes>'
+'''EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = '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'
 EMAIL_PORT = 587
-
+EMAIL_USE_TLS = True
+'''
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+SENDGRID_API_KEY = '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'
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 # Back up Database
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {'location': os.path.join(BASE_DIR, 'backups')}

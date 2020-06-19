@@ -6,30 +6,78 @@ Imports should be grouped in the following order:
 3.Local application/library specific imports.
 """
 import csv
-import time
 from datetime import datetime, timedelta
 
-
-from django.core.exceptions import ValidationError
-from django.db.models import F
 from django.db.models import Q
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
-from django.urls import reverse
-from django.contrib.auth import logout, authenticate, login
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.paginator import Paginator
-from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
-
-from kmutnbtrackapp.models import *
-from kmutnbtrackapp.forms import SignUpForm
-from kmutnbtrackapp.dashboard import *
-
 from django.core import management
 from django.contrib import messages
+from django.core.mail import EmailMessage
+from django.urls import reverse, reverse_lazy
+from django.template.loader import render_to_string
+from django.contrib.auth import logout, authenticate, login
+from django.contrib.sites.shortcuts import get_current_site
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, INTERNAL_RESET_SESSION_TOKEN, \
+    PasswordResetCompleteView
+
+from kmutnbtrackapp.models import *
+from kmutnbtrackapp.dashboard import *
+
 
 # Create your views here.
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'registration/password_reset_form.html'
+    email_template_name = 'registration/password_reset_email.html'
+    subject_template_name = 'registration/password_reset_subject.txt'
+
+    def post(self, request, *args, **kwargs):
+        self.extra_email_context = {
+            'lab_hash': self.request.POST['lab_hash']
+        }
+        return super().post(request, *args, **kwargs)
+
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'registration/password_reset_confirm.html'
+    success_url = reverse_lazy('password_reset_complete')
+
+    def dispatch(self, *args, **kwargs):
+        assert 'uidb64' in kwargs and 'token' in kwargs
+
+        self.validlink = False
+        self.user = self.get_user(kwargs['uidb64'])
+        lab_hash = self.request.GET.get('next')
+        self.success_url = reverse_lazy('password_reset_complete', kwargs={'next': lab_hash})
+
+        if self.user is not None:
+            print(lab_hash)
+            token = kwargs['token']
+            if token == self.reset_url_token:
+                session_token = self.request.session.get(INTERNAL_RESET_SESSION_TOKEN)
+                if self.token_generator.check_token(self.user, session_token):
+                    self.validlink = True
+                    return super().dispatch(*args, **kwargs)
+            else:
+                if self.token_generator.check_token(self.user, token):
+                    self.request.session[INTERNAL_RESET_SESSION_TOKEN] = token
+                    redirect_url = self.request.path.replace(token, self.reset_url_token) + "?next=" + lab_hash
+                    return HttpResponseRedirect(redirect_url)
+        return self.render_to_response(self.get_context_data())
+
+
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'registration/password_reset_complete.html'
+
+    def get_context_data(self, **kwargs):
+        assert 'next' in kwargs
+        self.extra_context = {
+            'lab_hash_receive': kwargs['next'],
+            'lab_name': Lab.objects.get(hash=kwargs['next']).name
+        }
+        return super().get_context_data(**kwargs)
+
 
 def home(request):
     if request.GET:
@@ -44,7 +92,7 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
     if not Lab.objects.filter(hash=lab_hash).exists():  # lab does not exists
         error_message = "QR code ไม่ถูกต้อง"
         return render(request, 'Page/error.html', {"error_message": error_message})
-    
+
     this_lab = Lab.objects.get(hash=lab_hash)
 
     if not request.user.is_authenticated:  # if user hasn't login
@@ -54,15 +102,16 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
     else:  # if user already login
         person = Person.objects.get(user=request.user)
         now_datetime = datetime.datetime.now()
-        
-        if History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime).exists(): # if have lastest history which checkout not at time
+
+        if History.objects.filter(person=person, checkin__lte=now_datetime,
+                                  checkout__gte=now_datetime).exists():  # if have lastest history which checkout not at time
             last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
             last_lab_hist = last_lab_hist[0]
 
-            if last_lab_hist.lab.hash == lab_hash: # if latest lab is same as the going lab
+            if last_lab_hist.lab.hash == lab_hash:  # if latest lab is same as the going lab
                 return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_lab_hist.lab})
-            
-            else: # if be another lab
+
+            else:  # if be another lab
                 return render(request, 'Page/lab_checkout.html', {"last_lab": last_lab_hist.lab,
                                                                   "new_lab": this_lab})
 
@@ -76,37 +125,39 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
             current_people = History.objects.filter(lab=lab_object, checkout__gte=now_datetime,
                                                     checkout__lte=midnight_time).count()
             return render(request, 'Page/lab_checkin_new.html', {"lab_name": lab_name,
-                                                            "lab_hash": lab_hash,
-                                                            "time_option": time_option,
-                                                            "time_now_hour": datetime.datetime.now().hour,
-                                                            "time_now_minute": datetime.datetime.now().minute,
-                                                            "current_people": current_people
-                                                            })  # render page for checkin
+                                                                 "lab_hash": lab_hash,
+                                                                 "time_option": time_option,
+                                                                 "time_now_hour": datetime.datetime.now().hour,
+                                                                 "time_now_minute": datetime.datetime.now().minute,
+                                                                 "current_people": current_people
+                                                                 })  # render page for checkin
+
 
 def username_check_api(request):
     username = request.GET.get('username')
-    if User.objects.filter(username=username).count() is 0:
-        return JsonResponse({"status":"available"})
+    if User.objects.filter(username=username).count() == 0:
+        return JsonResponse({"status": "available"})
     else:
-        return JsonResponse({"status":"already_taken"})
+        return JsonResponse({"status": "already_taken"})
+
 
 def signup_api(request):  # when stranger click 'Signup and Checkin'
     if request.method == "GET":
-        lab_hash = request.GET.get('next','')
-        return render(request, 'Page/signup_form.html', {'lab_hash':lab_hash})
+        lab_hash = request.GET.get('next', '')
+        return render(request, 'Page/signup_form.html', {'lab_hash': lab_hash})
     # Receive data from POST
     if request.method == "POST":
-        lab_hash = request.POST.get('next','')
+        lab_hash = request.POST.get('next', '')
         username = request.POST["username"]
         email = request.POST['email']
         password = request.POST['password']
-        firstname = request.POST.get('first_name','')
+        firstname = request.POST.get('first_name', '')
         lastname = request.POST.get('last_name', '')
         # Form is valid
-        if User.objects.filter(username=username).count() is 0:   # if username is available
+        if User.objects.filter(username=username).count() == 0:  # if username is available
             # create new User object and save it
             u = User.objects.create(username=username, email=email)
-            u.set_password(password) # bypassing Django password format check 
+            u.set_password(password)  # bypassing Django password format check
             u.save()
             # create new Person object
             Person.objects.create(user=u, first_name=firstname, last_name=lastname, email=email, is_student=False)
@@ -115,26 +166,26 @@ def signup_api(request):  # when stranger click 'Signup and Checkin'
 
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
         else:
-            return JsonResponse({"status":"fail"})
-    
-    
+            return JsonResponse({"status": "fail"})
+
+
 def login_api(request):  # api when stranger login
     if request.method == "GET":
-        lab_hash = request.GET.get('next','')
-        return render(request, 'Page/log_in.html', {'lab_hash':lab_hash})
+        lab_hash = request.GET.get('next', '')
+        return render(request, 'Page/log_in.html', {'lab_hash': lab_hash})
 
     if request.method == "POST":
-        lab_hash = request.POST.get('next','')
+        lab_hash = request.POST.get('next', '')
         username = request.POST['username']
         password = request.POST['password']
-        user = authenticate(request, username=username, password=password) # auth username and password 
+        user = authenticate(request, username=username, password=password)  # auth username and password
         if user is not None:
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend') 
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
         else:
-            return JsonResponse({"status":"fail"})
+            return JsonResponse({"status": "fail"})
     # didn't receive POST        
-    
+
 
 def logout_api(request):  # api for logging out
     logout(request)
@@ -163,34 +214,35 @@ def compare_current_time():  # make check out valid
 def check_in(request, lab_hash):  # when user checkin record in history
     person = Person.objects.get(user=request.user)
     this_lab = Lab.objects.get(hash=lab_hash)
-    
+
     checkout_time_str = request.POST.get('check_out_time')  # get check out time
     now_datetime = datetime.datetime.now()
-    
+
     checkout_datetime = now_datetime.replace(hour=int(checkout_time_str.split(":")[0]),
-                                             minute=int(checkout_time_str.split(":")[1]))  # get check out time in object datetime
+                                             minute=int(checkout_time_str.split(":")[
+                                                            1]))  # get check out time in object datetime
     if Lab.objects.filter(hash=lab_hash).exists():  # check that lab does exists
         last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
-        if last_lab_hist.exists(): # if have a history that intersect between now
+        if last_lab_hist.exists():  # if have a history that intersect between now
             if last_lab_hist[0].lab.hash != lab_hash:  # ไปแลปอื่นแล้วแล็ปเดิมยังไม่ check out
                 return render(request, 'Page/lab_checkout.html', {"lab_hash_check_out": last_lab_hist[0].lab,
                                                                   "new_lab": this_lab})
             else:  # มาแลปเดิมแล้วถ้าจะ check in ซ้ำจะเลือกให้ check out ก่อนเวลา
                 last_hist = History.objects.get(person=person, lab=this_lab, checkin__lte=now_datetime,
-                                                   checkout__gte=now_datetime)
+                                                checkout__gte=now_datetime)
                 return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_hist.lab})
-        
+
         else:
-            new_hist = History.objects.create(person=person, 
-                                        lab=this_lab, 
-                                        checkin=now_datetime,
-                                        checkout=checkout_datetime)
-            
+            new_hist = History.objects.create(person=person,
+                                              lab=this_lab,
+                                              checkin=now_datetime,
+                                              checkout=checkout_datetime)
+
             return render(request, 'Page/lab_checkin_successful_new.html',
-                        {"lab_hash": this_lab.hash, 
-                        "lab_name": this_lab.name,
-                        "check_in": (new_hist.checkin + timedelta(hours=7)).strftime("%A, %d %B %Y, %H:%M"),
-                        "check_out": new_hist.checkout.strftime("%A, %d %B %Y, %H:%M")})
+                          {"lab_hash": this_lab.hash,
+                           "lab_name": this_lab.name,
+                           "check_in": (new_hist.checkin + timedelta(hours=7)).strftime("%A, %d %B %Y, %H:%M"),
+                           "check_out": new_hist.checkout.strftime("%A, %d %B %Y, %H:%M")})
 
 
 def check_out(request, lab_hash):  # api
@@ -395,22 +447,14 @@ def notify_user(request):
         return HttpResponse("Permission Denined")
 
 
-def generate_qr_code(request):
+def generate_qr_code(request,lab_hash,lab_name):
     if request.user.is_superuser:
         site_url = get_current_site(request)
-        selected_lab = ""
-        selected_lab_name = ""
-        selected_lab_hash = ""
-        all_lab_name = Lab.objects.all().order_by("name").values_list('name', flat=True)
-        all_lab_hash = Lab.objects.all().order_by("name").values_list('hash', flat=True)
-        if request.POST.get("lab_selector"):
-            selected_lab = request.POST["lab_selector"]
-            selected_lab_name = all_lab_name[int(selected_lab)]
-            selected_lab_hash = all_lab_hash[int(selected_lab)]
-        return render(request, 'admin/qr_code_generate.html', {"all_lab_name": all_lab_name,
-                                                               "selected_lab_hash": selected_lab_hash,
-                                                               "selected_lab_name": selected_lab_name,
-                                                               "selected_lab": selected_lab, 'domain': site_url.domain})
+
+        return render(request, 'admin/qr_code_generate.html', {
+                                                               "selected_lab_hash": lab_hash,
+                                                               "selected_lab_name": lab_name,
+                                                                'domain': site_url.domain})
     else:
         return HttpResponse("Permission Denined")
 
@@ -442,7 +486,7 @@ def call_dashboard(request):
         pie_data = prepare_pie_data(meta_data)
         liner_data = prepare_liner_data(meta_data)
         return render(request, 'admin/dashboard.html', {
-            'pie_data':  json.dumps(pie_data),
+            'pie_data': json.dumps(pie_data),
             'liner_data': json.dumps(liner_data)
         })
     else:
@@ -453,7 +497,7 @@ def backup(request):
     """ manually back up database """
 
     # call command python manage.py dbbackup
-    management.call_command('dbbackup') 
+    management.call_command('dbbackup')
 
     messages.info(request, 'Database has been backed up successfully!')
     return HttpResponseRedirect('/admin')

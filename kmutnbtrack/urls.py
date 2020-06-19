@@ -20,13 +20,17 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from kmutnbtrackapp import views    
+from kmutnbtrackapp import views
+from django.conf.urls import url
+from django.contrib.auth.views import PasswordResetDoneView, PasswordResetCompleteView, PasswordResetConfirmView
+from kmutnbtrackapp.views import CustomPasswordResetView, CustomPasswordResetConfirmView, CustomPasswordResetCompleteView
+
 
 urlpatterns = [
     path('', include('kmutnbtrackapp.urls')),
     path('auth/', include('social_django.urls', namespace='social')),
     path('qr_code/', include('qr_code.urls', namespace="qr_code")),
-    path('admin/qrcode/', views.generate_qr_code, name='generate_qr_code'),
+    path('admin/qrcode/<str:lab_hash>/<str:lab_name>', views.generate_qr_code, name='generate_qr_code'),
     path('admin/dashboard/', views.call_dashboard, name='dashboard'),
     path('admin/history/search/', TemplateView.as_view(template_name="admin/history_search_main.html"),
          name='admin_search'),
@@ -39,7 +43,12 @@ urlpatterns = [
     path('admin/history/search/history/download_normal_csv/', views.export_normal_csv, name='download_normal_csv'),
     path('admin/backup', views.backup, name='backup'),
     path('admin/', admin.site.urls, name='admin'),
-    
+    url(r'^password_reset/$', CustomPasswordResetView.as_view(), name='password_reset'),
+    url(r'^reset/done/(?P<next>.+)/$', CustomPasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    url(r'^password_reset/done/$', PasswordResetDoneView.as_view(), name='password_reset_done'),
+    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)
 urlpatterns += staticfiles_urlpatterns()

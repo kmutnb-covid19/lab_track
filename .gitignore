@@ -8,3 +8,5 @@ db.sqlite3
 kmutnbtrackapp/migrations/0001_initial.py
 /.env
 media/*
+.env
+

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'social_django',
     'dbbackup',
+    'anymail',
 ]
 
 MIDDLEWARE = [
@@ -167,12 +168,15 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static/'),
 )
 
-DEFAULT_FROM_EMAIL = 'KMUTNB labtrack <noreply@mail.cony.codes>'
-
 # Mailgun api
-EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
-MAILGUN_ACCESS_KEY = os.environ['MAILGUN_ACCESS_KEY']
-MAILGUN_SERVER_NAME = os.environ['MAILGUN_SERVER_NAME']
+ANYMAIL = {
+    # (exact settings here depend on your ESP...)
+    "MAILGUN_API_KEY": os.environ['MAILGUN_ACCESS_KEY'],
+    "MAILGUN_SENDER_DOMAIN": os.environ['MAILGUN_SERVER_NAME'],  # your Mailgun domain, if needed
+}
+DEFAULT_FROM_EMAIL = 'KMUTNB labtrack <noreply@mail.cony.codes>'
+EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+SERVER_EMAIL = "admin@cony.codes"  # ditto (default from-email for Django errors)
 
 # Back up Database
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'

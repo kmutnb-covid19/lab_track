@@ -259,23 +259,23 @@ def check_out(request, lab_hash):  # api
 def query_search(mode, keyword, start, stop, search_mode):
     """search data in DB by time and keyword and return query set"""
     histories = History.objects.all()
-
+    print(mode, keyword, start, stop, search_mode)
     if not isinstance(start, type(datetime.datetime.now())):
         try:
             start = datetime.datetime.strptime(start,
-                                               "%Y-%m-%dT%H:%M:%S.%f")  # convert from "2020-06-05T03:29" to Datetime object
+                                               "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             start = datetime.datetime.fromtimestamp(0)
     if not isinstance(stop, type(datetime.datetime.now())):
         try:
             stop = datetime.datetime.strptime(stop,
-                                              "%Y-%m-%dT%H:%M:%S.%f")  # convert from "2020-06-05T03:29" to Datetime object
+                                              "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now()
     if search_mode == "normal":
         histories = histories.exclude(Q(checkout__gt=stop) | Q(checkout__lt=start))
     else:
-        histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
+        histories = "EMPTY"
 
     if keyword != "":  # if have specific keyword
         if mode == "id":

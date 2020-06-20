@@ -5,9 +5,16 @@ Imports should be grouped in the following order:
 2.Related third party imports.
 3.Local application/library specific imports.
 """
-import csv
-import json
+
 from datetime import datetime, timedelta
+import csv
+import qrcode
+from PIL import Image
+from PIL import ImageFont
+from PIL import ImageDraw
+
+import re
+
 
 from django.db.models import Q
 from django.shortcuts import render
@@ -186,7 +193,7 @@ def login_api(request):  # api when stranger login
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
         else:
             return JsonResponse({"status": "fail"})
-    # didn't receive POST        
+    # didn't receive POST
 
 
 def logout_api(request):  # api for logging out
@@ -288,8 +295,8 @@ def query_search(mode, keyword, start, stop, search_mode):
                 Q(person__first_name__startswith=keyword) | Q(person__last_name__startswith=keyword))
         elif mode == "lab":
             histories = histories.filter(Q(lab__name__startswith=keyword))
-        elif mode == "tel":
-            histories = histories.filter(Q(person__tel__startswith=keyword))
+        #elif mode == "tel":
+        #    histories = histories.filter(Q(person__tel__startswith=keyword))
 
     return histories
 
@@ -309,6 +316,7 @@ def history_search(request):
         page_range = p.page_range
         shown_history = p.page(1)
         print(p, page_range, shown_history)
+
         return render(request, 'admin/history_search.html',
                       {'shown_history': histories,
                        'keyword': keyword,
@@ -356,13 +364,12 @@ def filter_risk_user(mode, keyword):
             for session in session_historys:
                 risk_people_data.append((session.person.student_id,
                                          session.person.first_name + ' ' + session.person.last_name,
-                                         '',
                                          session.lab,
                                          session.checkin,
                                          session.checkout,
                                          ))
                 risk_people_notify.append([session.person.student_id,
-                                           session.person.first_name + ' ' + session.person.last_name,
+                                           session.person.first_name + session.person.last_name,
                                            session.person.email,
                                            session.lab,
                                            ])
@@ -438,45 +445,79 @@ def notify_user(request, mode, keyword):
                 user_info.append(tuple(temp_list))
             risk_people_notify = set(user_info)
 
-            user_data = {}
-            user_email = []
             for each_user in risk_people_notify:
                 student_id = each_user[0]
                 first_last_name = each_user[1]
-                each_user_email = each_user[2]
-                user_email.append( each_user_email  )
-                lab_name = ''
+                user_email = each_user[2]
+                lab_name = []
                 for each_lab in each_user[3:]:
-                    lab_name += str(each_lab) + ', '
-                lab_name = lab_name[:-2]
-                user_data[each_user_email] = {'student_id':student_id,
-                                        'first_last_name':first_last_name,
-                                        'user_email':each_user_email,
-                                        'lab_name':lab_name}
-            print(user_data)
-            email_json = json.dumps(user_email)
-            print(email_json)
-            subject = 'แจ้งเตือนกลุ่มผู้มีความเสี่ยงติดเชื้อ covid-19'
-            email = EmailMessage(subject, to=user_email)
-            email.template_id = 'notify-labtrack'
-            email.merge_data = user_data
-            email.send()
+                    lab_name.append(each_lab)
 
-            return render(request, 'admin/notify_status.html',
-                        {'notify_status': True,
-                        })
+                subject = 'เทสการแจ้งเตือน'
+                message = render_to_string('admin/email.html', {'student_id': student_id,
+                                                                'user_email': user_email,
+                                                                'first_last_name': first_last_name,
+                                                                'lab_name': lab_name,
+                                                                })
+                email = EmailMessage(subject, message, to=[user_email])
+                #email.send()
+
+                return render(request, 'admin/notify_status.html',
+                            {'notify_status': True,
+                            })
     else:
         return HttpResponse("Permission Denined")
 
 
-def generate_qr_code(request,lab_hash,lab_name):
+def generate_qr_code(request,lab_hash):
     if request.user.is_superuser:
-        site_url = get_current_site(request)
+        site_url = "get_current_site(request)"
+        lab_name = Lab.objects.get(hash=lab_hash).name
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=0,
+        )
+        qr.add_data(f"https://labtrack.cony.codes/lab/{lab_hash}/")
+        qr.make()
 
-        return render(request, 'admin/qr_code_generate.html', {
-                                                               "selected_lab_hash": lab_hash,
-                                                               "selected_lab_name": lab_name,
-                                                                'domain': site_url.domain})
+        img_qr = qr.make_image()
+
+        img_frame = Image.open("kmutnbtrackapp/static/qrcode_src/qr_frame.jpg")
+
+        pos = (57,135)
+        img_frame.paste(img_qr, pos)
+
+
+        draw = ImageDraw.Draw(img_frame)
+
+        font_size = 38
+        font = ImageFont.truetype("kmutnbtrackapp/static/qrcode_src/Prompt-Medium.ttf", 38)
+        ascent, descent = font.getmetrics()
+        (width, baseline), (offset_x, offset_y) = font.font.getsize(lab_name)
+
+        if (len(lab_name) > 24):
+            # split to 2 line and draw here
+            pass
+
+        elif (len(lab_name) > 14): # long name -> reduce font size
+            while(width >= 305):
+                font_size -= 1
+                font = ImageFont.truetype("font/Prompt-Medium.ttf", font_size)
+                ascent, descent = font.getmetrics()
+                (width, baseline), (offset_x, offset_y) = font.font.getsize(lab_name)
+
+            draw.text((82, 75-ascent),lab_name,(255,255,255),font=font)
+
+        else:
+            draw.text((82, 75-ascent),lab_name,(255,255,255),font=font)
+
+        img_frame.save(f'media/{lab_name}_qrcode.jpg', quality=100, subsampling=0)
+        with open(f'media/{lab_name}_qrcode.jpg', "rb") as f:
+            response = HttpResponse(f.read(), content_type="image/jpeg")
+            response['Content-Disposition'] = 'inline; filename=' + f'media/{lab_name}_qrcode.jpg'
+            return response
     else:
         return HttpResponse("Permission Denined")
 

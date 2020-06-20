@@ -74,7 +74,7 @@
         <a href="{% url 'admin:index' %}">Labtrack Admin Dashboard</a>
         <a href="{% url 'risk_people_search' %}">Risk People Search</a>
         <a class="active" href="{% url 'history_search' %}">History Search</a>
-
+        <a href="{% url 'dashboard' %}">Statistic Dashboard</a>
     </div>
 
     <h1 style="color: #569ec1;font-family: Adamina, serif;margin: 10px;" align="center">History search</h1>
@@ -84,35 +84,24 @@
                     <option value="id" selected="selected">id</option>
                     <option value="name">name</option>
                     <option value="lab">lab</option>
-                    <option value="tel">tel</option>
                 </select>
             {% elif select_mode == "name"%}
                 <select class="mode-table-data" name="mode" id="mode">
                     <option value="id">id</option>
                     <option value="name" selected="selected">name</option>
                     <option value="lab">lab</option>
-                    <option value="tel">tel</option>
                 </select>
             {% elif select_mode == "lab"%}
                 <select class="mode-table-data" name="mode" id="mode">
                     <option value="id">id</option>
                     <option value="name">name</option>
                     <option value="lab" selected="selected">lab</option>
-                    <option value="tel">tel</option>
-                </select>
-            {% elif select_mode == "tel"%}
-                <select class="mode-table-data" name="mode" id="mode">
-                    <option value="id">id</option>
-                    <option value="name">name</option>
-                    <option value="lab">lab</option>
-                    <option value="tel" selected="selected">tel</option>
                 </select>
             {% else %}
                 <select class="mode-table-data" name="mode" id="mode">
                     <option value="id">id</option>
                     <option value="name">name</option>
                     <option value="lab">lab</option>
-                    <option value="tel">tel</option>
                 </select>
             {% endif %}
 
@@ -155,9 +144,6 @@
                     name
                 </th>
                 <th class="th-sm table-data">
-                    tel
-                </th>
-                <th class="th-sm table-data">
                     lab
                 </th>
                 <th class="th-sm table-data">
@@ -174,7 +160,6 @@
                         <tr>
                         <td>{{ h.person.student_id }}</td>
                         <td>{{ h.person.first_name }} {{ h.person.last_name }}</td>
-                        <td></td>
                         <td>{{ h.lab.name }}</td>
                         <td>{{ h.checkin }}</td>
                         <td>{{ h.checkout }}</td>

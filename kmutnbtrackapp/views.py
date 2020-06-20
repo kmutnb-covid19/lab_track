@@ -355,7 +355,6 @@ def filter_risk_user(mode, keyword):
             for session in session_historys:
                 risk_people_data.append((session.person.student_id,
                                          session.person.first_name + ' ' + session.person.last_name,
-                                         '',
                                          session.lab,
                                          session.checkin,
                                          session.checkout,

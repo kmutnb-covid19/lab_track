@@ -404,45 +404,56 @@ def export_risk_csv(request):
     else:
         return HttpResponse("Permission Denined")
 
-
-def notify_user(request):
+def notify_confirm(request):
     if request.user.is_superuser:
         mode = request.GET.get('mode', '')
         keyword = request.GET.get('keyword', '')
-        risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
-        # remove duplicate user'info
-        user_info = []
-        for each_list in risk_people_notify:
-            std_id = each_list[0]
-            name = each_list[1]
-            email = each_list[2]
-            temp_list = [std_id, name, email]
-            for each in risk_people_notify:
-                if each[1] == name and each[3] not in temp_list:
-                    temp_list.append(each[3])
-            user_info.append(tuple(temp_list))
-        risk_people_notify = set(user_info)
+        return render(request, 'admin/notify_confirm.html',{ 'mode':mode,
+                                                             'keyword':keyword,
+                                                             })
+    else:
+        return HttpResponse("Permission Denined")
 
-        for each_user in risk_people_notify:
-            student_id = each_user[0]
-            first_last_name = each_user[1]
-            user_email = each_user[2]
-            lab_name = []
-            for each_lab in each_user[3:]:
-                lab_name.append(each_lab)
+def notify_user(request, mode, keyword):
+    if request.user.is_superuser:
+        confirm = request.POST.get('confirm', '')
+        if request.method == "POST" and confirm == "ยืนยัน":
+            #mode = request.GET.get('mode', '')
+            #keyword = request.GET.get('keyword', '')
+            risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
+            # remove duplicate user'info
+            user_info = []
+            for each_list in risk_people_notify:
+                std_id = each_list[0]
+                name = each_list[1]
+                email = each_list[2]
+                temp_list = [std_id, name, email]
+                for each in risk_people_notify:
+                    if each[1] == name and each[3] not in temp_list:
+                        temp_list.append(each[3])
+                user_info.append(tuple(temp_list))
+            risk_people_notify = set(user_info)
 
-            subject = 'เทสการแจ้งเตือน'
-            message = render_to_string('admin/email.html', {'student_id': student_id,
-                                                            'user_email': user_email,
-                                                            'first_last_name': first_last_name,
-                                                            'lab_name': lab_name,
-                                                            })
-            email = EmailMessage(subject, message, to=[user_email])
-            email.send()
+            for each_user in risk_people_notify:
+                student_id = each_user[0]
+                first_last_name = each_user[1]
+                user_email = each_user[2]
+                lab_name = []
+                for each_lab in each_user[3:]:
+                    lab_name.append(each_lab)
 
-            return render(request, 'admin/notify.html',
-                          {'notify_status': True,
-                           })
+                subject = 'เทสการแจ้งเตือน'
+                message = render_to_string('admin/email.html', {'student_id': student_id,
+                                                                'user_email': user_email,
+                                                                'first_last_name': first_last_name,
+                                                                'lab_name': lab_name,
+                                                                })
+                email = EmailMessage(subject, message, to=[user_email])
+                #email.send()
+
+                return render(request, 'admin/notify_status.html',
+                            {'notify_status': True,
+                            })
     else:
         return HttpResponse("Permission Denined")
 

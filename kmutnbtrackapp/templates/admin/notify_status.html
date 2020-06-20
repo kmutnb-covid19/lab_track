@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>notify_Status</title>
+</head>
+    <body>
+        <center>
+            {% if notify_status %}
+                Send Email Success
+                <form action="{% url 'risk_people_search' %}">
+                    <input type="submit" value="Back to Risk Search" />
+                </form>
+            {% else %}
+                Send Email Fail
+            {% endif %}
+        </center>
+    </body>
+</html>

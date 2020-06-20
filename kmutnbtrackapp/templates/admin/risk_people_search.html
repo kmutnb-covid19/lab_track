@@ -72,6 +72,7 @@
         <a class="active" href="{% url 'risk_people_search' %}">Risk People Search</a>
         <a href="{% url 'history_search' %}">History Search</a>
         <a href="{% url 'dashboard' %}">Statistic Dashboard</a>
+        <a href="{% url 'backup' %}">Backup Database</a>
 
     </div>
     <h1 style="color: #569ec1;font-family: Adamina, serif;margin: 10px;" align="center">Risky people search</h1>
@@ -99,7 +100,7 @@
 
             <button class="btn btn-primary default-all-input-btn" type="submit" type="submit" value="search"><i style="font-size: 15px;" class="fa fa-search"></i> Search</button>
 
-            <button class="btn btn-primary default-all-input-btn" type="submit" formaction="{% url 'notify' %}"><i class="fa fa-bell" style="font-size: 15px;"> </i> notify risk people</button>
+            <button class="btn btn-primary default-all-input-btn" type="submit" formaction="{% url 'notify_confirm' %}"><i class="fa fa-bell" style="font-size: 15px;"> </i> notify risk people</button>
 
             <button class="btn btn-primary default-all-input-btn" type="submit" formaction="{% url 'download_risk_csv' %}"><i style="font-size: 15px;" class="fa fa-download"></i> download csv file</button>
 
@@ -133,7 +134,6 @@
                 {% for each_user in shown_history %}
                     <tr>
                     {% for each_data in each_user %}
-
                         <td>{{ each_data }}</td>
 
                     {% endfor %}

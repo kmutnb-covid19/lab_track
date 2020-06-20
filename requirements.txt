@@ -5,5 +5,5 @@ django-dbbackup==3.3.0
 django-storages==1.9.1
 celery==4.4.5
 selenium==3.141.0
-django-sendgrid-v5==0.8.1
+django-anymail==7.1.0
 python-dotenv==0.13.0

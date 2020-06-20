@@ -1,0 +1,17 @@
+<html>
+    <title>
+        Confirm Notify
+    </title>
+
+    <body>
+        <center>
+            <form action="{% url 'notify' mode keyword %}" method="POST">
+                {% csrf_token %}
+                <label for="confirm">กรุณาพิมพ์ "ยืนยัน" เพื่อยืนยันการส่งการแจ้งเตือนไปยังอีเมล์ของผู้ที่เกี่ยวข้องกับ {{ keyword }} </label>
+                <br>
+                <input type="text" name="confirm" id="confirm">
+                <button type="submit">Send Email</button>
+            </form>
+    </center>
+    </body>
+</html>

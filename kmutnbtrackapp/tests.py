@@ -63,15 +63,15 @@ class Searching_test(LiveServerTestCase):
         lablist = [labA, labB, labC]
         
         person_list = []    
-        for i in range(15):
+        for i in range(25):
             firstname = names.get_first_name() + str(randrange(1000))
             lastname = names.get_last_name()
             u = User.objects.create(username=firstname,email='',password=lastname)
             p = Person.objects.create(user=u, first_name=firstname, last_name=lastname)
             person_list.append(p)
         
-        self.generate_history(15, person_list, lablist, "1/1/2020 9:00", "1/1/2020 16:00")
-        self.generate_history(15, person_list, lablist, "2/1/2020 9:00", "2/1/2020 16:00")
+        self.generate_history(100, person_list, lablist, "1/1/2020 9:00", "1/1/2020 16:00")
+        self.generate_history(100, person_list, lablist, "2/1/2020 9:00", "2/1/2020 16:00")
 
 
     def test_can_query_by_name(self):

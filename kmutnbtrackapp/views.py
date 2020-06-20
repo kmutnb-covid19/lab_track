@@ -511,8 +511,9 @@ def generate_qr_code(request,lab_hash):
 
         img_frame.save(f'media/{lab_name}_qrcode.jpg', quality=100, subsampling=0)
         with open(f'media/{lab_name}_qrcode.jpg', "rb") as f:
-            return HttpResponse(f.read(), content_type="image/jpeg")
-        
+            response = HttpResponse(f.read(), content_type="image/jpeg")
+            response['Content-Disposition'] = 'inline; filename=' + f'media/{lab_name}_qrcode.jpg'
+            return response
     else:
         return HttpResponse("Permission Denined")
 

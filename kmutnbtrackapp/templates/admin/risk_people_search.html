@@ -71,6 +71,8 @@
         <a href="{% url 'admin:index' %}">Labtrack Admin Dashboard</a>
         <a class="active" href="{% url 'risk_people_search' %}">Risk People Search</a>
         <a href="{% url 'history_search' %}">History Search</a>
+        <a href="{% url 'dashboard' %}">Statistic Dashboard</a>
+        <a href="{% url 'backup' %}">Backup Database</a>
 
     </div>
     <h1 style="color: #569ec1;font-family: Adamina, serif;margin: 10px;" align="center">Risky people search</h1>
@@ -117,9 +119,6 @@
                     name
                 </th>
                 <th class="th-sm table-data">
-                    tel
-                </th>
-                <th class="th-sm table-data">
                     lab
                 </th>
                 <th class="th-sm table-data">
@@ -135,7 +134,6 @@
                 {% for each_user in shown_history %}
                     <tr>
                     {% for each_data in each_user %}
-
                         <td>{{ each_data }}</td>
 
                     {% endfor %}

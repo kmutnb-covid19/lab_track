@@ -7,11 +7,13 @@ Imports should be grouped in the following order:
 """
 
 from datetime import datetime, timedelta
-from PIL import Image
-from PIL import ImageFont
-from PIL import ImageDraw 
+
+
 import csv
 import qrcode
+from PIL import Image
+from PIL import ImageFont
+from PIL import ImageDraw
 import re
 
 
@@ -192,7 +194,7 @@ def login_api(request):  # api when stranger login
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
         else:
             return JsonResponse({"status": "fail"})
-    # didn't receive POST        
+    # didn't receive POST
 
 
 def logout_api(request):  # api for logging out
@@ -294,8 +296,8 @@ def query_search(mode, keyword, start, stop, search_mode):
                 Q(person__first_name__startswith=keyword) | Q(person__last_name__startswith=keyword))
         elif mode == "lab":
             histories = histories.filter(Q(lab__name__startswith=keyword))
-        elif mode == "tel":
-            histories = histories.filter(Q(person__tel__startswith=keyword))
+        #elif mode == "tel":
+        #    histories = histories.filter(Q(person__tel__startswith=keyword))
 
     return histories
 
@@ -312,6 +314,7 @@ def history_search(request, page=1):
         if request.GET:  # if request has parameter
             mode = request.GET.get('mode', '')
             histories = query_search(mode, keyword, start, stop, "normal")
+
         
 
         p = Paginator(histories, 36)
@@ -391,13 +394,12 @@ def filter_risk_user(mode, keyword):
             for session in session_historys:
                 risk_people_data.append((session.person.student_id,
                                          session.person.first_name + ' ' + session.person.last_name,
-                                         '',
                                          session.lab,
                                          session.checkin,
                                          session.checkout,
                                          ))
                 risk_people_notify.append([session.person.student_id,
-                                           session.person.first_name + ' ' + session.person.last_name,
+                                           session.person.first_name + session.person.last_name,
                                            session.person.email,
                                            session.lab,
                                            ])
@@ -509,7 +511,7 @@ def generate_qr_code(request,lab_hash):
         )
         qr.add_data(f"https://labtrack.cony.codes/lab/{lab_hash}/")
         qr.make()
-        
+
         img_qr = qr.make_image()
         
         img_frame = Image.open("kmutnbtrackapp/static/qrcode_src/qr_frame.jpg")
@@ -535,9 +537,10 @@ def generate_qr_code(request,lab_hash):
                 font = ImageFont.truetype("font/Prompt-Medium.ttf", font_size)
                 ascent, descent = font.getmetrics()
                 (width, baseline), (offset_x, offset_y) = font.font.getsize(lab_name)
-                
+
             draw.text((82, 75-ascent),lab_name,(255,255,255),font=font)
-            
+
+
         else:
             draw.text((82, 75-ascent),lab_name,(255,255,255),font=font)
 

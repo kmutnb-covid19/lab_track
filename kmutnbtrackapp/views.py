@@ -429,8 +429,6 @@ def notify_user(request, mode, keyword):
     if request.user.is_superuser:
         confirm = request.POST.get('confirm', '')
         if request.method == "POST" and confirm == "ยืนยัน":
-            #mode = request.GET.get('mode', '')
-            #keyword = request.GET.get('keyword', '')
             risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
             # remove duplicate user'info
             user_info = []
@@ -445,29 +443,32 @@ def notify_user(request, mode, keyword):
                 user_info.append(tuple(temp_list))
             risk_people_notify = set(user_info)
 
+            user_data = {}
+            user_email = []
             for each_user in risk_people_notify:
                 student_id = each_user[0]
                 first_last_name = each_user[1]
-                user_email = each_user[2]
-                lab_name = []
+                each_user_email = each_user[2]
+                user_email.append( each_user_email  )
+                lab_name = ''
                 for each_lab in each_user[3:]:
-                    lab_name.append(each_lab)
+                    lab_name += str(each_lab) + ', '
+                lab_name = lab_name[:-2]
+                user_data[each_user_email] = {'student_id':student_id,
+                                        'first_last_name':first_last_name,
+                                        'user_email':each_user_email,
+                                        'lab_name':lab_name}
+            subject = 'แจ้งเตือนกลุ่มผู้มีความเสี่ยงติดเชื้อ covid-19'
+            email = EmailMessage(subject, to=user_email)
+            email.template_id = 'notify-labtrack'
+            email.merge_data = user_data
+            email.send()
 
-                subject = 'เทสการแจ้งเตือน'
-                message = render_to_string('admin/email.html', {'student_id': student_id,
-                                                                'user_email': user_email,
-                                                                'first_last_name': first_last_name,
-                                                                'lab_name': lab_name,
-                                                                })
-                email = EmailMessage(subject, message, to=[user_email])
-                #email.send()
-
-                return render(request, 'admin/notify_status.html',
-                            {'notify_status': True,
-                            })
+            return render(request, 'admin/notify_status.html',
+                        {'notify_status': True,
+                        })
     else:
         return HttpResponse("Permission Denined")
-
 
 def generate_qr_code(request,lab_hash):
     if request.user.is_superuser:

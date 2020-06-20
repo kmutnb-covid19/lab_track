@@ -15,6 +15,7 @@ from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.urls import reverse, reverse_lazy
 from django.template.loader import render_to_string
+from django.core.paginator import Paginator
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
@@ -259,7 +260,6 @@ def check_out(request, lab_hash):  # api
 def query_search(mode, keyword, start, stop, search_mode):
     """search data in DB by time and keyword and return query set"""
     histories = History.objects.all()
-    print(mode, keyword, start, stop, search_mode)
     if not isinstance(start, type(datetime.datetime.now())):
         try:
             start = datetime.datetime.strptime(start,
@@ -274,6 +274,8 @@ def query_search(mode, keyword, start, stop, search_mode):
             stop = datetime.datetime.now()
     if search_mode == "normal":
         histories = histories.exclude(Q(checkout__gt=stop) | Q(checkout__lt=start))
+    elif search_mode == "risk" and keyword != "":
+        histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
     else:
         histories = "EMPTY"
 
@@ -302,9 +304,10 @@ def history_search(request):
         if request.GET:  # if request has parameter
             mode = request.GET.get('mode', '')
             histories = query_search(mode, keyword, start, stop, "normal")
-        # p = Paginator(histories, 24)
-        # page_range = p.page_range
-        # shown_history = p.page(page)
+        p = Paginator(histories, 24)
+        page_range = p.page_range
+        shown_history = p.page(1)
+        print(p, page_range, shown_history)
         return render(request, 'admin/history_search.html',
                       {'shown_history': histories,
                        'keyword': keyword,

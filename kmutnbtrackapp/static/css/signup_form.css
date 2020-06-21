@@ -16,7 +16,9 @@ p {
     color: white;
 }
 p span {
-    background-color: #355C7D; 
+    background-color: #355C7D;
+    border-color:#355C7D ;
+    border-style: solid;
 }       
 @media screen and (max-width: 375px) {
     html, body {
@@ -37,6 +39,7 @@ div.form-content {
     width: auto;
     line-height: 25px;
     color: #355C7D;
+    margin-left: 10px;
 }
 div.btn-submit-for-register {
     margin-top: 2%;

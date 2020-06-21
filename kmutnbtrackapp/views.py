@@ -182,7 +182,9 @@ def signup_api(request):  # when stranger click 'Signup and Checkin'
 def login_api(request):  # api when stranger login
     if request.method == "GET":
         lab_hash = request.GET.get('next', '')
-        return render(request, 'Page/log_in.html', {'lab_hash': lab_hash})
+        if lab_hash != '':
+            lab_name = Lab.objects.get(hash=lab_hash).name
+        return render(request, 'Page/log_in.html', {'lab_hash': lab_hash, 'lab_name': lab_name})
 
     if request.method == "POST":
         lab_hash = request.POST.get('next', '')

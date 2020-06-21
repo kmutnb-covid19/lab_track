@@ -557,7 +557,7 @@ def call_dashboard(request):
     if request.user.is_superuser:
         """load and manage metadata"""
         meta_data = get_data_metadata()
-        dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(), "normal")
+        dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(),"normal")
 
         for user in dataset:
             if str(user.lab) in meta_data['lab']:
@@ -578,9 +578,12 @@ def call_dashboard(request):
         """prepare data before sent to template"""
         pie_data = prepare_pie_data(meta_data)
         liner_data = prepare_liner_data(meta_data)
+        histrogram_data = prepare_histrogram_data(meta_data)
         return render(request, 'admin/dashboard.html', {
-            'pie_data': json.dumps(pie_data),
-            'liner_data': json.dumps(liner_data)
+            'pie_data':  json.dumps(pie_data),
+            'liner_data': json.dumps(liner_data),
+            'histrogram_dump': json.dumps(histrogram_data),
+            "histrogram_data" : histrogram_data,
         })
     else:
         return HttpResponse("Permission Denined")

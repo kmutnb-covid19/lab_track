@@ -80,7 +80,7 @@
         <ul class="upnav-link">
             <li><a href="{% url 'admin:index' %}">Labtrack Admin Dashboard</a> </li>
             <li><a href="{% url 'risk_people_search' %}">Risk People Search</a> </li>
-            <li><a href="{% url 'history_search' %}">History Search</a> </li>
+            <li><a href="{% url 'history_search' 1 %}">History Search</a> </li>
             <li><a href="{% url 'dashboard' %}">Statistic Dashboard</a> </li>
             <li><a href="{% url 'backup' %}">Backup Database</a> </li>
         </ul>
@@ -97,41 +97,30 @@
 
 
     <h1 style="color: #569ec1;font-family: Adamina, serif;margin: 10px;" align="center">History search</h1>
-        <form class="form-inline" action="{% url 'history_search' %}" method="GET" enctype="multipart/form-data">
+        <form class="form-inline" action="{% url 'history_search' 1 %}" method="GET" enctype="multipart/form-data">
             {% if select_mode == "id" %}
                 <select class="mode-table-data" name="mode" id="mode">
                     <option value="id" selected="selected">id</option>
                     <option value="name">name</option>
                     <option value="lab">lab</option>
-                    <option value="tel">tel</option>
                 </select>
             {% elif select_mode == "name"%}
                 <select class="mode-table-data" name="mode" id="mode">
                     <option value="id">id</option>
                     <option value="name" selected="selected">name</option>
                     <option value="lab">lab</option>
-                    <option value="tel">tel</option>
                 </select>
             {% elif select_mode == "lab"%}
                 <select class="mode-table-data" name="mode" id="mode">
                     <option value="id">id</option>
                     <option value="name">name</option>
                     <option value="lab" selected="selected">lab</option>
-                    <option value="tel">tel</option>
-                </select>
-            {% elif select_mode == "tel"%}
-                <select class="mode-table-data" name="mode" id="mode">
-                    <option value="id">id</option>
-                    <option value="name">name</option>
-                    <option value="lab">lab</option>
-                    <option value="tel" selected="selected">tel</option>
                 </select>
             {% else %}
                 <select class="mode-table-data" name="mode" id="mode">
                     <option value="id">id</option>
                     <option value="name">name</option>
                     <option value="lab">lab</option>
-                    <option value="tel">tel</option>
                 </select>
             {% endif %}
 
@@ -174,9 +163,6 @@
                     name
                 </th>
                 <th class="th-sm table-data">
-                    tel
-                </th>
-                <th class="th-sm table-data">
                     lab
                 </th>
                 <th class="th-sm table-data">
@@ -193,7 +179,6 @@
                         <tr>
                         <td>{{ h.person.student_id }}</td>
                         <td>{{ h.person.first_name }} {{ h.person.last_name }}</td>
-                        <td></td>
                         <td>{{ h.lab.name }}</td>
                         <td>{{ h.checkin }}</td>
                         <td>{{ h.checkout }}</td>
@@ -204,13 +189,20 @@
                 Plese type some keyword
             {% endif %}
     </table>
-    <nav aria-label="Page navigation example" style="position: absolute;right: 1px;">
+    <nav aria-label="Page navigation example" style="position: absolute;">
         <ul class="pagination">
-        {% for i in page_range %}
-            <li class="page-item"><a class="page-link" href="#">{{ i }}</a></li>
-        {% endfor %}
+        {% if prev_url %}
+            <li><a href="{{ prev_url }}">Prev</a></li>
+        {% endif %}
+        &nbsp;&nbsp;
+        <li class="page-item">{{ current_page_number }}</li>
+        &nbsp;&nbsp;
+        {% if next_url %}
+            <li><a href="{{ next_url }}">Next</a></li>
+        {% endif %}
         </ul>
     </nav>
+    
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 

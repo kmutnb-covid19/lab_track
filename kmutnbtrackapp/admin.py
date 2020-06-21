@@ -13,7 +13,7 @@ class LabAdmin(admin.ModelAdmin):
 
     def my_url_field(self, obj):
 
-        return format_html('<a href=" %s/admin/qrcode/%s%s">%s</a>' % ( "http://127.0.0.1:8000", obj.hash+"/",obj.name , obj.name))
+        return format_html('<button><a href="/admin/qrcode/%s/" download>%s</a></button>'%( obj.hash ,obj.name))
 
     my_url_field.allow_tags = True
     my_url_field.short_description = 'QR generate'

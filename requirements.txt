@@ -6,3 +6,5 @@ celery==4.4.5
 selenium==3.141.0
 django-anymail==7.1.0
 python-dotenv==0.13.0
+qrcode==6.1
+pillow==7.1.2

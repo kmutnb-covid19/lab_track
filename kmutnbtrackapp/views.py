@@ -212,7 +212,6 @@ def compare_current_time():  # make check out valid
     else:
         return 4
 
-
 def check_in(request, lab_hash):  # when user checkin record in history
     person = Person.objects.get(user=request.user)
     this_lab = Lab.objects.get(hash=lab_hash)

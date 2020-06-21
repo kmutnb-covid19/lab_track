@@ -20,17 +20,17 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from kmutnbtrackapp import views
 from django.conf.urls import url
 from django.contrib.auth.views import PasswordResetDoneView, PasswordResetCompleteView, PasswordResetConfirmView
+from django.views.generic.base import RedirectView
+
+from kmutnbtrackapp import views
 from kmutnbtrackapp.views import CustomPasswordResetView, CustomPasswordResetConfirmView, CustomPasswordResetCompleteView
-
-
 urlpatterns = [
     path('', include('kmutnbtrackapp.urls')),
     path('auth/', include('social_django.urls', namespace='social')),
     path('qr_code/', include('qr_code.urls', namespace="qr_code")),
-    path('admin/qrcode/<str:lab_hash>/<str:lab_name>', views.generate_qr_code, name='generate_qr_code'),
+    path('admin/qrcode/<str:lab_hash>/', views.generate_qr_code, name='generate_qr_code'),
     path('admin/dashboard/', views.call_dashboard, name='dashboard'),
     path('admin/history/search/', TemplateView.as_view(template_name="admin/history_search_main.html"),
          name='admin_search'),
@@ -39,8 +39,8 @@ urlpatterns = [
     path('admin/history/search/riskpeople/notify_confirm/', views.notify_confirm, name='notify_confirm'),
     url(r'^admin/history/search/riskpeople/notify/(?P<mode>.+)/(?P<keyword>.+)/$', views.notify_user, name='notify'),
     path('admin/history/search/riskpeople/download_risk_csv/', views.export_risk_csv, name='download_risk_csv'),
-    path('admin/history/search/history/', views.history_search, name='history_search'),
-    path('admin/history/search/history/<int:page>', views.history_search),
+    path('admin/history/search/history/', RedirectView.as_view(url='/admin/history/search/history/1/', permanent=False)),
+    path('admin/history/search/history/<int:page>/', views.history_search, name='history_search'),
     path('admin/history/search/history/download_normal_csv/', views.export_normal_csv, name='download_normal_csv'),
     path('admin/backup', views.backup, name='backup'),
     path('admin/', admin.site.urls, name='admin'),

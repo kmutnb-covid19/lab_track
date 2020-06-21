@@ -7,12 +7,13 @@ Imports should be grouped in the following order:
 """
 
 from datetime import datetime, timedelta
+
+
 import csv
 import qrcode
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
-
 import re
 
 
@@ -301,7 +302,7 @@ def query_search(mode, keyword, start, stop, search_mode):
     return histories
 
 
-def history_search(request):
+def history_search(request, page=1):
     """Received from the client and searched for information from the server and then sent back to the client"""
     if request.user.is_superuser:
         keyword = request.GET.get('keyword', '')
@@ -309,22 +310,51 @@ def history_search(request):
         stop = request.GET.get('to', '')
         mode = ""
         histories = "EMPTY"
+
         if request.GET:  # if request has parameter
             mode = request.GET.get('mode', '')
             histories = query_search(mode, keyword, start, stop, "normal")
-        p = Paginator(histories, 24)
-        page_range = p.page_range
-        shown_history = p.page(1)
-        print(p, page_range, shown_history)
+
+        
+
+        p = Paginator(histories, 36)
+        num_pages = p.num_pages
+        shown_history = p.page(page)
+        
+        split_url = request.get_full_path().split("/")
+        print(split_url)
+        if page == 1:
+            prev_url = None
+            
+            if num_pages != 1:
+                split_url[-2] = "2"
+                next_url = "/".join(split_url)
+            else:
+                next_url = None
+
+        elif page == num_pages:
+            split_url[-2] = str(num_pages - 1)
+            prev_url = "/".join(split_url)
+
+            next_url = None
+        
+        else:
+            split_url[-2] = str(page - 1)
+            prev_url = "/".join(split_url)
+
+            split_url[-2] = str(page + 1)
+            next_url = "/".join(split_url)
 
         return render(request, 'admin/history_search.html',
-                      {'shown_history': histories,
+                      {'shown_history': shown_history,
                        'keyword': keyword,
                        'select_mode': mode,
                        'start': start,
-                       'stop': stop
-                       # 'page_number': page,
-                       # 'page_range': page_range,
+                       'stop': stop,
+                       'current_page_number': page,
+                        'prev_url':prev_url,
+                        'next_url':next_url,
+                        
                        })
     else:
         return HttpResponse("Permission Denined")
@@ -484,13 +514,13 @@ def generate_qr_code(request,lab_hash):
         qr.make()
 
         img_qr = qr.make_image()
-
+        
         img_frame = Image.open("kmutnbtrackapp/static/qrcode_src/qr_frame.jpg")
-
+        
         pos = (57,135)
         img_frame.paste(img_qr, pos)
-
-
+        
+        
         draw = ImageDraw.Draw(img_frame)
 
         font_size = 38
@@ -510,6 +540,7 @@ def generate_qr_code(request,lab_hash):
                 (width, baseline), (offset_x, offset_y) = font.font.getsize(lab_name)
 
             draw.text((82, 75-ascent),lab_name,(255,255,255),font=font)
+
 
         else:
             draw.text((82, 75-ascent),lab_name,(255,255,255),font=font)

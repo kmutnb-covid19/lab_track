@@ -2,11 +2,9 @@
     padding-top:4.2rem;
     padding-bottom:4.2rem;
 }
-a {
-    text-decoration:none !important;
-}
 h1 {
-    font-family: 'Kaushan Script', cursive;
+    font-family: sans-serif;
+    color: #355C7D;
 }
 .myform{
     position: relative;
@@ -17,12 +15,13 @@ h1 {
     flex-direction: column;
     width: 100%;
     pointer-events: auto;
-    background-color: #fff;
+    background-color: #ffffff;
     background-clip: padding-box;
     border: 1px solid rgba(0,0,0,.2);
     border-radius: 1.1rem;
     outline: 0;
     max-width: 500px;
+    border-color: #355C7D;
 }
 .tx-tfm{
     text-transform:uppercase;
@@ -55,13 +54,30 @@ h1 {
     margin-bottom: 0px !important;
 }
 .google {
-    color:#666;
+    color:#ffffff;
     width:100%;
     height:40px;
     text-align:center;
     outline:none;
-    border: 1px solid lightgrey;
+    border: 1px solid #ffffff;
+    background-color: #355C7D;
 }
 form .error {
     color: #ff0000;
+}
+nav {
+    color: #fff;
+    font-family: 'Kanit',sans-serif;
+}
+#signup {
+    cursor: pointer;
+}
+#google_img {
+    width: 25px;
+}
+label {
+    color: #355C7D;
+}
+input {
+    border-color: #355C7D;
 }

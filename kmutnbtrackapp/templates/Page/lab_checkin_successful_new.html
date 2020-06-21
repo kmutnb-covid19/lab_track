@@ -30,16 +30,16 @@
 <div class="container">
     <div class="alert alert-success" role="alert">
         <h4 class="alert-heading">Check in successful!</h4>
-        <p><img src="{% static 'images/desktop.png' %}"  width="30" alt="lab_pic"> Room : {{ lab_name }}</p>
+        <p style="font-size:20px"><img src="{% static 'images/desktop.png' %}"  width="30" alt="lab_pic" > Room : {{ lab_name }}</p>
     </div>
     <div class="alert alert-primary" role="alert">
         <p class="mb-0">
             <img id="checkin_img" src="{% static 'images/check in.png' %}" alt="checkin_pic">
-            เวลา check in : {{ check_in }}
+            เวลา check in<p style="font-size:15px">{{ check_in }}</p>
         </p>
         <p class="mb-0">
             <img id="checkout_img" src="{% static 'images/logout_2.png' %}" alt="checkout_pic">
-            เวลา check out ที่ระบุ : {{ check_out }}
+            เวลา check out ที่ระบุ <p  style="font-size:15px">{{ check_out }}</p>
         </p>
     </div>
     <div style="display: flex; justify-content: center; align-items: center;">

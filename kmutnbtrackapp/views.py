@@ -220,7 +220,6 @@ def compare_current_time():  # make check out valid
     else:
         return 4
 
-
 def check_in(request, lab_hash):  # when user checkin record in history
     person = Person.objects.get(user=request.user)
     this_lab = Lab.objects.get(hash=lab_hash)
@@ -311,11 +310,8 @@ def history_search(request, page=1):
         mode = ""
         histories = "EMPTY"
 
-        if request.GET:  # if request has parameter
-            mode = request.GET.get('mode', '')
-            histories = query_search(mode, keyword, start, stop, "normal")
-
-        
+        mode = request.GET.get('mode', '')
+        histories = query_search(mode, keyword, start, stop, "normal")
 
         p = Paginator(histories, 36)
         num_pages = p.num_pages

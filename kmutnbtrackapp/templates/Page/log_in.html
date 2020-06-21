@@ -35,7 +35,7 @@
                         <h1>Login</h1>
                     </div>
                 </div>
-                <form action="{% url 'kmutnbtrackapp:login' %}" method="post" name="login">
+                <form action="{% url 'kmutnbtrackapp:login' %}?next={{ lab_hash }}" method="post" name="login">
                     {% csrf_token %}
                     <input value="{{lab_hash}}" name="next" hidden>
                     <div class="form-group">
@@ -56,12 +56,13 @@
                         </div>
                     </div>
                     <div class="col-md-12 mb-3">
-                        <p class="text-center">
-                            <button onclick="Click_Sign_in_with_google()" class="google btn mybtn">
+                        <p class="text-center" style="color:#FFFFFF";>
+                            <a onclick="Click_Sign_in_with_google()" class="google btn mybtn">
                                 <img id="google_img" src="{% static 'images/google.png' %}" alt="google_pic">
-                             Sign in with KMUTNB account
-                            </button>
+                                Sign in with KMUTNB account
+                            </a>
                         </p>
+
                     </div>
                     <div class="form-group">
                         <p class="text-center">Don't have account? <a href="{% url 'kmutnbtrackapp:signup' %}?next={{ lab_hash }}" id="signup">Sign up here</a></p>

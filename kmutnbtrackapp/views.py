@@ -107,7 +107,7 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
 
     if not request.user.is_authenticated:  # if user hasn't login
         lab_name = this_lab.name
-        return render(request, 'Page/lab_home.html', {"lab_name": lab_name, "lab_hash": lab_hash})
+        return render(request, 'Page/log_in.html', {"lab_name": lab_name, "lab_hash": lab_hash})
         # render page for logging in in that lab
     else:  # if user already login
         person = Person.objects.get(user=request.user)
@@ -180,8 +180,10 @@ def signup_api(request):  # when stranger click 'Signup and Checkin'
 
 
 def login_api(request):  # api when stranger login
+    print("Here")
     if request.method == "GET":
         lab_hash = request.GET.get('next', '')
+        print(lab_hash)
         if lab_hash != '':
             lab_name = Lab.objects.get(hash=lab_hash).name
         return render(request, 'Page/log_in.html', {'lab_hash': lab_hash, 'lab_name': lab_name})

@@ -1,0 +1,142 @@
+*{
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+upnav{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: rgb(64,118,144);
+    min-height: 8vh;
+    font-family: 'Poppins',sans-serif;
+}
+.logo{
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    font-size: 20px;
+    margin: 0px;
+}
+.upnav-link{
+    display: flex;
+    justify-content: space-around;
+    font-size: 30px;
+    width: 60%;
+}
+ul.upnav-link{
+    margin: 0%;
+    font-size: 0px;
+}
+.upnav-link a:hover {
+          color: black;
+        }
+.upnav-link a.active {
+
+          color: white;
+        }
+.upnav-link li{
+    list-style: none;
+    }
+.upnav-link a{
+    color: white;
+    text-decoration: none;
+    letter-spacing: 3px;
+    font-weight: bold;
+    font-size: 15px;
+}
+.burger{
+    display: none;
+}
+.burger div{
+    width: 25px;
+    height: 3px;
+    background-color: white;
+    margin: 5px;
+    transition: all 0.3s ease;
+}
+@media screen and (max-width: 1680px) {
+    .upnav-link {
+        width: 80%;
+    }
+
+    .upnav-link a{
+        font-size: 13px;
+    }
+}
+@media screen and (max-width: 1440px) {
+    .upnav-link {
+        width: 80%;
+    }
+
+    .upnav-link a{
+        font-size: 12px;
+    }
+}
+@media screen and (max-width: 1024px) {
+    .upnav-link{
+        width: 90%;
+    }
+    .upnav-link a{
+        font-size: 10px;
+    }
+}
+@media screen and (max-width: 768px) {
+    body{
+        overflow-x: hidden;
+    }
+    .upnav-link{
+        position: absolute;
+        right:0px;
+        height: 40vh;
+        top:8vh;
+        background-color: rgb(90,134,156);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        opacity: 0;
+        transform: translateX(100%);
+        transition: transform 0.5s ease-in;
+    }
+    .upnav-link a{
+        font-size: 13px;
+    }
+    .upnav-link li{
+
+        opacity: 0;
+}
+    .burger{
+        display: block;
+    }
+}
+
+
+.upnav-active{
+    transform: translateX(0%);
+    opacity: 1;
+}
+
+@keyframes navLinkFade {
+    from{
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to{
+        opacity: 1;
+        transform: translateX(0px);
+    }
+
+}
+
+
+.toggle .line1{
+    transform: rotate(-45deg) translate(-5px,6px);
+}
+.toggle .line2{
+    opacity: 0;
+}
+.toggle .line3{
+    transform: rotate(45deg) translate(-5px,-6px);
+}

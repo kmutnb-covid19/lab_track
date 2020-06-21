@@ -310,11 +310,8 @@ def history_search(request, page=1):
         mode = ""
         histories = "EMPTY"
 
-        if request.GET:  # if request has parameter
-            mode = request.GET.get('mode', '')
-            histories = query_search(mode, keyword, start, stop, "normal")
-
-        
+        mode = request.GET.get('mode', '')
+        histories = query_search(mode, keyword, start, stop, "normal")
 
         p = Paginator(histories, 36)
         num_pages = p.num_pages

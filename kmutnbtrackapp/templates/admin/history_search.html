@@ -97,7 +97,7 @@
 
 
     <h1 style="color: #569ec1;font-family: Adamina, serif;margin: 10px;" align="center">History search</h1>
-        <form class="form-inline" action="{% url 'history_search' 1 %}" method="GET" enctype="multipart/form-data">
+        <form class="form-inline" action="{% url 'history_search_function' 1 %}" method="GET" enctype="multipart/form-data">
             {% if select_mode == "id" %}
                 <select class="mode-table-data" name="mode" id="mode">
                     <option value="id" selected="selected">id</option>

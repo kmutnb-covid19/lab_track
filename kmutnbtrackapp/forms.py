@@ -1,5 +1,7 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.template import loader
+from django.core.mail import EmailMessage
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 
 from .models import *
 
@@ -14,3 +16,24 @@ class SignUpForm(UserCreationForm):
         fields = ('username', 'password1', 'password2', 'first_name', 'last_name', 'email',)
 
 
+class CustomPasswordResetForm(PasswordResetForm):
+    def send_mail(self, subject_template_name, email_template_name,
+                  context, from_email, to_email, html_email_template_name=None):
+
+        subject = loader.render_to_string(subject_template_name, context)
+        subject = ''.join(subject.splitlines())
+        user_data = {}
+        protocol = context['protocol']
+        domain = context['domain']
+        uid64 = context['uid']
+        token = context['token']
+        lab_hash = context['lab_hash']
+        user = context['user']
+        username = user.username
+        link = protocol + "://" + domain + "/reset/" + uid64 + '/' + token + "/?next=" + lab_hash
+        user_data[to_email] = {'link': link, 'username': username}
+
+        email = EmailMessage(subject, to=[to_email])
+        email.template_id = 'labtrack_reset_password_template'
+        email.merge_data = user_data
+        email.send()

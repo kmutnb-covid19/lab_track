@@ -6,16 +6,12 @@ Imports should be grouped in the following order:
 3.Local application/library specific imports.
 """
 
-from datetime import datetime, timedelta
-
-
 import csv
 import qrcode
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
-import re
-
+from datetime import datetime, timedelta
 
 from django.db.models import Q
 from django.shortcuts import render
@@ -112,7 +108,7 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
         now_datetime = datetime.datetime.now()
 
         if History.objects.filter(person=person, checkin__lte=now_datetime,
-                                  checkout__gte=now_datetime).exists(): # if have lastest history which checkout not at time
+                                  checkout__gte=now_datetime).exists():  # if have lastest history which checkout not at time
             last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
             last_lab_hist = last_lab_hist[0]
 
@@ -159,8 +155,8 @@ def signup_api(request):  # when stranger click 'Signup and Checkin'
         username = request.POST["username"]
         email = request.POST['email']
         password = request.POST['password']
-        firstname = request.POST.get('first_name', '')
-        lastname = request.POST.get('last_name', '')
+        first_name = request.POST.get('first_name', '')
+        last_name = request.POST.get('last_name', '')
         # Form is valid
         if User.objects.filter(username=username).count() == 0:  # if username is available
             # create new User object and save it
@@ -168,7 +164,7 @@ def signup_api(request):  # when stranger click 'Signup and Checkin'
             u.set_password(password)  # bypassing Django password format check
             u.save()
             # create new Person object
-            Person.objects.create(user=u, first_name=firstname, last_name=lastname, email=email, is_student=False)
+            Person.objects.create(user=u, first_name=first_name, last_name=last_name, email=email, is_student=False)
             # then login
             login(request, u, backend='django.contrib.auth.backends.ModelBackend')
 
@@ -181,6 +177,7 @@ def login_api(request):  # api when stranger login
     print("Here")
     if request.method == "GET":
         lab_hash = request.GET.get('next', '')
+        lab_name = ''
         print(lab_hash)
         if lab_hash != '':
             lab_name = Lab.objects.get(hash=lab_hash).name
@@ -221,6 +218,7 @@ def compare_current_time():  # make check out valid
         return 3
     else:
         return 4
+
 
 def check_in(request, lab_hash):  # when user checkin record in history
     person = Person.objects.get(user=request.user)
@@ -350,12 +348,12 @@ def history_search(request, page=1):
                        'start': start,
                        'stop': stop,
                        'current_page_number': page,
-                        'prev_url':prev_url,
-                        'next_url':next_url,
+                       'prev_url': prev_url,
+                       'next_url': next_url,
 
                        })
     else:
-        return HttpResponse("Permission Denined")
+        return HttpResponse("Permission Denied")
 
 
 def export_normal_csv(request):
@@ -421,7 +419,7 @@ def risk_people_search(request):
                        'keyword': keyword, 'select_mode': mode,
                        })
     else:
-        return HttpResponse("Permission Denined")
+        return HttpResponse("Permission Denied")
 
 
 def export_risk_csv(request):
@@ -441,7 +439,7 @@ def export_risk_csv(request):
         response['Content-Disposition'] = 'attachment; filename="Risk Log.csv"'
         return response
     else:
-        return HttpResponse("Permission Denined")
+        return HttpResponse("Permission Denied")
 
 
 def notify_confirm(request):
@@ -452,7 +450,7 @@ def notify_confirm(request):
                                                              'keyword': keyword,
                                                              })
     else:
-        return HttpResponse("Permission Denined")
+        return HttpResponse("Permission Denied")
 
 
 def notify_user(request, mode, keyword):
@@ -518,9 +516,8 @@ def generate_qr_code(request, lab_hash):
 
         img_frame = Image.open("kmutnbtrackapp/static/qrcode_src/qr_frame.jpg")
 
-        pos = (57,135)
+        pos = (57, 135)
         img_frame.paste(img_qr, pos)
-
 
         draw = ImageDraw.Draw(img_frame)
 
@@ -560,7 +557,7 @@ def call_dashboard(request):
     if request.user.is_superuser:
         """load and manage metadata"""
         meta_data = get_data_metadata()
-        dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(),"normal")
+        dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(), "normal")
 
         for user in dataset:
             if str(user.lab) in meta_data['lab']:
@@ -583,13 +580,14 @@ def call_dashboard(request):
         liner_data = prepare_liner_data(meta_data)
         histrogram_data = prepare_histrogram_data(meta_data)
         return render(request, 'admin/dashboard.html', {
-            'pie_data':  json.dumps(pie_data),
+            'pie_data': json.dumps(pie_data),
             'liner_data': json.dumps(liner_data),
             'histrogram_dump': json.dumps(histrogram_data),
-            "histrogram_data" : histrogram_data,
+            "histrogram_data": histrogram_data,
         })
     else:
-        return HttpResponse("Permission Denined")
+        return HttpResponse("Permission Denied")
+
 
 
 def backup(request):

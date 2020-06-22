@@ -105,16 +105,16 @@ QR_CODE_CACHE_ALIAS = 'qr-code'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'kmutnbtrackapp.custom_password_validation.CustomUserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'kmutnbtrackapp.custom_password_validation.CustomMinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'kmutnbtrackapp.custom_password_validation.CustomCommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'kmutnbtrackapp.custom_password_validation.CustomNumericPasswordValidator',
     },
 ]
 

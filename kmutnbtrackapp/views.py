@@ -32,10 +32,6 @@ from kmutnbtrackapp.dashboard import *
 # Create your views here.
 
 class CustomPasswordResetView(PasswordResetView):
-    template_name = 'registration/password_reset_form.html'
-    email_template_name = 'registration/password_reset_email.html'
-    subject_template_name = 'registration/password_reset_subject.txt'
-
     def post(self, request, *args, **kwargs):
         self.extra_email_context = {
             'lab_hash': self.request.POST['lab_hash']
@@ -44,7 +40,6 @@ class CustomPasswordResetView(PasswordResetView):
 
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
-    template_name = 'registration/password_reset_confirm.html'
     success_url = reverse_lazy('password_reset_complete')
 
     def dispatch(self, *args, **kwargs):
@@ -72,8 +67,6 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
 
 
 class CustomPasswordResetCompleteView(PasswordResetCompleteView):
-    template_name = 'registration/password_reset_complete.html'
-
     def get_context_data(self, **kwargs):
         assert 'next' in kwargs
         self.extra_context = {

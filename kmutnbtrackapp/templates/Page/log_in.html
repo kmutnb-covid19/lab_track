@@ -35,6 +35,11 @@
                         <h1>Login</h1>
                     </div>
                 </div>
+                {% if wrong %}
+                <div class="col-md-12 text-center">
+                        <p style="color:red">Username หรือ Password ผิด กรุณาลองใหม่อีกครั้ง</p>
+                </div>
+                {% endif %}
                 <form action="{% url 'kmutnbtrackapp:login' %}?next={{ lab_hash }}" method="post" name="login">
                     {% csrf_token %}
                     <input value="{{lab_hash}}" name="next" hidden>

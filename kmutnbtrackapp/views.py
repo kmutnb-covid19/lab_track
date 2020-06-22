@@ -174,17 +174,18 @@ def signup_api(request):  # when stranger click 'Signup and Checkin'
 
 
 def login_api(request):  # api when stranger login
-    print("Here")
     if request.method == "GET":
         lab_hash = request.GET.get('next', '')
         lab_name = ''
-        print(lab_hash)
         if lab_hash != '':
             lab_name = Lab.objects.get(hash=lab_hash).name
         return render(request, 'Page/log_in.html', {'lab_hash': lab_hash, 'lab_name': lab_name})
 
     if request.method == "POST":
-        lab_hash = request.POST.get('next', '')
+        lab_hash = request.GET.get('next', '')
+        lab_name = ''
+        if lab_hash != '':
+            lab_name = Lab.objects.get(hash=lab_hash).name
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)  # auth username and password
@@ -192,7 +193,7 @@ def login_api(request):  # api when stranger login
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
         else:
-            return JsonResponse({"status": "fail"})
+            return render(request, 'Page/log_in.html', {'lab_hash': lab_hash, 'lab_name': lab_name, 'wrong': 1})
     # didn't receive POST
 
 

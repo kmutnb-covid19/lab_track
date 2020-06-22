@@ -55,3 +55,21 @@ def prepare_liner_data(meta_data):
                                                        int(day.split("/")[2])).timetuple())) * 1000,
                      duplicate[day]])
     return data
+def prepare_histrogram_data(meta_data):
+    """Prepare liner chart data before send to template"""
+    # format example [new Date(2015, 0, 1), 5]
+    classify_data = {}
+    for lab_name in meta_data["lab"]:
+        duplicate = {}
+        data = []
+        for day in meta_data["lab"][lab_name]:
+            if day in duplicate:
+                duplicate[day] += meta_data['lab'][lab_name][day]
+            else:
+                duplicate[day] = meta_data['lab'][lab_name][day]
+        for day in duplicate:
+            data.append([int(time.mktime(datetime.datetime(int(day.split("/")[0]), int(day.split("/")[1]),
+                                                       int(day.split("/")[2])).timetuple())) * 1000,
+                     duplicate[day]])
+        classify_data[lab_name] = data
+    return classify_data

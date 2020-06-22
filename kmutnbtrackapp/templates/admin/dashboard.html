@@ -2,13 +2,85 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Statistic Dashboard</title>
+    <body>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+          margin: 0;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+        .topnav {
+          overflow: hidden;
+          background-color: #417690;
+        }
+        .topnav a {
+          float: left;
+          color: #f2f2f2;
+          text-align: center;
+          padding: 14px 16px;
+          text-decoration: none;
+          font-size: 18px;
+        }
+        .topnav a:hover {
+          background-color: #ddd;
+          color: black;
+        }
+        .topnav a.active {
+          background-color: #0F587D;
+          color: white;
+        }
+    </style>
+     <title>Statistic Dashboard</title>
+    <div class="topnav">
+        <a href="{% url 'admin:index' %}">Labtrack Admin Dashboard</a>
+        <a href="{% url 'risk_people_search' %}">Risk People Search</a>
+        <a href="{% url 'history_search' %}">History Search</a>
+        <a class="active" href="{% url 'dashboard' %}">Statistic Dashboard</a>
+    </div>
+    <h1 align="center">Dashboard</h1>
+
+    <div id="chart_div" style="width: 60%;"></div>
+    <div id="pie_chart" style="width: 900px; height: 500px;"></div>
+<center>
+    <select id="select_graph" onchange="drawhistrogramChart()">
+        {% for key,value in histrogram_data.items %}
+           <option value="{{ key }}">{{ key }}</option>
+        {% endfor %}
+    </select>
+</center>
+    <div id="histrogram" style="width: 60%;"></div>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</body>
+
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
       google.charts.setOnLoadCallback(drawLineChart);
+      google.charts.setOnLoadCallback(drawhistrogramChart);
+      function drawhistrogramChart() {
+          var key = document.getElementById("select_graph").value;
+          var data = new google.visualization.DataTable();
+          data.addColumn('date', 'Time of Day');
+          data.addColumn('number', 'Number of user');
+          var histrogram_data_list = [];
+          for (var i = 0; i < {{histrogram_dump|safe}}[key].length; i++) {
+                histrogram_data_list.push([new Date({{histrogram_dump|safe}}[key][i][0]), {{histrogram_dump|safe}}[key][i][1]]);
+              }
+              data.addRows(histrogram_data_list);
+              var options = {
+                  title: 'Number of users'+" "+String(key)+" "+'in each day',
+                  fontSize: 18,
+                  width: 1300,
+                  height: 500,
+                  hAxis: {format: 'M/d/yy', gridlines: {count: 15}},
+                  vAxis: { gridlines: {color: 'none'}, minValue: 0
+              }
+                };
+              var chart = new google.visualization.LineChart(document.getElementById('histrogram'));
+              chart.draw(data,options);
 
+      }
       function drawChart() {
         var data = google.visualization.arrayToDataTable({{pie_data|safe}});
 
@@ -23,17 +95,18 @@
         chart.draw(data, options);
       }
 
-
       function drawLineChart() {
 
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'Time of Day');
         data.addColumn('number', 'Number of user');
 
-        var liner_data_list = []
-        for (var i = 0; i < {{liner_data}}.length; i++) {
+        var liner_data_list = [];
+        for (var i = 0; i < {{liner_data}}.length; i++
+      ) {
             liner_data_list.push([new Date({{liner_data}}[i][0]), {{liner_data}}[i][1]]);
         }
+        console.log(liner_data_list)
         data.addRows(liner_data_list);
 
         var options = {
@@ -67,49 +140,9 @@
 
           chart.draw(data, options);
         };
+        console.log({{ liner_data }})
       }
     </script>
 </head>
-<body>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body {
-          margin: 0;
-          font-family: Arial, Helvetica, sans-serif;
-        }
-        .topnav {
-          overflow: hidden;
-          background-color: #417690;
-        }
-        .topnav a {
-          float: left;
-          color: #f2f2f2;
-          text-align: center;
-          padding: 14px 16px;
-          text-decoration: none;
-          font-size: 18px;
-        }
-        .topnav a:hover {
-          background-color: #ddd;
-          color: black;
-        }
-        .topnav a.active {
-          background-color: #0F587D;
-          color: white;
-        }
-    </style>
-    <div class="topnav">
-        <a href="{% url 'admin:index' %}">Labtrack Admin Dashboard</a>
-        <a href="{% url 'risk_people_search' %}">Risk People Search</a>
-        <a href="{% url 'history_search' %}">History Search</a>
-        <a href="{% url 'dashboard' %}">Statistic Dashboard</a>
-        <a href="{% url 'backup' %}">Backup Database</a>
 
-    </div>
-    <h1 align="center">Dashboard</h1>
-
-    <div id="chart_div" style="width: 60%;"></div>
-    <div id="pie_chart" style="width: 900px; height: 500px;"></div>
-    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-</body>
 </html>

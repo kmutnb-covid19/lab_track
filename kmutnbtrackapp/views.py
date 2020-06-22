@@ -7,11 +7,15 @@ Imports should be grouped in the following order:
 """
 
 from datetime import datetime, timedelta
+
+
 import csv
 import qrcode
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
+import re
+
 
 from django.db.models import Q
 from django.shortcuts import render
@@ -101,7 +105,7 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
 
     if not request.user.is_authenticated:  # if user hasn't login
         lab_name = this_lab.name
-        return render(request, 'Page/lab_home.html', {"lab_name": lab_name, "lab_hash": lab_hash})
+        return render(request, 'Page/log_in.html', {"lab_name": lab_name, "lab_hash": lab_hash})
         # render page for logging in in that lab
     else:  # if user already login
         person = Person.objects.get(user=request.user)
@@ -174,9 +178,13 @@ def signup_api(request):  # when stranger click 'Signup and Checkin'
 
 
 def login_api(request):  # api when stranger login
+    print("Here")
     if request.method == "GET":
         lab_hash = request.GET.get('next', '')
-        return render(request, 'Page/log_in.html', {'lab_hash': lab_hash})
+        print(lab_hash)
+        if lab_hash != '':
+            lab_name = Lab.objects.get(hash=lab_hash).name
+        return render(request, 'Page/log_in.html', {'lab_hash': lab_hash, 'lab_name': lab_name})
 
     if request.method == "POST":
         lab_hash = request.POST.get('next', '')
@@ -213,7 +221,6 @@ def compare_current_time():  # make check out valid
         return 3
     else:
         return 4
-
 
 def check_in(request, lab_hash):  # when user checkin record in history
     person = Person.objects.get(user=request.user)
@@ -296,7 +303,7 @@ def query_search(mode, keyword, start, stop, search_mode):
     return histories
 
 
-def history_search(request):
+def history_search(request, page=1):
     """Received from the client and searched for information from the server and then sent back to the client"""
     if request.user.is_superuser:
         keyword = request.GET.get('keyword', '')
@@ -304,22 +311,48 @@ def history_search(request):
         stop = request.GET.get('to', '')
         mode = ""
         histories = "EMPTY"
-        if request.GET:  # if request has parameter
-            mode = request.GET.get('mode', '')
-            histories = query_search(mode, keyword, start, stop, "normal")
-        p = Paginator(histories, 24)
-        page_range = p.page_range
-        shown_history = p.page(1)
-        print(p, page_range, shown_history)
+
+        mode = request.GET.get('mode', '')
+        histories = query_search(mode, keyword, start, stop, "normal")
+
+        p = Paginator(histories, 36)
+        num_pages = p.num_pages
+        shown_history = p.page(page)
+
+        split_url = request.get_full_path().split("/")
+        print(split_url)
+        if page == 1:
+            prev_url = None
+
+            if num_pages != 1:
+                split_url[-2] = "2"
+                next_url = "/".join(split_url)
+            else:
+                next_url = None
+
+        elif page == num_pages:
+            split_url[-2] = str(num_pages - 1)
+            prev_url = "/".join(split_url)
+
+            next_url = None
+
+        else:
+            split_url[-2] = str(page - 1)
+            prev_url = "/".join(split_url)
+
+            split_url[-2] = str(page + 1)
+            next_url = "/".join(split_url)
 
         return render(request, 'admin/history_search.html',
-                      {'shown_history': histories,
+                      {'shown_history': shown_history,
                        'keyword': keyword,
                        'select_mode': mode,
                        'start': start,
-                       'stop': stop
-                       # 'page_number': page,
-                       # 'page_range': page_range,
+                       'stop': stop,
+                       'current_page_number': page,
+                        'prev_url':prev_url,
+                        'next_url':next_url,
+
                        })
     else:
         return HttpResponse("Permission Denined")
@@ -485,8 +518,9 @@ def generate_qr_code(request, lab_hash):
 
         img_frame = Image.open("kmutnbtrackapp/static/qrcode_src/qr_frame.jpg")
 
-        pos = (57, 135)
+        pos = (57,135)
         img_frame.paste(img_qr, pos)
+
 
         draw = ImageDraw.Draw(img_frame)
 
@@ -508,6 +542,7 @@ def generate_qr_code(request, lab_hash):
 
             draw.text((82, 75 - ascent), lab_name, (255, 255, 255), font=font)
 
+
         else:
             draw.text((82, 75 - ascent), lab_name, (255, 255, 255), font=font)
 
@@ -525,7 +560,7 @@ def call_dashboard(request):
     if request.user.is_superuser:
         """load and manage metadata"""
         meta_data = get_data_metadata()
-        dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(), "normal")
+        dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(),"normal")
 
         for user in dataset:
             if str(user.lab) in meta_data['lab']:
@@ -546,9 +581,12 @@ def call_dashboard(request):
         """prepare data before sent to template"""
         pie_data = prepare_pie_data(meta_data)
         liner_data = prepare_liner_data(meta_data)
+        histrogram_data = prepare_histrogram_data(meta_data)
         return render(request, 'admin/dashboard.html', {
-            'pie_data': json.dumps(pie_data),
-            'liner_data': json.dumps(liner_data)
+            'pie_data':  json.dumps(pie_data),
+            'liner_data': json.dumps(liner_data),
+            'histrogram_dump': json.dumps(histrogram_data),
+            "histrogram_data" : histrogram_data,
         })
     else:
         return HttpResponse("Permission Denined")

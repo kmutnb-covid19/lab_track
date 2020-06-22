@@ -1,13 +1,47 @@
 {% extends 'Page/page_base.html' %}
 {% load static %}
 
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/check_out_before_due.css'%}">
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="{% static '/js/check_out_before_due.js' %}"></script>
+{% endblock %}
+
 {% block content %}
-    <center>
-        <h1>กรุณา check out ออกจาก lab นี้ก่อน : {{ new_lab.name }}</h1>
-            <h2>เมื่อ check out จาก lab ก่อนหน้าแล้ว ระบบ จะพาคุณไปยัง {{ new_lab.name }}</h2>
+<!-- navbar room name -->
+<nav class="navbar navbar-dark" style="background-color: #355C7D;">
+    <a class="navbar-brand" href="#">
+        <img src="{% static 'images/desktop.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
+        {{ last_lab.name }}
+    </a>
+    <a href="{% url 'kmutnbtrackapp:logout' %}?lab={{ last_lab.hash }}">
+        <button class="btn btn-danger my-2 my-sm-0">
+            Logout
+        </button>
+    </a>
+</nav>
+
+<div class="container">
+    <div class="alert alert-warning" role="alert">
+        <h4 class="alert-heading">กรุณา check out ออกจาก lab นี้ก่อน : {{ last_lab.name }}</h4>
+        <p></p>
+        <hr>
+        <p class="mb-0">เมื่อ check out จาก lab ก่อนหน้าแล้ว ระบบ จะพาคุณไปยัง {{ new_lab.name }}</p>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center;">
+        <a href="{% url 'kmutnbtrackapp:check_out' last_lab.hash %}">
             <form method="post" action="{% url 'kmutnbtrackapp:check_out' last_lab.hash  %}?next_lab={{ new_lab.hash }}">
-            <button name="checkout" type="submit" value="check_out">Check out {{ lab_hash_check_out.name }}</button>
-            {% csrf_token %}
+            <button type="button" class="btn btn-warning" style="color:#FFFFFF";>
+                <img id="checkout_img" src="{% static 'images/logout_2.png' %}" alt="checkout_pic">
+                Check out
+            </button>
+                {% csrf_token %}
             </form>
-    </center>
+        </a>
+    </div>
+</div>
+
+
 {% endblock %}

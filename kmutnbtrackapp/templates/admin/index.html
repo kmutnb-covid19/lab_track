@@ -1,38 +1,35 @@
 {% extends 'admin/index.html' %}
 {% block branding %}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+     {% load static %}
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body {
-          margin: 0;
-          font-family: Arial, Helvetica, sans-serif;
-        }
-        .topnav {
-          overflow: hidden;
-          background-color: #417690;
-        }
-        .topnav a {
-          float: left;
-          color: #f2f2f2;
-          text-align: center;
-          padding: 14px 16px;
-          text-decoration: none;
-          font-size: 18px;
-        }
-        .topnav a:hover {
-          background-color: #ddd;
-          color: black;
-        }
-        .topnav a.active {
-          background-color: #0F587D;
-          color: white;
-        }
-    </style>
-    <div class="topnav">
-        <a class="active" href="{% url 'admin:index' %}">Labtrack Admin Dashboard</a>
-        <a href="{% url 'risk_people_search' %}">Risk People Search</a>
-        <a href="{% url 'history_search' %}">History Search</a>
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <link rel="stylesheet" href="Navigation-Clean.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+     {% load static %}
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+    <upnav>
+        <div class="logo"}><h4>Labtrack</h4></div>
+        <ul class="upnav-link">
+            <li><a  href="{% url 'admin:index' %}">Labtrack Admin Dashboard</a> </li>
+            <li><a href="{% url 'risk_people_search' %}">Risk People Search</a> </li>
+            <li><a href="{% url 'history_search' %}">History Search</a> </li>
+            <li><a href="{% url 'dashboard' %}">Statistic Dashboard</a> </li>
+            <li><a href="{% url 'backup' %}">Backup Database</a> </li>
+        </ul>
+        <div class="burger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+    </upnav>
+<script src="{% static "js/app.js" %}"></script>
 
-        <a href="{% url 'dashboard' %}">Statistic Dashboard</a>
-        <a href="{% url 'backup' %}">Backup Database</a>
-    </div>
+
 {% endblock %}

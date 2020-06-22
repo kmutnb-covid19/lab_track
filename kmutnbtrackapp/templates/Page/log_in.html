@@ -12,20 +12,15 @@
     function Click_Sign_in_with_google() {
         location.href="{% url 'social:begin' 'google-oauth2' %}?next={{ lab_hash }}";
     }
-    function Click_to_Sign_Up_form() {
-        location.href="{% url 'kmutnbtrackapp:signup' %}?next={{ lab_hash }}";
-    }
-    function Password_reset_form() {
-        location.href="{% url 'password_reset' %}?next={{ lab_hash }}";
-    }
 </script>
 {% endblock %}
 
 {% block content %}
 <!-- navbar LabTrack -->
-<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+<nav class="navbar navbar-dark" style="background-color: #355C7D;">
     <a class="navbar-brand" href="#">
-        <img src="{% static 'images/Logo_LabTrack.png' %}" width="auto" height="40px" class="d-inline-block align-top" loading="lazy">
+        <img src="{% static 'images/logo.png' %}" width="40" height="auto" class="d-inline-block align-top" alt="" loading="lazy">
+        {{ lab_name }}
     </a>
 </nav>
 
@@ -40,7 +35,7 @@
                         <h1>Login</h1>
                     </div>
                 </div>
-                <form action="{% url 'kmutnbtrackapp:login' %}" method="post" name="login">
+                <form action="{% url 'kmutnbtrackapp:login' %}?next={{ lab_hash }}" method="post" name="login">
                     {% csrf_token %}
                     <input value="{{lab_hash}}" name="next" hidden>
                     <div class="form-group">
@@ -52,7 +47,7 @@
                         <input type="password" name="password" id="password" class="form-control" aria-describedby="emailHelp" placeholder="Enter Password">
                     </div>
                     <div class="col-md-12 text-center ">
-                        <button type="submit" class=" btn btn-block mybtn btn-primary tx-tfm">Login</button>
+                        <button type="submit" class="btn btn-block mybtn btn-primary tx-tfm">Login</button>
                     </div>
                     <div class="col-md-12 ">
                         <div class="login-or">
@@ -61,15 +56,17 @@
                         </div>
                     </div>
                     <div class="col-md-12 mb-3">
-                        <p class="text-center">
-                            <a onclick="Click_Sign_in_with_google()" class="google btn mybtn"><i class="fa fa-google-plus"> 
-                            </i> Sign in using KMUTNB account
+                        <p class="text-center" style="color:#FFFFFF";>
+                            <a onclick="Click_Sign_in_with_google()" class="google btn mybtn">
+                                <img id="google_img" src="{% static 'images/google.png' %}" alt="google_pic">
+                                Sign in with KMUTNB account
                             </a>
                         </p>
+
                     </div>
                     <div class="form-group">
-                        <p class="text-center">Don't have account? <a onclick="Click_to_Sign_Up_form()" id="signup">Sign up here</a></p>
-                        <p class="text-center">Forgot password? <a onclick="Password_reset_form()" id="signup">Reset password here</a></p><!-- เหลือใส่ href -->
+                        <p class="text-center">Don't have account? <a href="{% url 'kmutnbtrackapp:signup' %}?next={{ lab_hash }}" id="signup">Sign up here</a></p>
+                        <p class="text-center">Forgot password? <a href="{% url 'password_reset' %}?next={{ lab_hash }}" id="signup">Reset password here</a></p>
                     </div>
                 </form> 
             </div>

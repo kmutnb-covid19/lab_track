@@ -105,16 +105,16 @@ QR_CODE_CACHE_ALIAS = 'qr-code'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'kmutnbtrackapp.custom_password_validation.CustomUserAttributeSimilarityValidator',
+        'NAME': 'kmutnbtrackapp.validation.CustomUserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'kmutnbtrackapp.custom_password_validation.CustomMinimumLengthValidator',
+        'NAME': 'kmutnbtrackapp.validation.CustomMinimumLengthValidator',
     },
     {
-        'NAME': 'kmutnbtrackapp.custom_password_validation.CustomCommonPasswordValidator',
+        'NAME': 'kmutnbtrackapp.validation.CustomCommonPasswordValidator',
     },
     {
-        'NAME': 'kmutnbtrackapp.custom_password_validation.CustomNumericPasswordValidator',
+        'NAME': 'kmutnbtrackapp.validation.CustomNumericPasswordValidator',
     },
 ]
 

@@ -6,14 +6,12 @@ Imports should be grouped in the following order:
 3.Local application/library specific imports.
 """
 
-from datetime import datetime, timedelta
-
 import csv
 import qrcode
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
-import re
+from datetime import datetime, timedelta
 
 from django.db.models import Q
 from django.shortcuts import render
@@ -21,13 +19,11 @@ from django.core import management
 from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.urls import reverse, reverse_lazy
-from django.template.loader import render_to_string
 from django.core.paginator import Paginator
 from django.contrib.auth import logout, authenticate, login
-from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, INTERNAL_RESET_SESSION_TOKEN, \
-    PasswordResetCompleteView
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, INTERNAL_RESET_SESSION_TOKEN
+from django.contrib.auth.views import PasswordResetCompleteView
 
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.dashboard import *
@@ -159,8 +155,8 @@ def signup_api(request):  # when stranger click 'Signup and Checkin'
         username = request.POST["username"]
         email = request.POST['email']
         password = request.POST['password']
-        firstname = request.POST.get('first_name', '')
-        lastname = request.POST.get('last_name', '')
+        first_name = request.POST.get('first_name', '')
+        last_name = request.POST.get('last_name', '')
         # Form is valid
         if User.objects.filter(username=username).count() == 0:  # if username is available
             # create new User object and save it
@@ -168,7 +164,7 @@ def signup_api(request):  # when stranger click 'Signup and Checkin'
             u.set_password(password)  # bypassing Django password format check
             u.save()
             # create new Person object
-            Person.objects.create(user=u, first_name=firstname, last_name=lastname, email=email, is_student=False)
+            Person.objects.create(user=u, first_name=first_name, last_name=last_name, email=email, is_student=False)
             # then login
             login(request, u, backend='django.contrib.auth.backends.ModelBackend')
 
@@ -181,6 +177,7 @@ def login_api(request):  # api when stranger login
     print("Here")
     if request.method == "GET":
         lab_hash = request.GET.get('next', '')
+        lab_name = ''
         print(lab_hash)
         if lab_hash != '':
             lab_name = Lab.objects.get(hash=lab_hash).name
@@ -419,7 +416,7 @@ def risk_people_search(request):
                        'keyword': keyword, 'select_mode': mode,
                        })
     else:
-        return HttpResponse("Permission Denined")
+        return HttpResponse("Permission Denied")
 
 
 def export_risk_csv(request):
@@ -439,7 +436,8 @@ def export_risk_csv(request):
         response['Content-Disposition'] = 'attachment; filename="Risk Log.csv"'
         return response
     else:
-        return HttpResponse("Permission Denined")
+        return HttpResponse("Permission Denied")
+
 
 
 def notify_confirm(request):
@@ -450,7 +448,8 @@ def notify_confirm(request):
                                                              'keyword': keyword,
                                                              })
     else:
-        return HttpResponse("Permission Denined")
+        return HttpResponse("Permission Denied")
+
 
 
 def notify_user(request, mode, keyword):
@@ -486,7 +485,7 @@ def notify_user(request, mode, keyword):
                                               'first_last_name': first_last_name,
                                               'user_email': each_user_email,
                                               'lab_name': lab_name}
-            subject = 'แจ้งเตือนกลุ่มผู้มีความเสี่ยงติดเชื้อ covid-19'
+            subject = 'แจ้งเตือนกลุ่มผู้มีความเสี่ยงติดเชื้อ COVID-19'
             email = EmailMessage(subject, to=user_email)
             email.template_id = 'notify-labtrack'
             email.merge_data = user_data
@@ -496,7 +495,7 @@ def notify_user(request, mode, keyword):
                           {'notify_status': True,
                            })
     else:
-        return HttpResponse("Permission Denined")
+        return HttpResponse("Permission Denied")
 
 
 def generate_qr_code(request, lab_hash):
@@ -538,6 +537,8 @@ def generate_qr_code(request, lab_hash):
                 (width, baseline), (offset_x, offset_y) = font.font.getsize(lab_name)
 
             draw.text((82, 75 - ascent), lab_name, (255, 255, 255), font=font)
+
+
         else:
             draw.text((82, 75 - ascent), lab_name, (255, 255, 255), font=font)
 
@@ -547,7 +548,7 @@ def generate_qr_code(request, lab_hash):
             response['Content-Disposition'] = 'inline; filename=' + f'media/{lab_name}_qrcode.jpg'
             return response
     else:
-        return HttpResponse("Permission Denined")
+        return HttpResponse("Permission Denied")
 
 
 def call_dashboard(request):
@@ -556,6 +557,7 @@ def call_dashboard(request):
         """load and manage metadata"""
         meta_data = get_data_metadata()
         dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(), "normal")
+
         for user in dataset:
             if str(user.lab) in meta_data['lab']:
                 if (str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)) in \
@@ -583,7 +585,8 @@ def call_dashboard(request):
             "histrogram_data": histrogram_data,
         })
     else:
-        return HttpResponse("Permission Denined")
+        return HttpResponse("Permission Denied")
+
 
 
 def backup(request):

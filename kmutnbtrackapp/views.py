@@ -307,9 +307,6 @@ def history_search(request, page=1):
         keyword = request.GET.get('keyword', '')
         start = request.GET.get('from', '')
         stop = request.GET.get('to', '')
-        mode = ""
-        histories = "EMPTY"
-
         mode = request.GET.get('mode', '')
         histories = query_search(mode, keyword, start, stop, "normal")
 
@@ -442,6 +439,7 @@ def export_risk_csv(request):
         return HttpResponse("Permission Denied")
 
 
+
 def notify_confirm(request):
     if request.user.is_superuser:
         mode = request.GET.get('mode', '')
@@ -451,6 +449,7 @@ def notify_confirm(request):
                                                              })
     else:
         return HttpResponse("Permission Denied")
+
 
 
 def notify_user(request, mode, keyword):
@@ -578,7 +577,7 @@ def call_dashboard(request):
         """prepare data before sent to template"""
         pie_data = prepare_pie_data(meta_data)
         liner_data = prepare_liner_data(meta_data)
-        histrogram_data = prepare_histrogram_data(meta_data)
+        histrogram_data = prepare_single_liner_data(meta_data)
         return render(request, 'admin/dashboard.html', {
             'pie_data': json.dumps(pie_data),
             'liner_data': json.dumps(liner_data),

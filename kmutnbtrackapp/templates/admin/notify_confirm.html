@@ -1,17 +1,42 @@
-<html>
-    <title>
-        Confirm Notify
-    </title>
+{% extends 'Page/page_base.html' %}
+{% load static %}
 
-    <body>
-        <center>
-            <form action="{% url 'notify' mode keyword %}" method="POST">
-                {% csrf_token %}
-                <label for="confirm">กรุณาพิมพ์ "ยืนยัน" เพื่อยืนยันการส่งการแจ้งเตือนไปยังอีเมล์ของผู้ที่เกี่ยวข้องกับ {{ keyword }} </label>
-                <br>
-                <input type="text" name="confirm" id="confirm">
-                <button type="submit">Send Email</button>
-            </form>
-    </center>
-    </body>
-</html>
+{% block title%}Confirm Notify{% endblock %}
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/log_in.css'%}">
+{% endblock %}
+
+{% block content %}
+<!-- navbar LabTrack -->
+<nav class="navbar navbar-dark" style="background-color: #355C7D;">
+    <a class="navbar-brand" href="#">
+        <img src="{% static 'images/logo.png' %}" width="40" height="auto" class="d-inline-block align-top" alt="" loading="lazy">
+        Labtrack
+    </a>
+</nav>
+
+<!-- log in form -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-5 mx-auto">
+        <div id="first">
+            <div class="myform form ">
+                <div class="logo mb-3">
+                    <div class="col-md-12 text-center">
+                        <h1>ยืนยันการส่งอีเมล</h1>
+                    </div>
+                </div>
+                <form action="{% url 'notify' mode keyword %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="confirm">กรุณาพิมพ์ "ยืนยัน" เพื่อยืนยันการส่งการแจ้งเตือนไปยังอีเมลของผู้ที่เกี่ยวข้องกับ {{ keyword }} </label>
+                        <input class="form-control" type="text" name="confirm" id="confirm" maxlength="254" required>
+                    </div>
+                    <button type="submit" class="btn btn-block mybtn btn-primary tx-tfm">ส่งอีเมล</button>
+                </form>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

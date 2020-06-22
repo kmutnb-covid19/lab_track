@@ -1,19 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>notify_Status</title>
-</head>
-    <body>
-        <center>
-            {% if notify_status %}
-                Send Email Success
-                <form action="{% url 'risk_people_search' %}">
-                    <input type="submit" value="Back to Risk Search" />
-                </form>
-            {% else %}
-                Send Email Fail
-            {% endif %}
-        </center>
-    </body>
-</html>
+
+{% extends 'Page/page_base.html' %}
+{% load static %}
+
+{% block title%}Notify Status{% endblock %}
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/log_in.css'%}">
+{% endblock %}
+
+{% block content %}
+<!-- navbar LabTrack -->
+<nav class="navbar navbar-dark" style="background-color: #355C7D;">
+    <a class="navbar-brand" href="#">
+        <img src="{% static 'images/logo.png' %}" width="40" height="auto" class="d-inline-block align-top" alt="" loading="lazy">
+        Labtrack
+    </a>
+</nav>
+
+<!-- log in form -->
+{% if notify_status %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-5 mx-auto">
+        <div id="first">
+            <div class="myform form ">
+                <div class="logo mb-3">
+                    <div class="col-md-12 text-center">
+                        <h1>อีเมลถูกส่งแล้ว</h1>
+                    </div>
+                </div>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label >ส่งอีเมลแจ้งเตือนไปยังอีเมลของผู้ที่เกี่ยวข้องเรียบร้อยแล้ว</label>
+                        <form action="{% url 'risk_people_search' %}">
+                            <input class="btn btn-block mybtn btn-primary tx-tfm" type="submit" value="Back to Risk Search" />
+                        </form>
+                    </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-5 mx-auto">
+        <div id="first">
+            <div class="myform form ">
+                <div class="logo mb-3">
+                    <div class="col-md-12 text-center">
+                        <h1>เกิดข้อผิดพลาด</h1>
+                    </div>
+                </div>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label >ไม่สามารถส่งอีเมลได้ กรุณาลองใหม่อีกครั้ง</label>
+                        <form action="{% url 'risk_people_search' %}">
+                            <input class="btn btn-block mybtn btn-primary tx-tfm" type="submit" value="Back to Risk Search" />
+                        </form>
+                    </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -13,7 +13,7 @@ def create_id():
 
 class Lab(models.Model):
     name = models.CharField(max_length=60, null=True)
-    amount = models.IntegerField(blank=True, default=20)
+    max_number_of_people = models.IntegerField(blank=True, default=20)
     hash = models.CharField(max_length=16, primary_key=True, default=create_id)
 
     def __str__(self):

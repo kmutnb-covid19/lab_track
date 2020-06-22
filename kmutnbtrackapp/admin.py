@@ -16,7 +16,7 @@ class LabAdmin(admin.ModelAdmin):
         return format_html('<button><a href="/admin/qrcode/%s/" download>%s</a></button>'%( obj.hash ,obj.name))
 
     my_url_field.allow_tags = True
-    my_url_field.short_description = 'QR generate'
+    my_url_field.short_description = 'Download QR code'
 
 
 class HistoryAdmin(admin.ModelAdmin):

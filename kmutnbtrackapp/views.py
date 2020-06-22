@@ -13,22 +13,17 @@ from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 
-import re
-
-
 from django.db.models import Q
 from django.shortcuts import render
 from django.core import management
 from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.urls import reverse, reverse_lazy
-from django.template.loader import render_to_string
 from django.core.paginator import Paginator
 from django.contrib.auth import logout, authenticate, login
-from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, INTERNAL_RESET_SESSION_TOKEN, \
-    PasswordResetCompleteView
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, INTERNAL_RESET_SESSION_TOKEN
+from django.contrib.auth.views import PasswordResetCompleteView
 
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.dashboard import *
@@ -113,7 +108,7 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
         now_datetime = datetime.datetime.now()
 
         if History.objects.filter(person=person, checkin__lte=now_datetime,
-                                  checkout__gte=now_datetime).exists():  # if have lastest history which checkout not at time
+                                  checkout__gte=now_datetime).exists(): # if have lastest history which checkout not at time
             last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
             last_lab_hist = last_lab_hist[0]
 
@@ -295,7 +290,7 @@ def query_search(mode, keyword, start, stop, search_mode):
                 Q(person__first_name__startswith=keyword) | Q(person__last_name__startswith=keyword))
         elif mode == "lab":
             histories = histories.filter(Q(lab__name__startswith=keyword))
-        #elif mode == "tel":
+        # elif mode == "tel":
         #    histories = histories.filter(Q(person__tel__startswith=keyword))
 
     return histories
@@ -415,15 +410,17 @@ def export_risk_csv(request):
     else:
         return HttpResponse("Permission Denined")
 
+
 def notify_confirm(request):
     if request.user.is_superuser:
         mode = request.GET.get('mode', '')
         keyword = request.GET.get('keyword', '')
-        return render(request, 'admin/notify_confirm.html',{ 'mode':mode,
-                                                             'keyword':keyword,
+        return render(request, 'admin/notify_confirm.html', {'mode': mode,
+                                                             'keyword': keyword,
                                                              })
     else:
         return HttpResponse("Permission Denined")
+
 
 def notify_user(request, mode, keyword):
     if request.user.is_superuser:
@@ -449,28 +446,29 @@ def notify_user(request, mode, keyword):
                 student_id = each_user[0]
                 first_last_name = each_user[1]
                 each_user_email = each_user[2]
-                user_email.append( each_user_email  )
+                user_email.append(each_user_email)
                 lab_name = ''
                 for each_lab in each_user[3:]:
                     lab_name += str(each_lab) + ', '
                 lab_name = lab_name[:-2]
-                user_data[each_user_email] = {'student_id':student_id,
-                                        'first_last_name':first_last_name,
-                                        'user_email':each_user_email,
-                                        'lab_name':lab_name}
-            subject = 'แจ้งเตือนกลุ่มผู้มีความเสี่ยงติดเชื้อ covid-19'
+                user_data[each_user_email] = {'student_id': student_id,
+                                              'first_last_name': first_last_name,
+                                              'user_email': each_user_email,
+                                              'lab_name': lab_name}
+            subject = 'แจ้งเตือนกลุ่มผู้มีความเสี่ยงติดเชื้อ COVID-19'
             email = EmailMessage(subject, to=user_email)
             email.template_id = 'notify-labtrack'
             email.merge_data = user_data
             email.send()
 
             return render(request, 'admin/notify_status.html',
-                        {'notify_status': True,
-                        })
+                          {'notify_status': True,
+                           })
     else:
-        return HttpResponse("Permission Denined")
+        return HttpResponse("Permission Denied")
 
-def generate_qr_code(request,lab_hash):
+
+def generate_qr_code(request, lab_hash):
     if request.user.is_superuser:
         site_url = "get_current_site(request)"
         lab_name = Lab.objects.get(hash=lab_hash).name
@@ -487,9 +485,8 @@ def generate_qr_code(request,lab_hash):
 
         img_frame = Image.open("kmutnbtrackapp/static/qrcode_src/qr_frame.jpg")
 
-        pos = (57,135)
+        pos = (57, 135)
         img_frame.paste(img_qr, pos)
-
 
         draw = ImageDraw.Draw(img_frame)
 
@@ -498,21 +495,21 @@ def generate_qr_code(request,lab_hash):
         ascent, descent = font.getmetrics()
         (width, baseline), (offset_x, offset_y) = font.font.getsize(lab_name)
 
-        if (len(lab_name) > 24):
+        if len(lab_name) > 24:
             # split to 2 line and draw here
             pass
 
-        elif (len(lab_name) > 14): # long name -> reduce font size
-            while(width >= 305):
+        elif len(lab_name) > 14:  # long name -> reduce font size
+            while width >= 305:
                 font_size -= 1
                 font = ImageFont.truetype("font/Prompt-Medium.ttf", font_size)
                 ascent, descent = font.getmetrics()
                 (width, baseline), (offset_x, offset_y) = font.font.getsize(lab_name)
 
-            draw.text((82, 75-ascent),lab_name,(255,255,255),font=font)
+            draw.text((82, 75 - ascent), lab_name, (255, 255, 255), font=font)
 
         else:
-            draw.text((82, 75-ascent),lab_name,(255,255,255),font=font)
+            draw.text((82, 75 - ascent), lab_name, (255, 255, 255), font=font)
 
         img_frame.save(f'media/{lab_name}_qrcode.jpg', quality=100, subsampling=0)
         with open(f'media/{lab_name}_qrcode.jpg', "rb") as f:
@@ -520,7 +517,7 @@ def generate_qr_code(request,lab_hash):
             response['Content-Disposition'] = 'inline; filename=' + f'media/{lab_name}_qrcode.jpg'
             return response
     else:
-        return HttpResponse("Permission Denined")
+        return HttpResponse("Permission Denied")
 
 
 def call_dashboard(request):

@@ -53,7 +53,6 @@ def prepare_liner_data(meta_data):
                 duplicate[day] += meta_data['lab'][lab_name][day]
             else:
                 duplicate[day] = meta_data['lab'][lab_name][day]
-
     for day in duplicate:
         data.append([int(time.mktime(datetime.datetime(int(day.split("/")[0]), int(day.split("/")[1]),
                                                        int(day.split("/")[2])).timetuple())) * 1000,

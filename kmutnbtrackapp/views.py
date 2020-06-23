@@ -187,7 +187,6 @@ def login_api(request):  # api when stranger login
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
         else:
             return render(request, 'Page/log_in.html', {'lab_hash': lab_hash, 'lab_name': lab_name, 'wrong': 1})
-    # didn't receive POST
 
 
 def logout_api(request):  # api for logging out
@@ -433,7 +432,6 @@ def export_risk_csv(request):
         return HttpResponse("Permission Denied")
 
 
-
 def notify_confirm(request):
     if request.user.is_superuser:
         mode = request.GET.get('mode', '')
@@ -443,7 +441,6 @@ def notify_confirm(request):
                                                              })
     else:
         return HttpResponse("Permission Denied")
-
 
 
 def notify_user(request, mode, keyword):
@@ -580,7 +577,6 @@ def call_dashboard(request):
         })
     else:
         return HttpResponse("Permission Denied")
-
 
 
 def backup(request):

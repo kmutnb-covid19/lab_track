@@ -14,7 +14,7 @@ from PIL import ImageDraw
 from datetime import datetime, timedelta
 
 from django.db.models import Q
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core import management
 from django.contrib import messages
 from django.core.mail import EmailMessage
@@ -368,6 +368,10 @@ def export_normal_csv(request):
     else:
         return HttpResponse("Permission Denied")
 
+def sort_lab_name_risk_search(each_user):
+    return str(each_user[2])
+def sort_name_risk_search(each_user):
+    return str(each_user[1])
 
 def filter_risk_user(mode, keyword):
     """filter user if there near by infected in time"""
@@ -389,6 +393,8 @@ def filter_risk_user(mode, keyword):
                                            session.person.email,
                                            session.lab,
                                            ])
+        risk_people_data.sort(key=sort_name_risk_search)
+        risk_people_data.sort(key=sort_lab_name_risk_search)
 
     return list(set(risk_people_data)), risk_people_notify
 
@@ -415,19 +421,22 @@ def risk_people_search(request):
 def export_risk_csv(request):
     """export file risk user csv log to user"""
     if request.user.is_superuser:
-        mode = request.GET.get('mode', '')
-        keyword = request.GET.get('keyword', '')
-        risk_people_data, not_use = filter_risk_user(mode, keyword)
-        response = HttpResponse(content_type='text/csv')
-        writer = csv.writer(response)
-        writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
-        for user in risk_people_data:
-            user = list(user)
-            user[4] = user[4] + timedelta(hours=7)
-            user[5] = user[5] + timedelta(hours=7)
-            writer.writerow(user)
-        response['Content-Disposition'] = 'attachment; filename="Risk Log.csv"'
-        return response
+        if keyword != "":
+            mode = request.GET.get('mode', '')
+            keyword = request.GET.get('keyword', '')
+            risk_people_data, not_use = filter_risk_user(mode, keyword)
+            response = HttpResponse(content_type='text/csv')
+            writer = csv.writer(response)
+            writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
+            for user in risk_people_data:
+                user = list(user)
+                user[4] = user[4] + timedelta(hours=7)
+                user[5] = user[5] + timedelta(hours=7)
+                writer.writerow(user)
+            response['Content-Disposition'] = 'attachment; filename="Risk Log.csv"'
+            return response
+        else:
+            return redirect(risk_people_search)
     else:
         return HttpResponse("Permission Denied")
 
@@ -436,9 +445,12 @@ def notify_confirm(request):
     if request.user.is_superuser:
         mode = request.GET.get('mode', '')
         keyword = request.GET.get('keyword', '')
-        return render(request, 'admin/notify_confirm.html', {'mode': mode,
-                                                             'keyword': keyword,
-                                                             })
+        if keyword != "":
+            return render(request, 'admin/notify_confirm.html', {'mode': mode,
+                                                                'keyword': keyword,
+                                                                })
+        else:
+            return redirect(risk_people_search)
     else:
         return HttpResponse("Permission Denied")
 

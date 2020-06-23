@@ -369,6 +369,10 @@ def export_normal_csv(request):
     else:
         return HttpResponse("Permission Denied")
 
+def sort_lab_name_risk_search(each_user):
+    return str(each_user[2])
+def sort_name_risk_search(each_user):
+    return str(each_user[1])
 
 def filter_risk_user(mode, keyword):
     """filter user if there near by infected in time"""
@@ -390,6 +394,8 @@ def filter_risk_user(mode, keyword):
                                            session.person.email,
                                            session.lab,
                                            ])
+        risk_people_data.sort(key=sort_name_risk_search)
+        risk_people_data.sort(key=sort_lab_name_risk_search)
 
     return list(set(risk_people_data)), risk_people_notify
 

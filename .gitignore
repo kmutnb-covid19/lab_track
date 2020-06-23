@@ -8,5 +8,5 @@
 metadata.json
 db.sqlite3
 
-kmutnbtrackapp/migrations/*.py
+kmutnbtrackapp/migrations/
 /.env

@@ -217,34 +217,38 @@ def check_in(request, lab_hash):  # when user checkin record in history
     person = Person.objects.get(user=request.user)
     this_lab = Lab.objects.get(hash=lab_hash)
 
-    checkout_time_str = request.POST.get('check_out_time')  # get check out time
-    now_datetime = datetime.datetime.now()
+    if request.method == "POST":
+        checkout_time_str = request.POST.get('check_out_time')  # get check out time
+        now_datetime = datetime.datetime.now()
 
-    checkout_datetime = now_datetime.replace(hour=int(checkout_time_str.split(":")[0]),
-                                             minute=int(checkout_time_str.split(":")[
-                                                            1]))  # get check out time in object datetime
-    if Lab.objects.filter(hash=lab_hash).exists():  # check that lab does exists
-        last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
-        if last_lab_hist.exists():  # if have a history that intersect between now
-            if last_lab_hist[0].lab.hash != lab_hash:  # ไปแลปอื่นแล้วแล็ปเดิมยังไม่ check out
-                return render(request, 'Page/lab_checkout.html', {"lab_hash_check_out": last_lab_hist[0].lab,
-                                                                  "new_lab": this_lab})
-            else:  # มาแลปเดิมแล้วถ้าจะ check in ซ้ำจะเลือกให้ check out ก่อนเวลา
-                last_hist = History.objects.get(person=person, lab=this_lab, checkin__lte=now_datetime,
-                                                checkout__gte=now_datetime)
-                return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_hist.lab})
+        checkout_datetime = now_datetime.replace(hour=int(checkout_time_str.split(":")[0]),
+                                                 minute=int(checkout_time_str.split(":")[
+                                                                1]))  # get check out time in object datetime
+        if Lab.objects.filter(hash=lab_hash).exists():  # check that lab does exists
+            last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
+            if last_lab_hist.exists():  # if have a history that intersect between now
+                if last_lab_hist[0].lab.hash != lab_hash:  # ไปแลปอื่นแล้วแล็ปเดิมยังไม่ check out
+                    return render(request, 'Page/lab_checkout.html', {"lab_hash_check_out": last_lab_hist[0].lab,
+                                                                      "new_lab": this_lab})
+                else:  # มาแลปเดิมแล้วถ้าจะ check in ซ้ำจะเลือกให้ check out ก่อนเวลา
+                    last_hist = History.objects.get(person=person, lab=this_lab, checkin__lte=now_datetime,
+                                                    checkout__gte=now_datetime)
+                    return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_hist.lab})
 
-        else:
-            new_hist = History.objects.create(person=person,
-                                              lab=this_lab,
-                                              checkin=now_datetime,
-                                              checkout=checkout_datetime)
+            else:
+                new_hist = History.objects.create(person=person,
+                                                  lab=this_lab,
+                                                  checkin=now_datetime,
+                                                  checkout=checkout_datetime)
 
-            return render(request, 'Page/lab_checkin_successful_new.html',
-                          {"lab_hash": this_lab.hash,
-                           "lab_name": this_lab.name,
-                           "check_in": (new_hist.checkin + timedelta(hours=7)).strftime("%A, %d %B %Y, %H:%M"),
-                           "check_out": new_hist.checkout.strftime("%A, %d %B %Y, %H:%M")})
+                return render(request, 'Page/lab_checkin_successful_new.html',
+                              {"lab_hash": this_lab.hash,
+                               "lab_name": this_lab.name,
+                               "check_in": (new_hist.checkin + timedelta(hours=7)).strftime("%A, %d %B %Y, %H:%M"),
+                               "check_out": new_hist.checkout.strftime("%A, %d %B %Y, %H:%M")})
+    else:
+        error_message = "เซสชั่นหมดอายุ กรุณาสแกน QR Code ใหม่อีกครั้ง"
+        return render(request, 'Page/error.html', {"error_message": error_message, "this_lab": this_lab})
 
 
 def check_out(request, lab_hash):  # api

@@ -27,7 +27,7 @@
         const UserTime = document.getElementById('time_value');
         var SelectTime = UserTime.value.split(":");
         if (UserMode == "others"){
-            if (SelectTime[1] >= (minute + 10)){
+            if ((SelectTime[1] >= (minute + 10)) || ((SelectTime[1] < 10) && ((minute + 10) > 60))) {
                 // waiting for beautiful time lock condition
                 if (true){
                     if (SelectTime[0] >= hour){

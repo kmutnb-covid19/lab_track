@@ -385,7 +385,7 @@ def filter_risk_user(mode, keyword):
                                          session.checkout,
                                          ))
                 risk_people_notify.append([session.person.student_id,
-                                           session.person.first_name + session.person.last_name,
+                                           session.person.first_name + ' ' + session.person.last_name,
                                            session.person.email,
                                            session.lab,
                                            ])

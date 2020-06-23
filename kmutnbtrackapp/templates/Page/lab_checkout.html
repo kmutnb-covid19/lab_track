@@ -31,14 +31,11 @@
         <p class="mb-0">เมื่อ check out จาก lab ก่อนหน้าแล้ว ระบบ จะพาคุณไปยัง {{ new_lab.name }}</p>
     </div>
     <div style="display: flex; justify-content: center; align-items: center;">
-        <a href="{% url 'kmutnbtrackapp:check_out' last_lab.hash %}">
-            <form method="post" action="{% url 'kmutnbtrackapp:check_out' last_lab.hash  %}?next_lab={{ new_lab.hash }}">
+        <a href="{% url 'kmutnbtrackapp:check_out' last_lab.hash %}?next_lab={{ new_lab.hash }}">
             <button type="button" class="btn btn-warning" style="color:#FFFFFF";>
                 <img id="checkout_img" src="{% static 'images/logout_2.png' %}" alt="checkout_pic">
                 Check out
             </button>
-                {% csrf_token %}
-            </form>
         </a>
     </div>
 </div>

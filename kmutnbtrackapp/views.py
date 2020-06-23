@@ -421,9 +421,9 @@ def risk_people_search(request):
 def export_risk_csv(request):
     """export file risk user csv log to user"""
     if request.user.is_superuser:
+        mode = request.GET.get('mode', '')
+        keyword = request.GET.get('keyword', '')
         if keyword != "":
-            mode = request.GET.get('mode', '')
-            keyword = request.GET.get('keyword', '')
             risk_people_data, not_use = filter_risk_user(mode, keyword)
             response = HttpResponse(content_type='text/csv')
             writer = csv.writer(response)

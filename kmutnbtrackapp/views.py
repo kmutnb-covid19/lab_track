@@ -6,12 +6,14 @@ Imports should be grouped in the following order:
 3.Local application/library specific imports.
 """
 
+import os
 import csv
 import qrcode
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 from datetime import datetime, timedelta
+
 
 from django.db.models import Q
 from django.shortcuts import render
@@ -24,11 +26,12 @@ from django.contrib.auth import logout, authenticate, login
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, INTERNAL_RESET_SESSION_TOKEN
 from django.contrib.auth.views import PasswordResetCompleteView
+from django.utils import timezone
 
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.dashboard import *
 
-
+tz = timezone.get_default_timezone()
 # Create your views here.
 
 class CustomPasswordResetView(PasswordResetView):
@@ -98,9 +101,10 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
         # render page for logging in in that lab
     else:  # if user already login
         person = Person.objects.get(user=request.user)
-        now_datetime = datetime.datetime.now()
+        now_datetime = datetime.datetime.now(tz)
 
-        if History.objects.filter(person=person, checkin__lte=now_datetime,
+        if History.objects.filter(person=person, 
+                                  checkin__lte=now_datetime,
                                   checkout__gte=now_datetime).exists():  # if have lastest history which checkout not at time
             last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
             last_lab_hist = last_lab_hist[0]
@@ -108,24 +112,21 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
             if last_lab_hist.lab.hash == lab_hash:  # if latest lab is same as the going lab
                 return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_lab_hist.lab})
 
-            else:  # if be another lab
+            else:  # if latest lab is another lab
                 return render(request, 'Page/lab_checkout.html', {"last_lab": last_lab_hist.lab,
                                                                   "new_lab": this_lab})
 
-
-        else:
+        else: # goto checkin page
             time_option = compare_current_time()
-            lab_object = Lab.objects.get(hash=lab_hash)
-            lab_name = lab_object.name
-            now_datetime = datetime.datetime.now()
             midnight_time = now_datetime.replace(hour=23, minute=59, second=59, microsecond=0)
-            current_people = History.objects.filter(lab=lab_object, checkout__gte=now_datetime,
+            current_people = History.objects.filter(lab=this_lab, 
+                                                    checkout__gte=now_datetime,
                                                     checkout__lte=midnight_time).count()
-            return render(request, 'Page/lab_checkin_new.html', {"lab_name": lab_name,
-                                                                 "lab_hash": lab_hash,
+            return render(request, 'Page/lab_checkin_new.html', {"lab_name": this_lab.name,
+                                                                 "lab_hash": this_lab.hash,
                                                                  "time_option": time_option,
-                                                                 "time_now_hour": datetime.datetime.now().hour,
-                                                                 "time_now_minute": datetime.datetime.now().minute,
+                                                                 "time_now_hour": now_datetime.hour,
+                                                                 "time_now_minute": now_datetime.minute + 5,
                                                                  "current_people": current_people
                                                                  })  # render page for checkin
 
@@ -168,11 +169,14 @@ def signup_api(request):  # when stranger click 'Signup and Checkin'
 
 def login_api(request):  # api when stranger login
     if request.method == "GET":
-        lab_hash = request.GET.get('next', '')
-        lab_name = ''
-        if lab_hash != '':
-            lab_name = Lab.objects.get(hash=lab_hash).name
-        return render(request, 'Page/log_in.html', {'lab_hash': lab_hash, 'lab_name': lab_name})
+        if not request.user.is_authenticated: # if user hasn't login
+            lab_hash = request.GET.get('next', '')
+            lab_name = ''
+            if lab_hash != '':
+                lab_name = Lab.objects.get(hash=lab_hash).name
+            return render(request, 'Page/log_in.html', {'lab_hash': lab_hash, 'lab_name': lab_name})
+        else:
+            return HttpResponseRedirect("/")
 
     if request.method == "POST":
         lab_hash = request.GET.get('next', '')
@@ -200,7 +204,7 @@ def logout_api(request):  # api for logging out
 
 
 def compare_current_time():  # make check out valid
-    now_datetime = datetime.datetime.now()
+    now_datetime = datetime.datetime.now(tz)
     noon = now_datetime.replace(hour=12, minute=0, second=0, microsecond=0)  # noon time value
     four_pm = now_datetime.replace(hour=16, minute=0, second=0, microsecond=0)  # evening time value
     eight_pm = now_datetime.replace(hour=20, minute=0, second=0, microsecond=0)  # night time value
@@ -219,7 +223,8 @@ def check_in(request, lab_hash):  # when user checkin record in history
     this_lab = Lab.objects.get(hash=lab_hash)
 
     checkout_time_str = request.POST.get('check_out_time')  # get check out time
-    now_datetime = datetime.datetime.now()
+    print(checkout_time_str)
+    now_datetime = datetime.datetime.now(tz)
 
     checkout_datetime = now_datetime.replace(hour=int(checkout_time_str.split(":")[0]),
                                              minute=int(checkout_time_str.split(":")[
@@ -244,13 +249,13 @@ def check_in(request, lab_hash):  # when user checkin record in history
             return render(request, 'Page/lab_checkin_successful_new.html',
                           {"lab_hash": this_lab.hash,
                            "lab_name": this_lab.name,
-                           "check_in": (new_hist.checkin + timedelta(hours=7)).strftime("%A, %d %B %Y, %H:%M"),
+                           "check_in": new_hist.checkin.strftime("%A, %d %B %Y, %H:%M"),
                            "check_out": new_hist.checkout.strftime("%A, %d %B %Y, %H:%M")})
 
 
 def check_out(request, lab_hash):  # api
     person = Person.objects.get(user=request.user)
-    out_local_time = datetime.datetime.now()
+    out_local_time = datetime.datetime.now(tz)
     log = History.objects.filter(person=person, lab__hash=lab_hash).order_by('checkin').last()
     log.checkout = out_local_time
     log.save()
@@ -262,18 +267,18 @@ def check_out(request, lab_hash):  # api
 def query_search(mode, keyword, start, stop, search_mode):
     """search data in DB by time and keyword and return query set"""
     histories = History.objects.all()
-    if not isinstance(start, type(datetime.datetime.now())):
+    if not isinstance(start, type(datetime.datetime.now(tz))):
         try:
             start = datetime.datetime.strptime(start,
                                                "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             start = datetime.datetime.fromtimestamp(0)
-    if not isinstance(stop, type(datetime.datetime.now())):
+    if not isinstance(stop, type(datetime.datetime.now(tz))):
         try:
             stop = datetime.datetime.strptime(stop,
                                               "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
-            stop = datetime.datetime.now()
+            stop = datetime.datetime.now(tz)
     if search_mode == "normal":
         histories = histories.exclude(Q(checkout__gt=stop) | Q(checkout__lt=start))
     elif search_mode == "risk" and keyword != "":
@@ -362,8 +367,8 @@ def export_normal_csv(request):
             writer.writerow([str(user.person.student_id),
                              user.person,
                              user.lab,
-                             user.checkin + timedelta(hours=7),
-                             user.checkout + timedelta(hours=7)])
+                             user.checkin.astimezone(tz),
+                             user.checkout.astimezone(tz)])
         response['Content-Disposition'] = 'attachment; filename="file_log.csv"'
         return response
     else:
@@ -424,8 +429,8 @@ def export_risk_csv(request):
         writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
         for user in risk_people_data:
             user = list(user)
-            user[4] = user[4] + timedelta(hours=7)
-            user[5] = user[5] + timedelta(hours=7)
+            user[4] = user[4].astimezone(tz)
+            user[5] = user[5].astimezone(tz)
             writer.writerow(user)
         response['Content-Disposition'] = 'attachment; filename="Risk Log.csv"'
         return response
@@ -550,7 +555,7 @@ def call_dashboard(request):
     if request.user.is_superuser:
         """load and manage metadata"""
         meta_data = get_data_metadata()
-        dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(), "normal")
+        dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(tz), "normal")
 
         for user in dataset:
             if str(user.lab) in meta_data['lab']:
@@ -565,7 +570,7 @@ def call_dashboard(request):
                 meta_data['lab'][str(user.lab)] = {}
                 meta_data['lab'][str(user.lab)][
                     str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] = 1
-        meta_data["latest time"] = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
+        meta_data["latest time"] = datetime.datetime.now(tz).strftime('%Y-%m-%dT%H:%M:%S.%f')
         write_metadata(meta_data)
 
         """prepare data before sent to template"""

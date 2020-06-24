@@ -1,17 +1,14 @@
-{% extends 'Page/page_base.html' %}
+
 {% load static %}
-
-{% block title%}Check out Successful{% endblock %}
-{% block style %}
-<link rel="stylesheet" type="text/css" href="{% static '/css/check_out_success.css'%}">
-{% endblock %}
-
-{% block content %}
-    <!-- Page => Check out Successful -->
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    <link rel="stylesheet" type="text/css" href="{% static '/css/check_out_success.css'%}">
     <div class="square-Check-out">
         <img id="icon-logout" src="{% static 'images/logout_2.png' %}">
         <!-- Icon made by https://www.flaticon.com/authors/smashicons -->
         <p>เช็คเอาท์แล้ว</p>
         <p>{{ lab_name }}</p>
     </div>
-{% endblock %}
+</body>
+</html>

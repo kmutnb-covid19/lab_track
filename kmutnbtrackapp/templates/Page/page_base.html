@@ -2,25 +2,29 @@
 <html>
 <head>
     <meta charset="UTF-8">  
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="HandheldFriendly" content="true">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Kaushan+Script" rel="stylesheet">
+    {% block head %}
+    {% endblock %}
+    <title>{% block title %}{% endblock %}</title>
+    {% block style %}
+    {% endblock %}
+</head>
+
+<body {% block body_attr %}{% endblock %}>
+    {% block content %}
+    {% endblock %}
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;500;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Kaushan+Script" rel="stylesheet">
-    
-    {% block head %}{% endblock %}
-    <title>{% block title %}{% endblock %}</title>
-    {% block style %}{% endblock %}
-    
-</head>
 
-{% block script %}{% endblock %}
-<body {% block body_attr %}{% endblock %}>
-    {% block content %}{% endblock %}
+    {% block script %}
+    {% endblock %}
 </body>
 </html>

@@ -5,7 +5,7 @@
 
 
 {% block style %}
-<link rel="stylesheet" type="text/css" href="{% static '/css/lab_checkin_successful.css'%}">
+
 {% endblock %}
 
 {% block script %}
@@ -13,6 +13,7 @@
 {% endblock %}
 
 {% block content %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/lab_checkin_successful.css'%}">
 <!-- navbar room name -->
 <nav class="navbar navbar-dark" style="background-color: #355C7D;">
     <a class="navbar-brand" href="#">
@@ -43,12 +44,10 @@
         </p>
     </div>
     <div style="display: flex; justify-content: center; align-items: center;">
-        <a href="{% url 'kmutnbtrackapp:check_out' lab_hash %}">
-        <button type="button" class="btn btn-warning" style="color:#FFFFFF";>
+        <button  id="checkout_button" type="button" onclick="checkout()" class="btn btn-warning" style="color:#FFFFFF";>
             <img id="checkout_img" src="{% static 'images/logout_2.png' %}" alt="checkout_pic">
-                Check out now
+                Check out ก่อนเวลา
         </button>
-        </a>
     </div>
 </div>
 {% endblock %}

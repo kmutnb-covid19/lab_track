@@ -6,15 +6,6 @@
 <link rel="stylesheet" type="text/css" href="{% static '/css/log_in.css'%}">
 {% endblock %}
 
-{% block script %}
-<script type="text/javascript" src="{% static '/js/log_in.js' %}"></script>
-<script type="text/javascript">
-    function Click_Sign_in_with_google() {
-        location.href="{% url 'social:begin' 'google-oauth2' %}?next={{ lab_hash }}";
-    }
-</script>
-{% endblock %}
-
 {% block content %}
 <!-- navbar LabTrack -->
 <nav class="navbar navbar-dark" style="background-color: #355C7D;">

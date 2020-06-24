@@ -31,7 +31,7 @@
             if (true) {
                 // waiting for beautiful time lock condition
                 if (SelectTime[0] >= hour){
-                    if (( (SelectTime[1] >= (minute + 10) ) && (SelectTime[0] == hour)) || (SelectTime[0] > hour && ( (SelectTime[1] < 10) && ( (minute + 10) > 60) )) || (SelectTime[0] > hour && (SelectTime[1] >=  10)){
+                    if (( (SelectTime[1] >= (minute + 10) ) && (SelectTime[0] == hour)) || (SelectTime[0] > hour && ( (SelectTime[1] < 10) && ( (minute + 10) > 60) )) || (SelectTime[0] > hour && (SelectTime[1] >=  10))){
                         document.getElementById("TimeFrom").submit();
                     } else {
                         document.getElementById("status").innerHTML = "กรุณาเลือกเวลาที่ถูกต้อง";

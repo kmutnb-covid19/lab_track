@@ -26,21 +26,18 @@
         const UserMode = document.getElementById('time').value;
         const UserTime = document.getElementById('time_value');
         var SelectTime = UserTime.value.split(":");
+        console.log()
         if (UserMode == "others"){
-            if ((SelectTime[1] >= (minute + 10)) || ((SelectTime[1] < 10) && ((minute + 10) > 60))) {
+            if (true) {
                 // waiting for beautiful time lock condition
-                if (true){
-                    if (SelectTime[0] >= hour){
-                        if (((SelectTime[1] > minute) && (SelectTime[0] == hour)) || SelectTime[0] > hour){
-                            document.getElementById("TimeFrom").submit();
-                        } else {
-                            document.getElementById("status").innerHTML = "กรุณาเลือกเวลาที่ถูกต้อง";
-                        }
+                if (SelectTime[0] >= hour){
+                    if (( (SelectTime[1] >= (minute + 10) ) && (SelectTime[0] == hour)) || (SelectTime[0] > hour && ( (SelectTime[1] < 10) && ( (minute + 10) > 60) )) || (SelectTime[0] > hour && (SelectTime[1] >=  10)){
+                        document.getElementById("TimeFrom").submit();
                     } else {
                         document.getElementById("status").innerHTML = "กรุณาเลือกเวลาที่ถูกต้อง";
                     }
                 } else {
-                    document.getElementById("status").innerHTML = "ร้านบัวลอยนพเก้า";
+                    document.getElementById("status").innerHTML = "กรุณาเลือกเวลาที่ถูกต้อง";
                 }
             } else {
                 document.getElementById("status").innerHTML = "กรุณาเลือกเวลาใช้งานที่ถูกต้อง";

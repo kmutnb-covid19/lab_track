@@ -142,17 +142,24 @@ def username_check_api(request):
 def signup_api(request):  # when stranger click 'Signup and Checkin'
     if request.method == "GET":
         lab_hash = request.GET.get('next', '')
-        return render(request, 'Page/signup_form.html', {'lab_hash': lab_hash})
+        lab_name = Lab.objects.get(hash=lab_hash).name
+        return render(request, 'Page/signup_form.html', {'lab_hash': lab_hash, 'lab_name': lab_name})
     # Receive data from POST
     if request.method == "POST":
         lab_hash = request.POST.get('next', '')
+        lab_name = Lab.objects.get(hash=lab_hash).name
         username = request.POST["username"]
         email = request.POST['email']
         password = request.POST['password']
+        password_confirm = request.POST['rePassword']
         first_name = request.POST.get('first_name', '')
         last_name = request.POST.get('last_name', '')
         # Form is valid
-        if User.objects.filter(username=username).count() == 0:  # if username is available
+        if password != password_confirm:
+            return render(request, 'Page/signup_form.html', {'lab_hash': lab_hash, 'lab_name': lab_name, 'wrong': 1})
+        elif User.objects.filter(username=username).count() != 0:  # if username is not available
+            return render(request, 'Page/signup_form.html', {'lab_hash': lab_hash, 'lab_name': lab_name, 'wrong': 2})
+        elif User.objects.filter(username=username).count() == 0:  # if username is available
             # create new User object and save it
             u = User.objects.create(username=username, email=email)
             u.set_password(password)  # bypassing Django password format check
@@ -163,8 +170,6 @@ def signup_api(request):  # when stranger click 'Signup and Checkin'
             login(request, u, backend='django.contrib.auth.backends.ModelBackend')
 
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
-        else:
-            return JsonResponse({"status": "fail"})
 
 
 def login_api(request):  # api when stranger login

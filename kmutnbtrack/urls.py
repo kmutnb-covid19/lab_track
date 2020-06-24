@@ -26,7 +26,7 @@ from django.views.generic.base import RedirectView
 
 from kmutnbtrackapp import views
 from kmutnbtrackapp.views import CustomPasswordResetView, CustomPasswordResetConfirmView, CustomPasswordResetCompleteView
-from kmutnbtrackapp.forms import CustomPasswordResetForm
+from kmutnbtrackapp.forms import CustomPasswordResetForm, CustomSetPasswordForm
 urlpatterns = [
     path('', include('kmutnbtrackapp.urls')),
     path('auth/', include('social_django.urls', namespace='social')),
@@ -49,7 +49,7 @@ urlpatterns = [
     url(r'^reset/done/(?P<next>.+)/$', CustomPasswordResetCompleteView.as_view(), name='password_reset_complete'),
     url(r'^password_reset/done/$', PasswordResetDoneView.as_view(), name='password_reset_done'),
     url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
-        CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+        CustomPasswordResetConfirmView.as_view(form_class=CustomSetPasswordForm), name='password_reset_confirm'),
 
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)

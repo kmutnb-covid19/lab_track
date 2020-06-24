@@ -31,7 +31,7 @@
             if (true) {
                 // waiting for beautiful time lock condition
                 if (SelectTime[0] >= hour){
-                    if (( (SelectTime[1] >= (minute + 10) ) && (SelectTime[0] == hour)) || (SelectTime[0] > hour && ( (SelectTime[1] < 10) && ( (minute + 10) > 60) )) || (SelectTime[0] > hour && (SelectTime[1] >=  10))){
+                    if (( (SelectTime[1] >= (minute + 10) ) && (SelectTime[0] == hour)) || (SelectTime[0] == (hour + 1) && ( (SelectTime[1] <= 10) && ( (minute + 10) > 60) )) || SelectTime[0] > hour){
                         document.getElementById("TimeFrom").submit();
                     } else {
                         document.getElementById("status").innerHTML = "กรุณาเลือกเวลาที่ถูกต้อง";
@@ -84,7 +84,7 @@
                 <img src="{% static 'images/people.png' %}"  width="30" alt="lab_pic">
                 จำนวนคนในแลปขณะนี้ : {{ current_people }} คน
             </p>
-            <form id="TimeFrom" method="post" action="{% url 'kmutnbtrackapp:check_in' lab_hash  %}" >
+            <form id="TimeForm" method="post" action="{% url 'kmutnbtrackapp:check_in' lab_hash  %}" >
                 {% csrf_token %}
                 <label for="check_out_time">เลือกเวลา check out :</label> 
             

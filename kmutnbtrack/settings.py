@@ -103,20 +103,7 @@ QR_CODE_CACHE_ALIAS = 'qr-code'
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'kmutnbtrackapp.validation.CustomUserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'kmutnbtrackapp.validation.CustomMinimumLengthValidator',
-    },
-    {
-        'NAME': 'kmutnbtrackapp.validation.CustomCommonPasswordValidator',
-    },
-    {
-        'NAME': 'kmutnbtrackapp.validation.CustomNumericPasswordValidator',
-    },
-]
+AUTH_PASSWORD_VALIDATORS = []
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',

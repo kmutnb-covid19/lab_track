@@ -161,7 +161,7 @@ def signup_api(request):  # when stranger click 'Signup and Checkin'
             return render(request, 'Page/signup_form.html', {'lab_hash': lab_hash, 'lab_name': lab_name, 'wrong': 2})
         elif User.objects.filter(username=username).count() == 0:  # if username is available
             # create new User object and save it
-            u = User.objects.create(username=username, email=email)
+            u = User.objects.create(username=username, email=email, first_name=first_name, last_name=last_name)
             u.set_password(password)  # bypassing Django password format check
             u.save()
             # create new Person object

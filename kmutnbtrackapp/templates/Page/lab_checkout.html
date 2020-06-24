@@ -14,9 +14,10 @@
 <nav class="navbar navbar-dark" style="background-color: #355C7D;">
     <a class="navbar-brand" href="#">
         <img src="{% static 'images/desktop.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
-        {{ last_lab.name }}
+        {{ lab_name }}
     </a>
-    <a href="{% url 'kmutnbtrackapp:logout' %}?lab={{ last_lab.hash }}">
+    <a class="ml-auto mr-1" style="color:white">Logged in as : {{ request.user.first_name }} </a>
+    <a href="{% url 'kmutnbtrackapp:logout' %}?lab={{ lab_hash }}">
         <button class="btn btn-danger my-2 my-sm-0">
             Logout
         </button>

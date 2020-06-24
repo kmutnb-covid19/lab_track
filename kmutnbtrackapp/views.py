@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 
 
 from django.db.models import Q
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core import management
 from django.contrib import messages
 from django.core.mail import EmailMessage
@@ -103,7 +103,7 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
         person = Person.objects.get(user=request.user)
         now_datetime = datetime.datetime.now(tz)
 
-        if History.objects.filter(person=person, 
+        if History.objects.filter(person=person,
                                   checkin__lte=now_datetime,
                                   checkout__gte=now_datetime).exists():  # if have lastest history which checkout not at time
             last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
@@ -119,7 +119,7 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
         else: # goto checkin page
             time_option = compare_current_time()
             midnight_time = now_datetime.replace(hour=23, minute=59, second=59, microsecond=0)
-            current_people = History.objects.filter(lab=this_lab, 
+            current_people = History.objects.filter(lab=this_lab,
                                                     checkout__gte=now_datetime,
                                                     checkout__lte=midnight_time).count()
             return render(request, 'Page/lab_checkin_new.html', {"lab_name": this_lab.name,
@@ -191,7 +191,6 @@ def login_api(request):  # api when stranger login
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
         else:
             return render(request, 'Page/log_in.html', {'lab_hash': lab_hash, 'lab_name': lab_name, 'wrong': 1})
-    # didn't receive POST
 
 
 def logout_api(request):  # api for logging out
@@ -222,35 +221,38 @@ def check_in(request, lab_hash):  # when user checkin record in history
     person = Person.objects.get(user=request.user)
     this_lab = Lab.objects.get(hash=lab_hash)
 
-    checkout_time_str = request.POST.get('check_out_time')  # get check out time
-    print(checkout_time_str)
-    now_datetime = datetime.datetime.now(tz)
+    if request.method == "POST":
+        checkout_time_str = request.POST.get('check_out_time')  # get check out time
+        now_datetime = datetime.datetime.now(tz)
 
-    checkout_datetime = now_datetime.replace(hour=int(checkout_time_str.split(":")[0]),
-                                             minute=int(checkout_time_str.split(":")[
-                                                            1]))  # get check out time in object datetime
-    if Lab.objects.filter(hash=lab_hash).exists():  # check that lab does exists
-        last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
-        if last_lab_hist.exists():  # if have a history that intersect between now
-            if last_lab_hist[0].lab.hash != lab_hash:  # ไปแลปอื่นแล้วแล็ปเดิมยังไม่ check out
-                return render(request, 'Page/lab_checkout.html', {"lab_hash_check_out": last_lab_hist[0].lab,
-                                                                  "new_lab": this_lab})
-            else:  # มาแลปเดิมแล้วถ้าจะ check in ซ้ำจะเลือกให้ check out ก่อนเวลา
-                last_hist = History.objects.get(person=person, lab=this_lab, checkin__lte=now_datetime,
-                                                checkout__gte=now_datetime)
-                return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_hist.lab})
+        checkout_datetime = now_datetime.replace(hour=int(checkout_time_str.split(":")[0]),
+                                                 minute=int(checkout_time_str.split(":")[
+                                                                1]))  # get check out time in object datetime
+        if Lab.objects.filter(hash=lab_hash).exists():  # check that lab does exists
+            last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
+            if last_lab_hist.exists():  # if have a history that intersect between now
+                if last_lab_hist[0].lab.hash != lab_hash:  # ไปแลปอื่นแล้วแล็ปเดิมยังไม่ check out
+                    return render(request, 'Page/lab_checkout.html', {"lab_hash_check_out": last_lab_hist[0].lab,
+                                                                      "new_lab": this_lab})
+                else:  # มาแลปเดิมแล้วถ้าจะ check in ซ้ำจะเลือกให้ check out ก่อนเวลา
+                    last_hist = History.objects.get(person=person, lab=this_lab, checkin__lte=now_datetime,
+                                                    checkout__gte=now_datetime)
+                    return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_hist.lab})
 
-        else:
-            new_hist = History.objects.create(person=person,
-                                              lab=this_lab,
-                                              checkin=now_datetime,
-                                              checkout=checkout_datetime)
+            else:
+                new_hist = History.objects.create(person=person,
+                                                  lab=this_lab,
+                                                  checkin=now_datetime,
+                                                  checkout=checkout_datetime)
 
-            return render(request, 'Page/lab_checkin_successful_new.html',
-                          {"lab_hash": this_lab.hash,
-                           "lab_name": this_lab.name,
-                           "check_in": new_hist.checkin.strftime("%A, %d %B %Y, %H:%M"),
-                           "check_out": new_hist.checkout.strftime("%A, %d %B %Y, %H:%M")})
+                return render(request, 'Page/lab_checkin_successful_new.html',
+                              {"lab_hash": this_lab.hash,
+                               "lab_name": this_lab.name,
+                               "check_in": new_hist.checkin.strftime("%A, %d %B %Y, %H:%M"),
+                               "check_out": new_hist.checkout.strftime("%A, %d %B %Y, %H:%M")})
+    else:
+        error_message = "เซสชั่นหมดอายุ กรุณาสแกน QR Code ใหม่อีกครั้ง"
+        return render(request, 'Page/error.html', {"error_message": error_message, "this_lab": this_lab})
 
 
 def check_out(request, lab_hash):  # api
@@ -374,6 +376,10 @@ def export_normal_csv(request):
     else:
         return HttpResponse("Permission Denied")
 
+def sort_lab_name_risk_search(each_user):
+    return str(each_user[2])
+def sort_name_risk_search(each_user):
+    return str(each_user[1])
 
 def filter_risk_user(mode, keyword):
     """filter user if there near by infected in time"""
@@ -391,12 +397,14 @@ def filter_risk_user(mode, keyword):
                                          session.checkout,
                                          ))
                 risk_people_notify.append([session.person.student_id,
-                                           session.person.first_name + session.person.last_name,
+                                           session.person.first_name + ' ' + session.person.last_name,
                                            session.person.email,
                                            session.lab,
                                            ])
+        risk_people_data.sort(key=sort_name_risk_search)
+        risk_people_data.sort(key=sort_lab_name_risk_search)
 
-    return list(set(risk_people_data)), risk_people_notify
+    return risk_people_data, risk_people_notify
 
 
 def risk_people_search(request):
@@ -423,32 +431,36 @@ def export_risk_csv(request):
     if request.user.is_superuser:
         mode = request.GET.get('mode', '')
         keyword = request.GET.get('keyword', '')
-        risk_people_data, not_use = filter_risk_user(mode, keyword)
-        response = HttpResponse(content_type='text/csv')
-        writer = csv.writer(response)
-        writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
-        for user in risk_people_data:
-            user = list(user)
-            user[4] = user[4].astimezone(tz)
-            user[5] = user[5].astimezone(tz)
-            writer.writerow(user)
-        response['Content-Disposition'] = 'attachment; filename="Risk Log.csv"'
-        return response
+        if keyword != "":
+            risk_people_data, not_use = filter_risk_user(mode, keyword)
+            response = HttpResponse(content_type='text/csv')
+            writer = csv.writer(response)
+            writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
+            for user in risk_people_data:
+                user = list(user)
+                user[4] = user[4].astimezone(tz)
+                user[5] = user[5].astimezone(tz)
+                writer.writerow(user)
+            response['Content-Disposition'] = 'attachment; filename="Risk Log.csv"'
+            return response
+        else:
+            return redirect(risk_people_search)
     else:
         return HttpResponse("Permission Denied")
-
 
 
 def notify_confirm(request):
     if request.user.is_superuser:
         mode = request.GET.get('mode', '')
         keyword = request.GET.get('keyword', '')
-        return render(request, 'admin/notify_confirm.html', {'mode': mode,
-                                                             'keyword': keyword,
-                                                             })
+        if keyword != "":
+            return render(request, 'admin/notify_confirm.html', {'mode': mode,
+                                                                'keyword': keyword,
+                                                                })
+        else:
+            return redirect(risk_people_search)
     else:
         return HttpResponse("Permission Denied")
-
 
 
 def notify_user(request, mode, keyword):
@@ -585,7 +597,6 @@ def call_dashboard(request):
         })
     else:
         return HttpResponse("Permission Denied")
-
 
 
 def backup(request):

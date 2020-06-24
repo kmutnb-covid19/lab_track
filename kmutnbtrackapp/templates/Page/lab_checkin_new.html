@@ -11,7 +11,13 @@
 
 {% block script %}
 <script type="text/javascript">
-    function OtherTime(){
+    let csrf_token = '{{csrf_token}}'; // Django will render this, don't move to .js file !!!
+    const checkin_url = "{% url 'kmutnbtrackapp:check_in' lab_hash  %}";
+    const checkout_url = "{% url 'kmutnbtrackapp:check_out' lab_hash  %}";
+
+    selectTime();
+
+    function selectTime(){
         const Mode = document.getElementById('time').value;
         const time_selector = document.getElementById('time_value');
         if ( Mode == "others" ){
@@ -32,24 +38,61 @@
                 // waiting for beautiful time lock condition
                 if (SelectTime[0] >= hour){
                     if (( (SelectTime[1] >= (minute + 10) ) && (SelectTime[0] == hour)) || (SelectTime[0] == (hour + 1) && ( (SelectTime[1] <= 10) && ( (minute + 10) > 60) )) || SelectTime[0] > hour){
-                        document.getElementById("TimeForm").submit();
+                        return true
                     } else {
                         document.getElementById("status").innerHTML = "กรุณาเลือกเวลาที่ถูกต้อง";
+                        return false
                     }
                 } else {
                     document.getElementById("status").innerHTML = "กรุณาเลือกเวลาที่ถูกต้อง";
+                    return false
                 }
             } else {
                 document.getElementById("status").innerHTML = "กรุณาเลือกเวลาใช้งานที่ถูกต้อง";
+                return false
             }
-        } else {
+        } 
+        else {
             document.getElementById('time_value').value = UserMode
-            document.getElementById("TimeForm").submit();
+            return true
+
         }
     }
-    function checkin(){
-        fetch()
+
+    $(document).ready(function () {
+        var body = $("body")
+        $("#checkin_button").click(function (event) {
+            if (CheckTime({{time_now_hour}}, {{time_now_minute}}) ){
+                $.ajax({
+                    headers: { "X-CSRFToken": csrf_token },
+                    type: "POST",
+                    url: checkin_url,
+                    data: {
+                        'check_out_time': $("#time_value").val()
+                    },
+                    success: function (response) {
+                        var parser = new DOMParser();
+                        var responseHtml = parser.parseFromString(response, "text/html");
+                        $("body").html(responseHtml.body)
+                    },
+                })
+            }
+        })
+    })
+
+    function checkout(){
+        fetch(checkout_url,{
+            method: "POST",
+            headers: { "X-CSRFToken": csrf_token },
+        })
+        .then(response =>{ 
+            return response.text()
+        })
+        .then(html =>{
+            document.getElementsByTagName("body")[0].innerHTML = html
+        })
     }
+
 </script>
 {% endblock %}
 
@@ -84,13 +127,16 @@
                 <img src="{% static 'images/people.png' %}"  width="30" alt="lab_pic">
                 จำนวนคนในแลปขณะนี้ : {{ current_people }} คน
             </p>
-            <form id="TimeForm" method="post" action="{% url 'kmutnbtrackapp:check_in' lab_hash  %}" >
+
+            <form id="TimeForm">
+
                 {% csrf_token %}
+                <input name="next" id="lab_hash" value="{{lab_hash}}" hidden>
                 <label for="check_out_time">เลือกเวลา check out :</label> 
             
                 <div class="dropdown">
                     
-                    <select class="btn btn-light btn-sm dropdown-toggle btn-timeselect " aria-haspopup="true" aria-expanded="false" aria-labelledby="dropdownMenu2" id="time" onchange='OtherTime();'>
+                    <select class="btn btn-light btn-sm dropdown-toggle btn-timeselect " aria-haspopup="true" aria-expanded="false" aria-labelledby="dropdownMenu2" id="time" onchange='selectTime();'>
                         {% if time_option == 1 %}
                             <option selected="selected" value="12:00">12:00</option>
                             <option value="16:00">16:00</option>
@@ -111,21 +157,22 @@
                 </div>
                 
                 <br>
-
+                
                 <div class="container-fluid col-12 col-sm-4">
                     <div class="form-group">
                         
-                      <input type="time" class="form-control" name="check_out_time" id="time_value" value="12:00" style='display:none;' />
+                      <input type="time" class="form-control" name="check_out_time" id="time_value" value="12:00" onchange="CheckTime({{time_now_hour}}, {{time_now_minute}}) " style='display:none;'/>
                     </div>
                 </div>
 
+            
+                <p id="status"></p>
+                <div>
+                    <button type="button" class="btn btn-success" id="checkin_button" >Check in</button>
+                </div>
 
             </form>
 
-            <p id="status"></p>
-            <div>
-                <button type="submit" class="btn btn-success" onclick="CheckTime({{time_now_hour}},{{time_now_minute}})">Check in</button>
-            </div>
         </div>
     </div>
 </div>

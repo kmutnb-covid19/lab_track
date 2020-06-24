@@ -297,12 +297,15 @@ def query_search(mode, keyword, start, stop, search_mode):
         if mode == "id":
             histories = histories.filter(Q(person__student_id__startswith=keyword))
         elif mode == "name":
-            histories = histories.filter(
-                Q(person__first_name__startswith=keyword) | Q(person__last_name__startswith=keyword))
+            keyword = keyword.split(" ")
+            if len(keyword) == 1:
+                histories = histories.filter(
+                    Q(person__first_name__startswith=keyword[0]) | Q(person__last_name__startswith=keyword[0]))
+            elif len(keyword) == 2:
+                histories = histories.filter(Q(person__first_name__startswith=keyword[0]))
+                histories = histories.filter(Q(person__last_name__startswith=keyword[1]))
         elif mode == "lab":
             histories = histories.filter(Q(lab__name__startswith=keyword))
-        # elif mode == "tel":
-        #    histories = histories.filter(Q(person__tel__startswith=keyword))
 
     return histories
 
@@ -381,10 +384,14 @@ def export_normal_csv(request):
     else:
         return HttpResponse("Permission Denied")
 
+
 def sort_lab_name_risk_search(each_user):
     return str(each_user[2])
+
+
 def sort_name_risk_search(each_user):
     return str(each_user[1])
+
 
 def filter_risk_user(mode, keyword):
     """filter user if there near by infected in time"""

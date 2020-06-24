@@ -27,14 +27,23 @@
         const UserTime = document.getElementById('time_value');
         var SelectTime = UserTime.value.split(":");
         if (UserMode == "others"){
-            if (SelectTime[0] >= hour){
-                if (((SelectTime[1] > minute) && (SelectTime[0] == hour)) || SelectTime[0] > hour){
-                    document.getElementById("TimeFrom").submit();
+            if ((SelectTime[1] >= (minute + 10)) || ((SelectTime[1] < 10) && ((minute + 10) > 60))) {
+                // waiting for beautiful time lock condition
+                if (true){
+                    if (SelectTime[0] >= hour){
+                        if (((SelectTime[1] > minute) && (SelectTime[0] == hour)) || SelectTime[0] > hour){
+                            document.getElementById("TimeFrom").submit();
+                        } else {
+                            document.getElementById("status").innerHTML = "กรุณาเลือกเวลาที่ถูกต้อง";
+                        }
+                    } else {
+                        document.getElementById("status").innerHTML = "กรุณาเลือกเวลาที่ถูกต้อง";
+                    }
                 } else {
-                    document.getElementById("status").innerHTML = "คุณไม่สามารถเลือกเวลาย้อนหลังได้";
+                    document.getElementById("status").innerHTML = "ร้านบัวลอยนพเก้า";
                 }
             } else {
-                document.getElementById("status").innerHTML = "คุณไม่สามารถเลือกเวลาย้อนหลังได้";
+                document.getElementById("status").innerHTML = "กรุณาเลือกเวลาใช้งานที่ถูกต้อง";
             }
         } else {
             document.getElementById('time_value').value = UserMode
@@ -112,18 +121,19 @@
                       <input type="time" class="form-control" name="check_out_time" id="time_value" value="12:00" style='display:none;' />
                     </div>
                 </div>
-            
-            
-                <div>
-                    <button type="submit" class="btn btn-success" onclick="Click_to_check_in()">Check in</button>
-                </div>
+
 
             </form>
-            <script type="text/javascript">
-                OtherTime();
-            </script>
+
+            <p id="status"></p>
+            <div>
+                <button type="submit" class="btn btn-success" onclick="CheckTime({{time_now_hour}},{{time_now_minute}})">Check in</button>
+            </div>
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    OtherTime();
+</script>
 {% endblock %}
 

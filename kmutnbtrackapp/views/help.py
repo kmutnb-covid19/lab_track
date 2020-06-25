@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.db.models import Q
 from django.utils import timezone
 
@@ -94,3 +95,11 @@ def filter_risk_user(mode, keyword):
         risk_people_data.sort(key=sort_lab_name_risk_search)
 
     return risk_people_data, risk_people_notify
+
+def superuser_login_required(func):
+    def wrapper(request, *args, **kw):
+        if request.user.is_superuser:
+            return func(request, *args, **kw)
+        else:
+            return HttpResponse("Permission Denied")
+    return wrapper

@@ -30,6 +30,7 @@ from kmutnbtrackapp.forms import CustomPasswordResetForm, CustomSetPasswordForm
 urlpatterns = [
     path('', include('kmutnbtrackapp.urls')),
     path('auth/', include('social_django.urls', namespace='social')),
+    path('privacy/', TemplateView.as_view(template_name="Page/privacy.html"),name='privacy_policy'),
     path('qr_code/', include('qr_code.urls', namespace="qr_code")),
     path('admin/qrcode/<str:lab_hash>/', views.generate_qr_code, name='generate_qr_code'),
     path('admin/dashboard/', views.call_dashboard, name='dashboard'),

@@ -13,6 +13,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from kmutnbtrackapp.models import *
 
+
 class CustomPasswordResetView(PasswordResetView):
     def post(self, request, *args, **kwargs):
         self.extra_email_context = {

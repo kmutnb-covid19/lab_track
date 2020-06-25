@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.db.models import Q
 from django.utils import timezone
 
@@ -101,5 +102,5 @@ def superuser_login_required(func):
         if request.user.is_superuser:
             return func(request, *args, **kw)
         else:
-            return HttpResponse("Permission Denied")
+            return render(request, 'Page/error.html', {"error_message": "Permission denied"})
     return wrapper

@@ -14,6 +14,7 @@ from django.contrib.auth import logout, authenticate, login
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.views.help import tz, compare_current_time
 
+
 def home(request):
     if request.GET:
         lab_hash = request.GET.get('next')
@@ -21,6 +22,7 @@ def home(request):
             return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_hash,)))
         return HttpResponseRedirect(reverse("kmutnbtrackapp:lab_home", args=(lab_hash,)))
     return HttpResponse('Waiting for beautiful homepage....')
+
 
 def lab_home_page(request, lab_hash):  # this function is used when user get in home page
     if not Lab.objects.filter(hash=lab_hash).exists():  # lab does not exists
@@ -50,7 +52,7 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
                 return render(request, 'Page/lab_checkout.html', {"last_lab": last_lab_hist.lab,
                                                                   "new_lab": this_lab})
 
-        else: # goto checkin page
+        else:  # goto checkin page
             time_option = compare_current_time()
             midnight_time = now_datetime.replace(hour=23, minute=59, second=59, microsecond=0)
             current_people = History.objects.filter(lab=this_lab,
@@ -64,12 +66,14 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
                                                                  "current_people": current_people
                                                                  })  # render page for checkin
 
+
 def username_check_api(request):
     username = request.GET.get('username')
     if User.objects.filter(username=username).count() == 0:
         return JsonResponse({"status": "available"})
     else:
         return JsonResponse({"status": "already_taken"})
+
 
 def signup_api(request):  # when stranger click 'Signup and Checkin'
     if request.method == "GET":
@@ -103,10 +107,11 @@ def signup_api(request):  # when stranger click 'Signup and Checkin'
 
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
 
+
 def login_api(request):  # api when stranger login
 
     if request.method == "GET":
-        if not request.user.is_authenticated: # if user hasn't login
+        if not request.user.is_authenticated:  # if user hasn't login
             lab_hash = request.GET.get('next', '')
             lab_name = ''
             if lab_hash != '':
@@ -129,6 +134,7 @@ def login_api(request):  # api when stranger login
         else:
             return render(request, 'Page/log_in.html', {'lab_hash': lab_hash, 'lab_name': lab_name, 'wrong': 1})
 
+
 def logout_api(request):  # api for logging out
     logout(request)
     try:
@@ -136,6 +142,7 @@ def logout_api(request):  # api for logging out
         return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
     except:
         return HttpResponseRedirect("/")
+
 
 def check_in(request, lab_hash):  # when user checkin record in history
     person = Person.objects.get(user=request.user)
@@ -174,6 +181,7 @@ def check_in(request, lab_hash):  # when user checkin record in history
         error_message = "เซสชั่นหมดอายุ กรุณาสแกน QR Code ใหม่อีกครั้ง"
         return render(request, 'Page/error.html', {"error_message": error_message, "this_lab": this_lab})
 
+
 def check_out(request, lab_hash):  # api
     person = Person.objects.get(user=request.user)
     out_local_time = datetime.datetime.now(tz)
@@ -183,4 +191,3 @@ def check_out(request, lab_hash):  # api
     if request.GET.get('next_lab'):
         return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(request.GET['next_lab'],)))
     return render(request, 'Page/check_out_success.html', {"lab_name": log.lab.name})
-

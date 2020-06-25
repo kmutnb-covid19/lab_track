@@ -7,6 +7,7 @@ from kmutnbtrackapp.models import *
 
 tz = timezone.get_default_timezone()
 
+
 def compare_current_time():  # make check out valid
     now_datetime = datetime.datetime.now(tz)
     noon = now_datetime.replace(hour=12, minute=0, second=0, microsecond=0)  # noon time value
@@ -20,6 +21,7 @@ def compare_current_time():  # make check out valid
         return 3
     else:
         return 4
+
 
 def query_search(mode, keyword, start, stop, search_mode):
     """search data in DB by time and keyword and return query set"""

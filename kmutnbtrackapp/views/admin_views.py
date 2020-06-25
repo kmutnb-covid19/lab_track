@@ -24,8 +24,10 @@ from django.core import management
 from django.contrib import messages
 
 from kmutnbtrackapp.models import *
-from kmutnbtrackapp.views.help import tz, query_search, sort_lab_name_risk_search, sort_lab_name_risk_search, filter_risk_user
+from kmutnbtrackapp.views.help import tz, query_search, sort_lab_name_risk_search, sort_lab_name_risk_search, \
+    filter_risk_user
 from kmutnbtrackapp.dashboard import *
+
 
 def history_search(request, page=1):
     """Received from the client and searched for information from the server and then sent back to the client"""
@@ -77,6 +79,7 @@ def history_search(request, page=1):
     else:
         return HttpResponse("Permission Denied")
 
+
 def export_normal_csv(request):
     """export file csv log to user"""
     if request.user.is_superuser:
@@ -99,6 +102,7 @@ def export_normal_csv(request):
     else:
         return HttpResponse("Permission Denied")
 
+
 def risk_people_search(request):
     """Received from the client filter data and sent back to client"""
     if request.user.is_superuser:
@@ -117,6 +121,7 @@ def risk_people_search(request):
     else:
         return HttpResponse("Permission Denied")
 
+
 def export_risk_csv(request):
     """export file risk user csv log to user"""
     if request.user.is_superuser:
@@ -126,7 +131,8 @@ def export_risk_csv(request):
             risk_people_data, not_use = filter_risk_user(mode, keyword)
             response = HttpResponse(content_type='text/csv')
             writer = csv.writer(response)
-            writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
+            writer.writerow(
+                ['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
             for user in risk_people_data:
                 user = list(user)
                 user[4] = user[4].astimezone(tz)
@@ -139,18 +145,20 @@ def export_risk_csv(request):
     else:
         return HttpResponse("Permission Denied")
 
+
 def notify_confirm(request):
     if request.user.is_superuser:
         mode = request.GET.get('mode', '')
         keyword = request.GET.get('keyword', '')
         if keyword != "":
             return render(request, 'admin/notify_confirm.html', {'mode': mode,
-                                                                'keyword': keyword,
-                                                                })
+                                                                 'keyword': keyword,
+                                                                 })
         else:
             return redirect(risk_people_search)
     else:
         return HttpResponse("Permission Denied")
+
 
 def notify_user(request, mode, keyword):
     if request.user.is_superuser:
@@ -196,6 +204,7 @@ def notify_user(request, mode, keyword):
                            })
     else:
         return HttpResponse("Permission Denied")
+
 
 def generate_qr_code(request, lab_hash):
     if request.user.is_superuser:
@@ -249,6 +258,7 @@ def generate_qr_code(request, lab_hash):
     else:
         return HttpResponse("Permission Denied")
 
+
 def call_dashboard(request):
     """load metadata check update and format it before send data to dashboard"""
     if request.user.is_superuser:
@@ -284,6 +294,7 @@ def call_dashboard(request):
         })
     else:
         return HttpResponse("Permission Denied")
+
 
 def backup(request):
     """ manually back up database """

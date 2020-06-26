@@ -5,6 +5,7 @@ Imports should be grouped in the following order:
 2.Related third party imports.
 3.Local application/library specific imports.
 """
+import base64
 
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse
@@ -97,8 +98,9 @@ def signup_api(request, lab_hash, tel_no):  # when stranger click 'Signup and Ch
             login(request, u, backend='kmutnbtrackapp.auth_backend.PasswordLessAuthBackend')
 
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
+    tel_no = base64.b64decode(tel_no[2:-1].encode('ascii')).decode('ascii')
     lab_name = Lab.objects.get(hash=lab_hash).name
-    return render(request, 'Page/signup_form.html', {'lab_hash': lab_hash, 'lab_name': lab_name, 'tel_no': tel_no})
+    return render(request, 'Page/signup_form.html',{'lab_hash': lab_hash, 'lab_name': lab_name, 'tel_no': tel_no})
 
 
 def login_api(request):  # api when stranger login
@@ -116,13 +118,17 @@ def login_api(request):  # api when stranger login
     if request.method == "POST":
         lab_hash = request.GET.get('next', '')
         tel_no = request.POST['tel']
+        base64.b64encode(tel_no.encode('utf-8', errors='strict'))
+        tel_no_encode = base64.b64encode(tel_no.encode('utf-8', errors='strict'))
+        print(type(tel_no_encode))
         user_check = User.objects.filter(username=tel_no)
         if user_check:
             user = User.objects.get(username=tel_no)
-            login(request, user, backend='kmutnbtrackapp.auth_backend.PasswordLessAuthBackend') # login with username only
+            login(request, user,
+                  backend='kmutnbtrackapp.auth_backend.PasswordLessAuthBackend')  # login with username only
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
         else:
-            return HttpResponseRedirect(reverse('kmutnbtrackapp:signup', args=(lab_hash, tel_no,)))
+            return HttpResponseRedirect(reverse('kmutnbtrackapp:signup', args=(lab_hash, tel_no_encode,)))
 
 
 def logout_api(request):  # api for logging out

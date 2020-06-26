@@ -31,4 +31,6 @@ h5 {
 .dropdown-menu button {
     font-size: 17px;
 }
-
+.container-fluid input {
+    margin-top: 10px;
+}

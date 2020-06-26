@@ -104,7 +104,9 @@
         <img src="{% static 'images/desktop.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
         {{ lab_name }}
     </a>
-    <a class="ml-auto mr-1" style="color:white">Logged in as : {{ request.user.first_name }} </a>
+    <a class="ml-auto mr-1" style="color:white">
+        <img src="{% static 'images/people.png' %}" width="18" alt="username_pic">
+        Logged in as : {{ request.user.first_name }} </a>
     <a href="{% url 'kmutnbtrackapp:logout' %}?lab={{ lab_hash }}">
         <button class="btn btn-danger my-2 my-sm-0">
             Logout

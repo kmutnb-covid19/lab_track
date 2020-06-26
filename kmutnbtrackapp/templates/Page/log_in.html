@@ -12,6 +12,23 @@
     function Click_Sign_in_with_google() {
         location.href="{% url 'social:begin' 'google-oauth2' %}?next={{ lab_hash }}";
     }
+    function validate(evt) {
+      var theEvent = evt || window.event;
+
+      // Handle paste
+      if (theEvent.type === 'paste') {
+          key = event.clipboardData.getData('text/plain');
+      } else {
+      // Handle key press
+          var key = theEvent.keyCode || theEvent.which;
+          key = String.fromCharCode(key);
+      }
+      var regex = /[0-9]|\./;
+      if( !regex.test(key) ) {
+        theEvent.returnValue = false;
+        if(theEvent.preventDefault) theEvent.preventDefault();
+      }
+}
 </script>
 {% endblock %}
 
@@ -44,15 +61,11 @@
                     {% csrf_token %}
                     <input value="{{lab_hash}}" name="next" hidden>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Username</label>
-                        <input type="text" name="username" required  class="form-control" id="username" aria-describedby="emailHelp" placeholder="Enter Username">
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Password</label>
-                        <input type="password" name="password" required id="password" class="form-control" aria-describedby="emailHelp" placeholder="Enter Password">
+                        <label for="exampleInputEmail1">Tel. no</label>
+                        <input type="text" name="tel" onkeypress='validate(event)' required  class="form-control" id="tel" aria-describedby="emailHelp" placeholder="Enter tel no.">
                     </div>
                     <div class="col-md-12 text-center ">
-                        <button type="submit" class="btn btn-block mybtn btn-primary tx-tfm">Login</button>
+                        <button type="submit" class="btn btn-block mybtn btn-primary tx-tfm">Continue</button>
                     </div>
                     <div class="col-md-12 ">
                         <div class="login-or">
@@ -68,10 +81,6 @@
                             </a>
                         </p>
 
-                    </div>
-                    <div class="form-group">
-                        <p class="text-center">Don't have account? <a href="{% url 'kmutnbtrackapp:signup' %}?next={{ lab_hash }}" id="signup">Sign up here</a></p>
-                        <p class="text-center">Forgot password? <a href="{% url 'password_reset' %}?next={{ lab_hash }}" id="signup">Reset password here</a></p>
                     </div>
                 </form> 
             </div>

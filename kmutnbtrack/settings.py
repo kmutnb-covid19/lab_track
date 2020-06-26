@@ -107,7 +107,8 @@ AUTH_PASSWORD_VALIDATORS = []
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
+    'kmutnbtrackapp.auth_backend.PasswordLessAuthBackend',
+    'django.contrib.auth.backends.ModelBackend'
 )
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ['SOCIAL_AUTH_GOOGLE_OAUTH2_KEY']

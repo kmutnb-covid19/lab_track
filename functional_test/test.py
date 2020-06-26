@@ -1,5 +1,6 @@
 from django.test import LiveServerTestCase, TestCase
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from django.contrib.auth.models import User
 from kmutnbtrackapp.models import *
@@ -13,11 +14,14 @@ class LoginTest(LiveServerTestCase):
     port = 8001
 
     def setUp(self):
-        self.browser = webdriver.Firefox()
-        super_user = User.objects.create_superuser(username="0", password="0")
+        chrome_options = Options()
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--headless")
+        self.browser = webdriver.Chrome(options=chrome_options)
+        '''super_user = User.objects.create_superuser(username="0", password="0")
         lab_com = Lab.objects.create(name="Computer Lab",amount=10)
 
-        self.lab_com_hash = lab_com.hash
+        self.lab_com_hash = lab_com.hash'''
 
     def tearDown(self):
         self.browser.quit()
@@ -62,7 +66,7 @@ class LoginTest(LiveServerTestCase):
 
         room = self.browser.find_element_by_id('room_name').text
         self.assertIn('Computer Lab', room)
-        '''
+        
 
     def test_user_can_check_in(self):
         self.browser.get(self.live_server_url + "/lab/" + str(self.lab_com_hash))
@@ -101,6 +105,26 @@ class LoginTest(LiveServerTestCase):
 
         check_out_time = self.browser.find_element_by_id('check_out_time_id').text
         self.assertIn('11:59 PM', check_out_time)
+        '''
+    def test_how_you_like_that(self):
+        self.browser.get('https://www.youtube.com/watch?v=ioNng23DkIM')
+        time.sleep(2)
+        play_btn = self.browser.find_elements_by_xpath("//button[@class='ytp-large-play-button ytp-button']")
+        if play_btn:
+            self.browser.find_element_by_xpath("//button[@class='ytp-large-play-button ytp-button']").click()
+        else:
+            pass
+        time.sleep(10)
+        have_skip_btn = self.browser.find_elements_by_xpath("//button[@class='ytp-ad-skip-button ytp-button']")
+        if have_skip_btn:
+            self.browser.find_element_by_xpath("//button[@class='ytp-ad-skip-button ytp-button']").click()
+        else:
+            pass
+        time.sleep(180)
+        self.browser.quit()
+        self.setUp()
+        self.test_how_you_like_that()
+
 
 
 

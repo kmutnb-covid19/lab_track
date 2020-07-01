@@ -80,12 +80,24 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if "DB_PASSWORD" in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'django',
+            'USER': 'djangouser',
+            'PASSWORD': os.environ['DB_PASSWORD'],
+            'HOST': 'localhost',
+            'PORT': '3306',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 CACHES = {
     'default': {

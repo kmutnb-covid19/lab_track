@@ -10,7 +10,7 @@ app = Celery("project_name")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 app.conf.beat_schedule = {
-     # Everyday at 22:00
+    # Everyday at 22:00
     "backup": {
         "task": "core.tasks.backup",
         "schedule": crontab(hour=22, minute=00)

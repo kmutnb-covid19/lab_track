@@ -6,26 +6,24 @@ Imports should be grouped in the following order:
 3.Local application/library specific imports.
 """
 
-import os
 import csv
+
 import qrcode
-
 from PIL import Image
-from PIL import ImageFont
 from PIL import ImageDraw
-
-from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.urls import reverse
-from django.shortcuts import render, redirect
-from django.contrib.auth import logout, authenticate, login
-from django.core.mail import EmailMessage
-from django.core import management
+from PIL import ImageFont
 from django.contrib import messages
+from django.core import management
+from django.core.mail import EmailMessage
+from django.core.paginator import Paginator
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import redirect
+from django.urls import reverse
 
-from kmutnbtrackapp.models import *
-from kmutnbtrackapp.views.help import *
 from kmutnbtrackapp.dashboard import *
+from kmutnbtrackapp.views.help import *
+from kmutnbtrackapp.views.help import tz
+
 
 @superuser_login_required
 def history_search(request, page=1):
@@ -65,15 +63,32 @@ def history_search(request, page=1):
         next_url = "/".join(split_url)
 
     return render(request, 'admin/history_search.html',
-                    {'shown_history': shown_history,
-                    'keyword': keyword,
-                    'select_mode': mode,
-                    'start': start,
-                    'stop': stop,
-                    'current_page_number': page,
-                    'prev_url': prev_url,
-                    'next_url': next_url,
-                    })
+                  {'shown_history': shown_history,
+                   'keyword': keyword,
+                   'select_mode': mode,
+                   'start': start,
+                   'stop': stop,
+                   'current_page_number': page,
+                   'prev_url': prev_url,
+                   'next_url': next_url,
+                   })
+
+
+@supervisor_login_required
+def view_lab(request, lab_hash):
+    this_lab = Lab.objects.get(hash=lab_hash)
+    now_datetime = datetime.datetime.now(tz)
+    midnight_time = now_datetime.replace(hour=23, minute=59, second=59, microsecond=0)
+    current_people = History.objects.filter(lab=this_lab,
+                                            checkout__gte=now_datetime,
+                                            checkout__lte=midnight_time)
+    if request.GET.get('confirm') == 'true':
+        for person in current_people:
+            out_local_time = datetime.datetime.now(tz)
+            person.checkout = out_local_time
+            person.save()
+        return HttpResponseRedirect(reverse('kmutnbtrackapp:view_lab', args=(lab_hash,)))
+    return render(request, 'admin/clear_lab.html', {'this_lab': this_lab, 'shown_history': current_people})
 
 
 @superuser_login_required
@@ -89,13 +104,13 @@ def export_normal_csv(request):
     writer.writerow(['Student ID', 'Person Name', 'Lab Name', 'Check in time', 'Check out time'])
     for user in histories:
         writer.writerow([str(user.person.student_id),
-                            user.person,
-                            user.lab,
-                            user.checkin.astimezone(tz),
-                            user.checkout.astimezone(tz)])
+                         user.person,
+                         user.lab,
+                         user.checkin.astimezone(tz),
+                         user.checkout.astimezone(tz)])
     response['Content-Disposition'] = 'attachment; filename="file_log.csv"'
     return response
-    
+
 
 @superuser_login_required
 def risk_people_search(request):
@@ -109,10 +124,10 @@ def risk_people_search(request):
         risk_people_data, risk_people_notify = filter_risk_user(mode, keyword)
 
     return render(request, 'admin/risk_people_search.html',
-                    {'shown_history': risk_people_data,
-                    'keyword': keyword, 'select_mode': mode,
-                    })
-    
+                  {'shown_history': risk_people_data,
+                   'keyword': keyword, 'select_mode': mode,
+                   })
+
 
 @superuser_login_required
 def export_risk_csv(request):
@@ -134,7 +149,7 @@ def export_risk_csv(request):
         return response
     else:
         return redirect(risk_people_search)
-    
+
 
 @superuser_login_required
 def notify_confirm(request):
@@ -142,11 +157,11 @@ def notify_confirm(request):
     keyword = request.GET.get('keyword', '')
     if keyword != "":
         return render(request, 'admin/notify_confirm.html', {'mode': mode,
-                                                                'keyword': keyword,
-                                                                })
+                                                             'keyword': keyword,
+                                                             })
     else:
         return redirect(risk_people_search)
-    
+
 
 @superuser_login_required
 def notify_user(request, mode, keyword):
@@ -178,9 +193,9 @@ def notify_user(request, mode, keyword):
                 lab_name += str(each_lab) + ', '
             lab_name = lab_name[:-2]
             user_data[each_user_email] = {'student_id': student_id,
-                                            'first_last_name': first_last_name,
-                                            'user_email': each_user_email,
-                                            'lab_name': lab_name}
+                                          'first_last_name': first_last_name,
+                                          'user_email': each_user_email,
+                                          'lab_name': lab_name}
         subject = 'แจ้งเตือนกลุ่มผู้มีความเสี่ยงติดเชื้อ COVID-19'
         email = EmailMessage(subject, to=user_email)
         email.template_id = 'notify-labtrack'
@@ -188,13 +203,12 @@ def notify_user(request, mode, keyword):
         email.send()
 
         return render(request, 'admin/notify_status.html',
-                        {'notify_status': True,
-                        })
-    
+                      {'notify_status': True,
+                       })
 
-@superuser_login_required
+
+@supervisor_login_required
 def generate_qr_code(request, lab_hash):
-    
     site_url = "get_current_site(request)"
     lab_name = Lab.objects.get(hash=lab_hash).name
     qr = qrcode.QRCode(
@@ -242,12 +256,12 @@ def generate_qr_code(request, lab_hash):
         response = HttpResponse(f.read(), content_type="image/jpeg")
         response['Content-Disposition'] = 'inline; filename=' + f'media/{lab_name}_qrcode.jpg'
         return response
-    
 
-@superuser_login_required
+
+@supervisor_login_required
 def call_dashboard(request):
     """load metadata check update and format it before send data to dashboard"""
-    
+
     """load and manage metadata"""
     meta_data = get_data_metadata()
     dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(tz), "normal")
@@ -278,7 +292,7 @@ def call_dashboard(request):
         'histrogram_dump': json.dumps(histrogram_data),
         "histrogram_data": histrogram_data,
     })
-    
+
 
 @superuser_login_required
 def backup(request):
@@ -289,6 +303,3 @@ def backup(request):
 
     messages.info(request, 'Database has been backed up successfully!')
     return HttpResponseRedirect('/admin')
-
-
-

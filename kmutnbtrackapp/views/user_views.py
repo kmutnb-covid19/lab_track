@@ -5,14 +5,16 @@ Imports should be grouped in the following order:
 2.Related third party imports.
 3.Local application/library specific imports.
 """
+
 import base64
+import datetime
 
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.urls import reverse
-from django.shortcuts import render, redirect
 from django.contrib.auth import logout, authenticate, login
-from kmutnbtrackapp.auth_backend import PasswordLessAuthBackend
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.shortcuts import render
+from django.urls import reverse
 
+from kmutnbtrackapp.auth_backend import PasswordLessAuthBackend
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.views.help import tz, compare_current_time
 

@@ -6,11 +6,11 @@ Imports should be grouped in the following order:
 3.Local application/library specific imports.
 """
 
-from django.urls import reverse, reverse_lazy
-from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, INTERNAL_RESET_SESSION_TOKEN
 from django.contrib.auth.views import PasswordResetCompleteView
-from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, INTERNAL_RESET_SESSION_TOKEN
+from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
+
 from kmutnbtrackapp.models import *
 
 

@@ -1,8 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from django.http import HttpResponse
-from django.shortcuts import render
 from django.db.models import Q
+from django.shortcuts import render
 from django.utils import timezone
 
 from kmutnbtrackapp.models import *
@@ -97,10 +96,22 @@ def filter_risk_user(mode, keyword):
 
     return risk_people_data, risk_people_notify
 
+
 def superuser_login_required(func):
     def wrapper(request, *args, **kw):
         if request.user.is_superuser:
             return func(request, *args, **kw)
         else:
             return render(request, 'Page/error.html', {"error_message": "Permission denied"})
+
+    return wrapper
+
+
+def supervisor_login_required(func):
+    def wrapper(request, *args, **kw):
+        if request.user.is_superuser or request.user.groups.filter(name='Supervisor').exists():
+            return func(request, *args, **kw)
+        else:
+            return render(request, 'Page/error.html', {"error_message": "Permission denied"})
+
     return wrapper

@@ -15,37 +15,40 @@ Including another URLconf
 """
 
 from django.conf import settings
+from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth.views import PasswordResetDoneView
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import path, include
 from django.views.generic import TemplateView
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.conf.urls import url
-from django.contrib.auth.views import PasswordResetDoneView
 from django.views.generic.base import RedirectView
 
 from kmutnbtrackapp import views
-from kmutnbtrackapp.views import CustomPasswordResetView, CustomPasswordResetConfirmView, CustomPasswordResetCompleteView
 from kmutnbtrackapp.forms import CustomPasswordResetForm, CustomSetPasswordForm
+from kmutnbtrackapp.views import CustomPasswordResetView, CustomPasswordResetConfirmView, \
+    CustomPasswordResetCompleteView
+
 urlpatterns = [
     path('', include('kmutnbtrackapp.urls')),
     path('auth/', include('social_django.urls', namespace='social')),
-    path('privacy/', TemplateView.as_view(template_name="Page/privacy.html"),name='privacy_policy'),
+    path('privacy/', TemplateView.as_view(template_name="Page/privacy.html"), name='privacy_policy'),
     path('admin/qrcode/<str:lab_hash>/', views.generate_qr_code, name='generate_qr_code'),
+    path('admin/clear/<str:lab_hash>/', views.view_lab, name='view_lab'),
     path('admin/dashboard/', views.call_dashboard, name='dashboard'),
-    path('admin/history/search/', TemplateView.as_view(template_name="admin/history_search_main.html"),
-         name='admin_search'),
     path('admin/history/search/riskpeople/', views.risk_people_search, name='risk_people_search'),
     path('admin/history/search/riskpeople/<int:page>', views.risk_people_search),
     path('admin/history/search/riskpeople/notify_confirm/', views.notify_confirm, name='notify_confirm'),
     url(r'^admin/history/search/riskpeople/notify/(?P<mode>.+)/(?P<keyword>.+)/$', views.notify_user, name='notify'),
     path('admin/history/search/riskpeople/download_risk_csv/', views.export_risk_csv, name='download_risk_csv'),
-    path('admin/history/search/history/', RedirectView.as_view(url='/admin/history/search/history/1/', permanent=False), name='history_search'),
+    path('admin/history/search/history/', RedirectView.as_view(url='/admin/history/search/history/1/', permanent=False),
+         name='history_search'),
     path('admin/history/search/history/<int:page>/', views.history_search, name="history_search_function"),
     path('admin/history/search/history/download_normal_csv/', views.export_normal_csv, name='download_normal_csv'),
     path('admin/backup', views.backup, name='backup'),
     path('admin/', admin.site.urls, name='admin'),
-    url(r'^password_reset/$', CustomPasswordResetView.as_view(form_class=CustomPasswordResetForm), name='password_reset'),
+    url(r'^password_reset/$', CustomPasswordResetView.as_view(form_class=CustomPasswordResetForm),
+        name='password_reset'),
     url(r'^reset/done/(?P<next>.+)/$', CustomPasswordResetCompleteView.as_view(), name='password_reset_complete'),
     url(r'^password_reset/done/$', PasswordResetDoneView.as_view(), name='password_reset_done'),
     url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',

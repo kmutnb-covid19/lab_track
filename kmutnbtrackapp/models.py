@@ -1,8 +1,7 @@
-import os
-import datetime
 import random
+
+from django.contrib.auth.models import User
 from django.db import models
-from django.contrib.auth.models import User, AnonymousUser
 
 
 # Create your models here.

@@ -1,8 +1,8 @@
 from django import forms
-from django.template import loader
-from django.core.mail import EmailMessage
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm, SetPasswordForm
-from django.utils.translation import gettext, gettext_lazy as _
+from django.core.mail import EmailMessage
+from django.template import loader
+from django.utils.translation import gettext_lazy as _
 
 from .models import *
 

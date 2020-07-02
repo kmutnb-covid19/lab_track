@@ -25,7 +25,7 @@ from kmutnbtrackapp.views.help import *
 from kmutnbtrackapp.views.help import tz
 
 
-@supervisor_login_required
+@superuser_login_required
 def history_search(request, page=1):
     """Received from the client and searched for information from the server and then sent back to the client"""
     keyword = request.GET.get('keyword', '')

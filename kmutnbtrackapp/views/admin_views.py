@@ -87,7 +87,7 @@ def view_lab(request, lab_hash):
             out_local_time = datetime.datetime.now(tz)
             person.checkout = out_local_time
             person.save()
-        return HttpResponseRedirect(reverse('admin:kmutnbtrackapp_lab_changelist'))
+        return HttpResponseRedirect(reverse('kmutnbtrackapp:view_lab', args=(lab_hash,)))
     return render(request, 'admin/clear_lab.html', {'this_lab': this_lab, 'shown_history': current_people})
 
 

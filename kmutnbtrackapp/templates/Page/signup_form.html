@@ -23,37 +23,21 @@
             <div class="myform form ">
                 <div class="logo mb-3">
                     <div class="col-md-12 text-center">
-                        <h1>Sign up</h1>
+                        <h1>เข้าใช้งานครั้งแรก</h1>
+                    </div>
+                    <div class="text-center">
+                        <p>สำหรับการเข้าใช้งานครั้งแรก</p>
+                        <p> กรุณาระบุชื่อ - นามสกุล ก่อนเข้าใช้งาน</p>
                     </div>
                 </div>
-                {% if wrong == 1 %}
+                {% if wrong == 2 %}
                 <div class="col-md-12 text-center">
-                        <p style="color:red">Password ไม่ตรงกัน กรุณาลองใหม่อีกครั้ง</p>
-                </div>
-                {% elif wrong == 2 %}
-                <div class="col-md-12 text-center">
-                        <p style="color:red">Username นี้ ถูกใช้งานแล้ว กรุณาลองใหม่อีกครั้ง</p>
+                        <p style="color:red">เบอร์โทรศัพท์นี้ ถูกใช้งานแล้ว กรุณาลองใหม่อีกครั้ง</p>
                 </div>
                 {% endif %}
-                <form action="{% url 'kmutnbtrackapp:signup' %}?next={{ lab_hash }}" method="POST" enctype="multipart/form-data">
+                <form action="{% url 'kmutnbtrackapp:signup' lab_hash=lab_hash tel_no=tel_no %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <input value="{{ lab_hash }}" name="next" hidden>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Username</label>
-                        <input required type="text" name="username" class="form-control" aria-describedby="emailHelp" placeholder="Username">
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Password</label>
-                        <input required type="password" name="password" id="inputPassword" class="form-control" aria-describedby="passwordHelpBlock" placeholder="Password">
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Confirm password</label>
-                        <input required type="password" name="rePassword" id="rePassword" class="form-control" aria-describedby="passwordHelpBlock" placeholder="Confirm password">
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Email</label>
-                        <input required type="email" name="email" class="form-control" aria-describedby="emailHelp" placeholder="Email">
-                    </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1">First name</label>
                         <input required type="text" class="form-control" name="first_name" id="name" placeholder="John">
@@ -61,6 +45,10 @@
                     <div class="form-group">
                         <label for="exampleInputEmail1">Last name</label>
                         <input required type="text" class="form-control" name="last_name" id="surname" placeholder="Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Tel no.</label>
+                        <input readonly type="text" name="tel" class="form-control" aria-describedby="emailHelp" value="{{ tel_no }}">
                     </div>
                     <div class="col-md-12 text-center ">
                         <button type="submit" class="btn btn-block mybtn btn-primary tx-tfm">Sign up</button>

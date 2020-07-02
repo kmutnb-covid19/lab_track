@@ -5,6 +5,8 @@ Imports should be grouped in the following order:
 2.Related third party imports.
 3.Local application/library specific imports.
 """
+
+import base64
 import datetime
 
 from django.contrib.auth import logout, authenticate, login
@@ -12,6 +14,7 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
+from kmutnbtrackapp.auth_backend import PasswordLessAuthBackend
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.views.help import tz, compare_current_time
 
@@ -76,37 +79,30 @@ def username_check_api(request):
         return JsonResponse({"status": "already_taken"})
 
 
-def signup_api(request):  # when stranger click 'Signup and Checkin'
-    if request.method == "GET":
-        lab_hash = request.GET.get('next', '')
-        lab_name = Lab.objects.get(hash=lab_hash).name
-        return render(request, 'Page/signup_form.html', {'lab_hash': lab_hash, 'lab_name': lab_name})
+def signup_api(request, lab_hash, tel_no):  # when stranger click 'Signup and Checkin'
     # Receive data from POST
     if request.method == "POST":
         lab_hash = request.POST.get('next', '')
         lab_name = Lab.objects.get(hash=lab_hash).name
-        username = request.POST["username"]
-        email = request.POST['email']
-        password = request.POST['password']
-        password_confirm = request.POST['rePassword']
+        tel_no = request.POST["tel"]
         first_name = request.POST.get('first_name', '')
         last_name = request.POST.get('last_name', '')
         # Form is valid
-        if password != password_confirm:
-            return render(request, 'Page/signup_form.html', {'lab_hash': lab_hash, 'lab_name': lab_name, 'wrong': 1})
-        elif User.objects.filter(username=username).count() != 0:  # if username is not available
+        if User.objects.filter(username=tel_no).count() != 0:  # if username is not available
             return render(request, 'Page/signup_form.html', {'lab_hash': lab_hash, 'lab_name': lab_name, 'wrong': 2})
-        elif User.objects.filter(username=username).count() == 0:  # if username is available
+        elif User.objects.filter(username=tel_no).count() == 0:  # if username is available
             # create new User object and save it
-            u = User.objects.create(username=username, email=email, first_name=first_name, last_name=last_name)
-            u.set_password(password)  # bypassing Django password format check
+            u = User.objects.create(username=tel_no, first_name=first_name, last_name=last_name)
             u.save()
             # create new Person object
-            Person.objects.create(user=u, first_name=first_name, last_name=last_name, email=email, is_student=False)
+            Person.objects.create(user=u, first_name=first_name, last_name=last_name, is_student=False)
             # then login
-            login(request, u, backend='django.contrib.auth.backends.ModelBackend')
+            login(request, u, backend='kmutnbtrackapp.auth_backend.PasswordLessAuthBackend')
 
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
+    tel_no = base64.b64decode(tel_no[2:-1].encode('ascii')).decode('ascii')
+    lab_name = Lab.objects.get(hash=lab_hash).name
+    return render(request, 'Page/signup_form.html',{'lab_hash': lab_hash, 'lab_name': lab_name, 'tel_no': tel_no})
 
 
 def login_api(request):  # api when stranger login
@@ -123,17 +119,18 @@ def login_api(request):  # api when stranger login
 
     if request.method == "POST":
         lab_hash = request.GET.get('next', '')
-        lab_name = ''
-        if lab_hash != '':
-            lab_name = Lab.objects.get(hash=lab_hash).name
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)  # auth username and password
-        if user is not None:
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        tel_no = request.POST['tel']
+        base64.b64encode(tel_no.encode('utf-8', errors='strict'))
+        tel_no_encode = base64.b64encode(tel_no.encode('utf-8', errors='strict'))
+        print(type(tel_no_encode))
+        user_check = User.objects.filter(username=tel_no)
+        if user_check:
+            user = User.objects.get(username=tel_no)
+            login(request, user,
+                  backend='kmutnbtrackapp.auth_backend.PasswordLessAuthBackend')  # login with username only
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
         else:
-            return render(request, 'Page/log_in.html', {'lab_hash': lab_hash, 'lab_name': lab_name, 'wrong': 1})
+            return HttpResponseRedirect(reverse('kmutnbtrackapp:signup', args=(lab_hash, tel_no_encode,)))
 
 
 def logout_api(request):  # api for logging out

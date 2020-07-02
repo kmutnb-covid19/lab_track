@@ -7,7 +7,7 @@ app_name = "kmutnbtrackapp"
 
 urlpatterns = [
     path('', views.home),
-    path('signup/', views.signup_api, name='signup'), #
+    path('signup/<str:lab_hash>/<str:tel_no>', views.signup_api, name='signup'), #
     path('api/usernamecheck/', views.username_check_api),
     path('login/', views.login_api, name="login"), # page+api
     path("logout/", views.logout_api, name="logout"), # api

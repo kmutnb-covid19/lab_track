@@ -27,7 +27,10 @@ if os.path.isfile(dot_env_file):
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if "DB_PASSWORD" in os.environ:
+    DEBUG = False
+else:
+    DEBUG = True
 
 ALLOWED_HOSTS = ["labtrack.cony.codes", "localhost", "127.0.0.1"]
 
@@ -102,11 +105,6 @@ else:
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    },
-    'qr-code': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'qr-code-cache',
-        'TIMEOUT': 3600
     }
 }
 
@@ -119,7 +117,6 @@ AUTH_PASSWORD_VALIDATORS = []
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
-    'kmutnbtrackapp.auth_backend.PasswordLessAuthBackend',
     'django.contrib.auth.backends.ModelBackend'
 )
 
@@ -163,10 +160,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static_root/')
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static/'),
-)
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # Mailgun api
 ANYMAIL = {

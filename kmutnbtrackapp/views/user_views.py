@@ -9,18 +9,17 @@ Imports should be grouped in the following order:
 import base64
 import datetime
 
-from django.contrib.auth import logout, authenticate, login
+from django.contrib.auth import logout, login
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-from kmutnbtrackapp.auth_backend import PasswordLessAuthBackend
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.views.help import tz, compare_current_time
 
 
 def home(request):
-    if request.GET:
+    if request.GET.get('next'):
         lab_hash = request.GET.get('next')
         if not request.user.is_authenticated:  # check if user do not login
             return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_hash,)))
@@ -42,10 +41,8 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
     else:  # if user already login
         person = Person.objects.get(user=request.user)
         now_datetime = datetime.datetime.now(tz)
-
-        if History.objects.filter(person=person,
-                                  checkin__lte=now_datetime,
-                                  checkout__gte=now_datetime).exists():  # if have lastest history which checkout not at time
+        # if have latest history which checkout not at time
+        if History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime).exists():
             last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
             last_lab_hist = last_lab_hist[0]
 
@@ -53,14 +50,12 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
                 return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_lab_hist.lab})
 
             else:  # if latest lab is another lab
-                return render(request, 'Page/lab_checkout.html', {"last_lab": last_lab_hist.lab,
-                                                                  "new_lab": this_lab})
+                return render(request, 'Page/lab_checkout.html', {"last_lab": last_lab_hist.lab, "new_lab": this_lab})
 
         else:  # goto checkin page
             time_option = compare_current_time()
             midnight_time = now_datetime.replace(hour=23, minute=59, second=59, microsecond=0)
-            current_people = History.objects.filter(lab=this_lab,
-                                                    checkout__gte=now_datetime,
+            current_people = History.objects.filter(lab=this_lab, checkout__gte=now_datetime,
                                                     checkout__lte=midnight_time).count()
             return render(request, 'Page/lab_checkin_new.html', {"lab_name": this_lab.name,
                                                                  "lab_hash": this_lab.hash,
@@ -97,16 +92,15 @@ def signup_api(request, lab_hash, tel_no):  # when stranger click 'Signup and Ch
             # create new Person object
             Person.objects.create(user=u, first_name=first_name, last_name=last_name, is_student=False)
             # then login
-            login(request, u, backend='kmutnbtrackapp.auth_backend.PasswordLessAuthBackend')
+            login(request, u, backend='django.contrib.auth.backends.ModelBackend')
 
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
     tel_no = base64.b64decode(tel_no[2:-1].encode('ascii')).decode('ascii')
     lab_name = Lab.objects.get(hash=lab_hash).name
-    return render(request, 'Page/signup_form.html',{'lab_hash': lab_hash, 'lab_name': lab_name, 'tel_no': tel_no})
+    return render(request, 'Page/signup_form.html', {'lab_hash': lab_hash, 'lab_name': lab_name, 'tel_no': tel_no})
 
 
 def login_api(request):  # api when stranger login
-
     if request.method == "GET":
         if not request.user.is_authenticated:  # if user hasn't login
             lab_hash = request.GET.get('next', '')
@@ -122,12 +116,11 @@ def login_api(request):  # api when stranger login
         tel_no = request.POST['tel']
         base64.b64encode(tel_no.encode('utf-8', errors='strict'))
         tel_no_encode = base64.b64encode(tel_no.encode('utf-8', errors='strict'))
-        print(type(tel_no_encode))
         user_check = User.objects.filter(username=tel_no)
         if user_check:
             user = User.objects.get(username=tel_no)
             login(request, user,
-                  backend='kmutnbtrackapp.auth_backend.PasswordLessAuthBackend')  # login with username only
+                  backend='django.contrib.auth.backends.ModelBackend')  # login with username only
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
         else:
             return HttpResponseRedirect(reverse('kmutnbtrackapp:signup', args=(lab_hash, tel_no_encode,)))
@@ -135,11 +128,11 @@ def login_api(request):  # api when stranger login
 
 def logout_api(request):  # api for logging out
     logout(request)
-    try:
-        lab_hash = request.GET.get("lab")
-        return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
-    except:
+    lab_hash = request.GET.get("lab")
+    if lab_hash is None:
         return HttpResponseRedirect("/")
+    else:
+        return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
 
 
 def check_in(request, lab_hash):  # when user checkin record in history

@@ -19,6 +19,11 @@ from kmutnbtrackapp.views.help import tz, compare_current_time
 
 
 def home(request):
+    if request.GET.get('next'):
+        lab_hash = request.GET.get('next')
+        if not request.user.is_authenticated:  # check if user do not login
+            return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_hash,)))
+        return HttpResponseRedirect(reverse("kmutnbtrackapp:lab_home", args=(lab_hash,)))
     return HttpResponse('Waiting for beautiful homepage....')
 
 

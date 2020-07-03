@@ -9,12 +9,11 @@ Imports should be grouped in the following order:
 import base64
 import datetime
 
-from django.contrib.auth import logout, authenticate, login
+from django.contrib.auth import logout, login
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-from kmutnbtrackapp.auth_backend import PasswordLessAuthBackend
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.views.help import tz, compare_current_time
 
@@ -122,7 +121,6 @@ def login_api(request):  # api when stranger login
         tel_no = request.POST['tel']
         base64.b64encode(tel_no.encode('utf-8', errors='strict'))
         tel_no_encode = base64.b64encode(tel_no.encode('utf-8', errors='strict'))
-        print(type(tel_no_encode))
         user_check = User.objects.filter(username=tel_no)
         if user_check:
             user = User.objects.get(username=tel_no)

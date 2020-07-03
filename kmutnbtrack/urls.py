@@ -14,20 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.conf import settings
 from django.conf.urls import url
-from django.conf.urls.static import static
 from django.contrib import admin
-from django.contrib.auth.views import PasswordResetDoneView
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import path, include
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
 from kmutnbtrackapp import views
-from kmutnbtrackapp.forms import CustomPasswordResetForm, CustomSetPasswordForm
-from kmutnbtrackapp.views import CustomPasswordResetView, CustomPasswordResetConfirmView, \
-    CustomPasswordResetCompleteView
 
 urlpatterns = [
     path('', include('kmutnbtrackapp.urls')),
@@ -47,13 +40,4 @@ urlpatterns = [
     path('admin/history/search/history/download_normal_csv/', views.export_normal_csv, name='download_normal_csv'),
     path('admin/backup', views.backup, name='backup'),
     path('admin/', admin.site.urls, name='admin'),
-    url(r'^password_reset/$', CustomPasswordResetView.as_view(form_class=CustomPasswordResetForm),
-        name='password_reset'),
-    url(r'^reset/done/(?P<next>.+)/$', CustomPasswordResetCompleteView.as_view(), name='password_reset_complete'),
-    url(r'^password_reset/done/$', PasswordResetDoneView.as_view(), name='password_reset_done'),
-    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
-        CustomPasswordResetConfirmView.as_view(form_class=CustomSetPasswordForm), name='password_reset_confirm'),
-
 ]
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)
-urlpatterns += staticfiles_urlpatterns()

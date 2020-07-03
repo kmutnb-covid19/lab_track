@@ -88,7 +88,7 @@ def view_lab(request, lab_hash):
             person.checkout = out_local_time
             person.save()
         return HttpResponseRedirect(reverse('kmutnbtrackapp:view_lab', args=(lab_hash,)))
-    return render(request, 'admin/clear_lab.html', {'this_lab': this_lab, 'shown_history': current_people})
+    return render(request, 'admin/view_lab.html', {'this_lab': this_lab, 'shown_history': current_people})
 
 
 @superuser_login_required
@@ -209,7 +209,6 @@ def notify_user(request, mode, keyword):
 
 @supervisor_login_required
 def generate_qr_code(request, lab_hash):
-    site_url = "get_current_site(request)"
     lab_name = Lab.objects.get(hash=lab_hash).name
     qr = qrcode.QRCode(
         version=1,
@@ -246,7 +245,6 @@ def generate_qr_code(request, lab_hash):
             (width, baseline), (offset_x, offset_y) = font.font.getsize(lab_name)
 
         draw.text((82, 75 - ascent), lab_name, (255, 255, 255), font=font)
-
 
     else:
         draw.text((82, 75 - ascent), lab_name, (255, 255, 255), font=font)

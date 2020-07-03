@@ -7,10 +7,10 @@ app_name = "kmutnbtrackapp"
 
 urlpatterns = [
     path('', views.home),
-    path('signup/<str:lab_hash>/<str:tel_no>', views.signup_api, name='signup'), #
+    path('signup/<str:lab_hash>/<str:tel_no>', views.signup_api, name='signup'),
     path('api/usernamecheck/', views.username_check_api),
-    path('login/', views.login_api, name="login"), # page+api
-    path("logout/", views.logout_api, name="logout"), # api
+    path('login/', views.login_api, name="login"),
+    path("logout/", views.logout_api, name="logout"),
     path('lab/', RedirectView.as_view(url="/", permanent=False)),
     path('lab/<str:lab_hash>/', views.lab_home_page, name='lab_home'),
     path('home/', views.home, name='home'),

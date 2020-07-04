@@ -1,7 +1,7 @@
 import datetime
 import json
 import time
-
+from kmutnbtrackapp.views.help import tz
 
 def get_data_metadata():
     """Load metadata file as json"""
@@ -63,7 +63,6 @@ def prepare_liner_data(meta_data):
 
 def prepare_single_liner_data(meta_data):
     """Prepare liner chart data before send to template"""
-    # format example [new Date(2015, 0, 1), 5]
     classify_data = {}
     for lab_name in meta_data["lab"]:
         duplicate = {}
@@ -79,3 +78,18 @@ def prepare_single_liner_data(meta_data):
                          duplicate[day]])
         classify_data[lab_name] = data
     return classify_data
+
+
+def prepare_room_status(lab, user):
+    room_status = {}
+    for lab_properties in lab:
+        room_status[lab_properties['name']] = {}
+        room_status[lab_properties['name']]['max'] = lab_properties['max_number_of_people']
+        room_status[lab_properties['name']]['use'] = 0
+
+    on_use_user = user.filter(checkin__lte=datetime.datetime.now(tz),
+                             checkout__gte=datetime.datetime.now(tz) + datetime.timedelta(minutes=1))
+
+    for room_name in on_use_user:
+        room_status[str(room_name)]['use'] += 1
+    return room_status

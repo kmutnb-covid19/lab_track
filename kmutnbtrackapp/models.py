@@ -18,7 +18,6 @@ class Lab(models.Model):
     def __str__(self):
         return self.name
 
-
 class Person(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50, default="", blank=True)

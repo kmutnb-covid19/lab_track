@@ -29,11 +29,13 @@
         </div>
     </upnav>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
     <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
       google.charts.setOnLoadCallback(drawLineChart);
       google.charts.setOnLoadCallback(draw_single_liner_Chart);
+      google.charts.setOnLoadCallback(donutChart);
 
       function draw_single_liner_Chart() {
           var key = document.getElementById("select_graph").value;
@@ -104,7 +106,45 @@
 
         chart.draw(data, options);
       }
+
+
+      function donutChart() {
+        var key = document.getElementById("select_graph").value;
+        var data = {{room_status|safe}}[key]
+        console.log(data)
+        var data = [['User count', 'Out of max'], ['user in use', data['use']], ['Remaining slot', data['max']-data['use']]]
+        console.log(data)
+        var data = google.visualization.arrayToDataTable(data)
+
+        var options = {
+          pieHole: 0.6,
+          colors: ['#00afdb', '#cdcdcd'],
+          pieSliceText: 'none',
+          legend: { position: 'none' },
+          tooltip: { text: 'percentage' },
+          tooltip: { textStyle: { fontSize: 12 } }
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('donutchart1'));
+        chart.draw(data, options);
+      }
+      function changeChart() {
+         draw_single_liner_Chart();
+         donutChart();
+      }
     </script>
+    <style>
+    .donutCell
+    {
+        position: relative;
+    }
+
+    .donutDiv
+    {
+        width: 256px;
+        height: 256px;
+    }
+    </style>
     <title>Statistic Dashboard</title>
 </head>
 <body>
@@ -113,14 +153,15 @@
     <div id="chart_div" style="width: 60%; "></div>
     <div id="pie_chart" style="width: 900px; height: 500px;"></div>
     <center>
-        <select id="select_graph" onchange="draw_single_liner_Chart()">
+        <select id="select_graph" onchange="changeChart()">
             {% for key,value in histrogram_data.items %}
                <option value="{{ key }}">{{ key }}</option>
             {% endfor %}
         </select>
     </center>
     <div id="histrogram" style="width: 60%;"></div>
-    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <div id="donutchart1" class="donutDiv"></div>
+
 
 </body>
 

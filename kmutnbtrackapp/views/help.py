@@ -59,7 +59,6 @@ def query_search(mode, keyword, start, stop, search_mode):
                 histories = histories.filter(Q(person__last_name__startswith=keyword[1]))
         elif mode == "lab":
             histories = histories.filter(Q(lab__name__startswith=keyword))
-
     return histories
 
 

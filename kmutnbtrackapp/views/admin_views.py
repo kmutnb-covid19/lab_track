@@ -40,7 +40,6 @@ def history_search(request, page=1):
     shown_history = p.page(page)
 
     split_url = request.get_full_path().split("/")
-    print(split_url)
     if page == 1:
         prev_url = None
 
@@ -62,7 +61,6 @@ def history_search(request, page=1):
 
         split_url[-2] = str(page + 1)
         next_url = "/".join(split_url)
-
     return render(request, 'admin/history_search.html',
                   {'shown_history': shown_history,
                    'keyword': keyword,
@@ -102,7 +100,7 @@ def export_normal_csv(request):
     histories = query_search(mode, keyword, start, stop, "normal")
     response = HttpResponse(content_type='text/csv')
     writer = csv.writer(response)
-    writer.writerow(['Student ID', 'Person Name', 'Lab Name', 'Check in time', 'Check out time'])
+    writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
     for user in histories:
         writer.writerow([str(user.person.student_id),
                          user.person,
@@ -281,16 +279,18 @@ def call_dashboard(request):
                 str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] = 1
     meta_data["latest time"] = datetime.datetime.now(tz).strftime('%Y-%m-%dT%H:%M:%S.%f')
     write_metadata(meta_data)
-
     """prepare data before sent to template"""
     pie_data = prepare_pie_data(meta_data)
     liner_data = prepare_liner_data(meta_data)
     histrogram_data = prepare_single_liner_data(meta_data)
+    room_stauts = prepare_room_status(Lab.objects.values('name', 'max_number_of_people'), History.objects)
+    print(room_stauts)
     return render(request, 'admin/dashboard.html', {
         'pie_data': json.dumps(pie_data),
         'liner_data': json.dumps(liner_data),
         'histrogram_dump': json.dumps(histrogram_data),
         "histrogram_data": histrogram_data,
+        "room_status": json.dumps(room_stauts),
     })
 
 

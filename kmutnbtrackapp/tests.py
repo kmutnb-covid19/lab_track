@@ -23,7 +23,7 @@ from kmutnbtrackapp.models import History, Person, Lab, User
 
 utc=pytz.UTC
 class Searching_test(LiveServerTestCase):
-    def generate_history(self, count, person_list, lab_list, start, end):
+    def generate_history(count, person_list, lab_list, start, end):
         def random_datetime(start, end):
             """
             This function will return a random datetime between two datetime 
@@ -56,10 +56,10 @@ class Searching_test(LiveServerTestCase):
             a.checkin=checkin_time
             a.save()
 
-    def setUp(self):
-        labA = Lab.objects.create(name="computer", amount=10)
-        labB = Lab.objects.create(name="ece", amount=10)
-        labC = Lab.objects.create(name="physic", amount=10)
+    def setUp():
+        labA = Lab.objects.create(name="computer", max_number_of_people=10)
+        labB = Lab.objects.create(name="ece", max_number_of_people=10)
+        labC = Lab.objects.create(name="physic", max_number_of_people=10)
         lablist = [labA, labB, labC]
         
         person_list = []    

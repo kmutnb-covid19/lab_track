@@ -7,7 +7,19 @@
 {% endblock %}
 
 {% block script %}
-
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (sessionStorage.getItem("tel")) {
+            const phoneNumber = sessionStorage.getItem('tel')
+            let telInput = document.getElementById("telInput")
+            telInput.value = phoneNumber
+        }
+        else{
+            $("form").prepend("<p style='color:#FF0000;'>กรุณาสแกน QR Code ใหม่อีกครั้ง</p>");
+            $("#submit").prop("disabled", true);
+        }
+    })
+</script>
 {% endblock %}
 {% block content %}
 <!-- navbar LabTrack -->
@@ -38,9 +50,8 @@
                         <p style="color:red">เบอร์โทรศัพท์นี้ ถูกใช้งานแล้ว กรุณาลองใหม่อีกครั้ง</p>
                 </div>
                 {% endif %}
-                <form action="{% url 'kmutnbtrackapp:signup' lab_hash=lab_hash tel_no=tel_no %}" method="POST" enctype="multipart/form-data">
+                <form action="{% url 'kmutnbtrackapp:signup' lab_hash=lab_hash %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <input value="{{ lab_hash }}" name="next" hidden>
                     <div class="form-group">
                         <label for="exampleInputEmail1">First name</label>
                         <input required type="text" class="form-control" name="first_name" id="name" placeholder="John">
@@ -51,10 +62,10 @@
                     </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1">Tel no.</label>
-                        <input readonly type="text" name="tel" class="form-control" aria-describedby="emailHelp" value="{{ tel_no }}">
+                        <input readonly id="telInput" type="text" name="tel" class="form-control" aria-describedby="emailHelp" value="">
                     </div>
                     <div class="col-md-12 text-center ">
-                        <button type="submit" class="btn btn-block mybtn btn-primary tx-tfm">Sign up</button>
+                        <button type="submit" id="submit" class="btn btn-block mybtn btn-primary tx-tfm">Sign up</button>
                     </div>
                 </form>
             </div>

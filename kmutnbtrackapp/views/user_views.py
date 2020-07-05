@@ -8,6 +8,7 @@ Imports should be grouped in the following order:
 
 import base64
 import datetime
+import re
 
 from django.contrib.auth import logout, login
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
@@ -69,8 +70,8 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
 def login_api(request):  # api when stranger login
     if request.method == "GET":
         if not request.user.is_authenticated:  # if user hasn't login
-            lab_hash = request.GET.get('next', '')
             lab_name = ''
+            lab_hash = request.GET.get('next', '')
             if lab_hash != '':
                 lab_name = Lab.objects.get(hash=lab_hash).name
             return render(request, 'Page/log_in.html', {'lab_hash': lab_hash, 'lab_name': lab_name})
@@ -80,27 +81,27 @@ def login_api(request):  # api when stranger login
     if request.method == "POST":
         lab_hash = request.GET.get('next', '')
         tel_no = request.POST['tel']
-        tel_no_encode = base64.b64encode(tel_no.encode('utf-8', errors='strict'))
         if User.objects.filter(username=tel_no).exists(): # if phone number already in database
             user = User.objects.get(username=tel_no)
             login(request, user,
                   backend='django.contrib.auth.backends.ModelBackend')  # login with username only
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
         else: # phone number not in database
-            return HttpResponseRedirect(reverse('kmutnbtrackapp:signup', args=(lab_hash, tel_no_encode,)))
+            return HttpResponseRedirect(reverse('kmutnbtrackapp:signup', args=(lab_hash,)))
 
 
-def signup_api(request, lab_hash, tel_no):  # when stranger click 'Signup and Checkin'
+def signup_api(request, lab_hash):  # when stranger click 'Signup and Checkin'
     if request.method == "GET":
-        tel_no = base64.b64decode(tel_no[2:-1].encode('ascii')).decode('ascii')
         lab_name = Lab.objects.get(hash=lab_hash).name
-        return render(request, 'Page/signup_form.html', {'lab_hash': lab_hash, 'lab_name': lab_name, 'tel_no': tel_no})
+        return render(request, 'Page/signup_form.html', {'lab_hash': lab_hash, 'lab_name': lab_name,})
     
     # Receive data from POST
     if request.method == "POST":
-        lab_hash = request.POST.get('next', '')
         lab_name = Lab.objects.get(hash=lab_hash).name
         tel_no = request.POST["tel"]
+        if not re.match(r"[0-9]|\.", tel_no): # if input is not phone number
+            error_message = "รูปแบบเบอร์ไม่ถูกต้อง กรุณาสแกน QR Code ใหม่อีกครั้ง"
+            return render(request, 'Page/error.html', {"error_message": error_message})
         first_name = request.POST.get('first_name', '')
         last_name = request.POST.get('last_name', '')
         # Form is valid

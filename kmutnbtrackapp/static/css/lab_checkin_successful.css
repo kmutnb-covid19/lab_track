@@ -10,10 +10,7 @@
 .dropdown-toggle:after {
     color: #ffffff;
 }
-#checkin_img {
-    width: 30px;
-}
-#checkout_img {
+#checkin_img, #checkout_img {
     width: 30px;
 }
 .container {

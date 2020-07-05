@@ -59,7 +59,7 @@
                 {% endif %}
                 <form action="{% url 'kmutnbtrackapp:login' %}?next={{ lab_hash }}" method="post" name="login">
                     {% csrf_token %}
-                    <input value="{{lab_hash}}" name="next" hidden>
+                    
                     <div class="form-group">
                         <label for="exampleInputEmail1">Tel. no</label>
                         <input type="tel" name="tel" minlength="10" maxlength="10" onkeypress='validate(event)' required  class="form-control" id="tel" aria-describedby="emailHelp" placeholder="08xxxxx">

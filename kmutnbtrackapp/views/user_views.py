@@ -50,7 +50,7 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
                 return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_lab_hist.lab})
 
             else:  # if latest lab is another lab
-                return render(request, 'Page/lab_checkout.html', {"last_lab": last_lab_hist.lab, "new_lab": this_lab})
+                return render(request, 'Page/check_out_prev_lab_before.html', {"last_lab": last_lab_hist.lab, "new_lab": this_lab})
 
         else:  # goto checkin page
             time_option = compare_current_time()
@@ -64,6 +64,8 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
                                                                  "time_now_minute": now_datetime.minute + 5,
                                                                  "current_people": current_people
                                                                  })  # render page for checkin
+
+
 def login_api(request):  # api when stranger login
     if request.method == "GET":
         if not request.user.is_authenticated:  # if user hasn't login
@@ -138,7 +140,7 @@ def check_in(request, lab_hash):  # when user checkin record in history
             last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
             if last_lab_hist.exists():  # if have a history that intersect between now
                 if last_lab_hist[0].lab.hash != lab_hash:  # if latest lab is same as the going lab
-                    return render(request, 'Page/lab_checkout.html', {"lab_hash_check_out": last_lab_hist[0].lab,
+                    return render(request, 'Page/check_out_prev_lab_before.html', {"lab_hash_check_out": last_lab_hist[0].lab,
                                                                       "new_lab": this_lab})
                 else:  # if latest lab is another lab
                     last_hist = History.objects.get(person=person, lab=this_lab, checkin__lte=now_datetime,

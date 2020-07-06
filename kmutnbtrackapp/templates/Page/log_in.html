@@ -7,7 +7,6 @@
 {% endblock %}
 
 {% block script %}
-<script type="text/javascript" src="{% static '/js/log_in.js' %}"></script>
 <script type="text/javascript">
     function Click_Sign_in_with_google() {
         location.href="{% url 'social:begin' 'google-oauth2' %}?next={{ lab_hash }}";
@@ -28,6 +27,10 @@
             theEvent.returnValue = false;
             if(theEvent.preventDefault) theEvent.preventDefault();
         }
+    }
+    function SaveTel(){
+        let phoneNumber = document.getElementById("tel").value
+        sessionStorage.setItem('tel', phoneNumber)
     }
 </script>
 {% endblock %}
@@ -57,12 +60,12 @@
                     <p style="color:red">Username หรือ Password ผิด กรุณาลองใหม่อีกครั้ง</p>
                 </div>
                 {% endif %}
-                <form action="{% url 'kmutnbtrackapp:login' %}?next={{ lab_hash }}" method="post" name="login">
+                <form action="{% url 'kmutnbtrackapp:login' %}?next={{ lab_hash }}" method="post" name="login" onsubmit="SaveTel()">
                     {% csrf_token %}
-                    
+                    <input value="{{ lab_hash }}" name="next" hidden>
                     <div class="form-group">
                         <label for="exampleInputEmail1">Tel. no</label>
-                        <input type="tel" name="tel" minlength="10" maxlength="10" onkeypress='validate(event)' required  class="form-control" id="tel" aria-describedby="emailHelp" placeholder="08xxxxx">
+                        <input type="tel" name="tel" class="form-control" id="tel" minlength="9" maxlength="10" onkeypress='validate(event)' required   aria-describedby="emailHelp" placeholder="08xxxxx">
                     </div>
                     <div class="col-md-12 text-center ">
                         <button type="submit" class="btn btn-block mybtn btn-primary tx-tfm">Continue</button>

@@ -1,11 +1,16 @@
 
+/* init html,navbar,content */
 .navbar-brand {
     cursor: default;
 }
-#checkin_img {
-    width: 30px;
+.dropdown-toggle {
+    border: none;
+    color: #ffffff;
 }
-#checkout_img {
+.dropdown-toggle:after {
+    color: #ffffff;
+}
+#checkin_img, #checkout_img {
     width: 30px;
 }
 .container {
@@ -13,15 +18,103 @@
     font-family: 'Kanit',sans-serif;
     margin-top: 2% ;
 }
-h4 {
-    font-size: 40px;
+.alert-success {
+    background-color: #a0dda0;
+    border-color: #a0dda0;
 }
-p {
-    font-size: 25px;
+h4 {
+    font-size: 50px;
+}
+.room-name {
+    font-size: 30px;
+}
+.showtime {
+    font-size: 20px;
 }
 .alert-primary {
-    background-color: #355C7D;
-    border-color: #355C7D;
+    background-color: #1261A0;
+    border-color: #1261A0;
     color: #ffffff;
     font-weight: lighter;
+}
+.btn-checkout {
+    border-radius: 50px;
+}
+
+/* Extra small devices (portrait phones, less than 576px) */
+@media (max-width: 575.98px) {
+    h4 {
+        font-size: 3rem;
+    }
+    .room-name {
+        font-size: 2rem;
+    }
+    .showtime {
+        font-size: 24px;
+    }
+    .time-checkin, .time-checkout {
+        font-size: 20px;
+    }
+    #checkin_img, #checkout_img {
+        width: 20px;
+    }
+    .navbar-brand {
+        font-size: 25px;
+    }
+    .navbar-brand img {
+        width: 35px;
+    }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    h4 {
+        font-size: 3rem;
+    }
+    .room-name {
+        font-size: 2rem;
+    }
+    .showtime {
+        font-size: 1rem;
+    }
+    .time-checkin, .time-checkout {
+        font-size: 20px;
+    }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    h4 {
+        font-size: 3rem;
+    }
+    .room-name {
+        font-size: 2rem;
+    }
+    .showtime {
+        font-size: 2rem;
+    }
+    .time-checkin, .time-checkout {
+        font-size: 30px;
+    }
+}
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) and (max-width: 1366.98px) {
+    h4 {
+        font-size: 4rem;
+    }
+    .room-name {
+        font-size: 3rem;
+    }
+    .showtime {
+        font-size: 2rem;
+    }
+    .time-checkin, .time-checkout {
+        font-size: 30px;
+    }
+    .room-name img {
+        width: 50px;
+    }
+    .btn-logout {
+        font-size: 30px;
+    }
 }

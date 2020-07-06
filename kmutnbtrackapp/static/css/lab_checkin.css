@@ -1,16 +1,23 @@
 /* init html,navbar,content */
 .navbar-brand {
     cursor: default;
+    font-family: 'Kanit',sans-serif;
 }
-.dropdown-toggle {
+.btn-username {
+    font-family: 'Kanit',sans-serif;
+}
+.dropdown-user {
     border: none;
     color: #ffffff;
 }
-.dropdown-toggle:after {
+.dropdown-user:after {
     color: #ffffff;
 }
-.dropdown {
+.checkout_time {
     display: inline;
+}
+#checkout_img {
+    width: 30px;
 }
 .container {
     font-family: 'Kanit',sans-serif;
@@ -21,33 +28,108 @@
     background-color:#1261A0;
     margin-top: 2% ;
 }
-p,label,button {
-    font-size: 25px;
-    font-weight: lighter;
-}
 h5 {
     font-size: 30px;
 }
 #dropdownMenu2 {
     background-color: #ffffff;
     color: black;
-    font-size: 17px;
+    font-size: 20px;
 }
 .container-fluid input {
     margin-top: 10px;
 }
+.btn-danger {
+    border-radius: 50px;
+    background-color: none;
+    border-color: red;
+    border-width: 2px;
+}
+.btn-checkin {
+    border-radius: 25px;
+    width: 50%;
+}
 
 /* Extra small devices (portrait phones, less than 576px) */
 @media (max-width: 575.98px) {
-
+    .room-name {
+        font-size: 2rem;
+    }
+    #checkout_img {
+        width: 20px;
+    }
+    .navbar-brand {
+        font-size: 25px;
+    }
+    .navbar-brand img {
+        width: 35px;
+    }
+    .amount-people {
+        font-size: 17px;
+    }
+    label.checkout_select_time, .checkout_time option, .btn-timeselect, .input-time input {
+        font-size: 18px;
+    }
 }
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
-    
+    .navbar-brand {
+        font-size: 25px;
+    }
+    .navbar-brand img {
+        width: 35px;
+    }
+    .room-name {
+        font-size: 2rem;
+    }
+    .amount-people, label.checkout_select_time,  .checkout_time option, .btn-timeselect, .input-time input {
+        font-size: 18px;
+    }
 }
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
-  
+    .navbar-brand {
+        font-size: 25px;
+    }
+    .navbar-brand img {
+        width: 35px;
+    }
+    .room-name {
+        font-size: 2rem;
+    }
+    .amount-people {
+        font-size: 21px;
+    }
+    label.checkout_select_time, .btn-checkin {
+        font-size: 20px;
+    }
+    .checkout_time option, .btn-timeselect, .input-time input {
+        font-size: 18px;
+    }
+}
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) and (max-width: 1366.98px) {
+    .navbar-brand {
+        font-size: 25px;
+    }
+    .navbar-brand img {
+        width: 35px;
+    }
+    .room-name {
+        font-size: 3rem;
+    }
+    .room-name img {
+        width: 50px;
+    }
+    .amount-people,  label.checkout_select_time {
+        font-size: 25px;
+    }
+    .checkout_time option, .btn-timeselect, .input-time input {
+        font-size: 21px;
+    }
+    .btn-checkin {
+        font-size: 22px;
+    }
 }

@@ -1,56 +1,72 @@
-/* Init html, body */
-html {
-    height: 100%;
+/* init html,navbar,content */
+.container {
+    padding-top:4.2rem;
+    padding-bottom:4.2rem;
+    font-family: 'Kanit',sans-serif;
+}
+h1 {
+    font-family: 'Kanit',sans-serif;
+    color: #1261A0;
+}
+.myform{
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    padding: 1rem;
+    -ms-flex-direction: column;
+    flex-direction: column;
     width: 100%;
+    pointer-events: auto;
+    background-color: #ffffff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 1.1rem;
+    outline: 0;
+    max-width: 1024px;
+    border-color: #1261A0;
 }
-body {
-    min-height: 100%;
-    min-width: 100%;
-    display: grid;
-}        
-p {
-    font-weight: light;
-    font-size: x-large;
-    margin-top: 50px;
-    margin-left: 5px;
-    color: white;
+.tx-tfm{
+    text-transform:uppercase;
 }
-p span {
-    background-color: #355C7D;
-    border-color:#355C7D ;
-    border-style: solid;
-}       
-@media screen and (max-width: 375px) {
-    html, body {
-        width: 375px
+.mybtn{
+    border-radius:50px;
+}
+form .error {
+    color: #ff0000;
+}
+nav {
+    color: #fff;
+    font-family: 'Kanit',sans-serif;
+}
+label {
+    color: #1261A0;
+}
+input {
+    border-color: #1261A0;
+}
+
+/* Extra small devices, Small devices and Medium devices */
+@media (max-width: 991.98px) {
+    .navbar-brand {
+        font-size: 25px;
     }
-    .container {
-        width: 375px
+    .navbar-brand img {
+        width: 35px;
+    }
+    h1 {
+        font-size: 30px;
     }
 }
 
-/* Register Form */
-div.register_form {
-    font-family: 'Kanit',sans-serif;
-    margin-left: 10%;
-}
-div.form-content {
-    margin-top: 30px auto;  
-    width: auto;
-    line-height: 25px;
-    color: #355C7D;
-    margin-left: 10px;
-}
-div.btn-submit-for-register {
-    margin-top: 2%;
-}
-.btn-primary {
-    background-color: green;
-    border: none;
-    width: 80%;
-    font-size: larger;
-    border-radius: 10px;
-}
-.form-control {
-    border-color: #355C7D;
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) and (max-width: 1366.98px) {
+    .navbar-brand {
+        font-size: 25px;
+    }
+    .navbar-brand img {
+        width: 35px;
+    }
+    p, label, .btn-signup {
+        font-size: 20px;
+    }
 }

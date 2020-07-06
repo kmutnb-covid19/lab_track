@@ -28,7 +28,7 @@
             <a href="{% url 'kmutnbtrackapp:logout' %}?lab={{ lab_hash }}">
                 <button class="dropdown-item" type="button">
                     <img id="checkout_img" src="{% static 'images/logout.png' %}" alt="checkout_pic">
-                    Logout
+                    ล็อกเอาท์
                 </button>
             </a>
         </div>
@@ -44,19 +44,19 @@
     <div class="alert alert-primary" role="alert">
         <p class="mb-0 showtime">
             <img id="checkin_img" src="{% static 'images/check in.png' %}" alt="checkin_pic">
-            เวลา check in
+            เวลาเช็คอิน
             <p class="time-checkin">{{ check_in }}</p>
         </p>
         <p class="mb-0 showtime">
             <img id="checkout_img" src="{% static 'images/logout_2.png' %}" alt="checkout_pic">
-            เวลา check out ที่ระบุ
+            เวลาเช็คเอาท์ที่ระบุ
             <p class="time-checkout">{{ check_out }}</p>
         </p>
     </div>
     <div style="display: flex; justify-content: center; align-items: center;">
         <button  id="checkout_button" type="button" onclick="checkout()" class="btn btn-warning" style="color:black;">
             <img id="checkout_img" src="{% static 'images/logout.png' %}" alt="checkout_pic">
-                Check out ก่อนเวลา
+                เช็คเอาท์ก่อนเวลา
         </button>
     </div>
 </div>

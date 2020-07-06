@@ -49,7 +49,7 @@
             <div class="myform form ">
                 <div class="logo mb-3">
                     <div class="col-md-12 text-center">
-                        <h1>Login</h1>
+                        <h1>ล็อกอิน</h1>
                     </div>
                 </div>
                 {% if wrong %}
@@ -61,7 +61,7 @@
                     {% csrf_token %}
                     <input value="{{lab_hash}}" name="next" hidden>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Tel. no</label>
+                        <label for="exampleInputEmail1">โทรศัพท์</label>
                         <input type="tel" name="tel" minlength="10" maxlength="10" onkeypress='validate(event)' required  class="form-control" id="tel" aria-describedby="emailHelp" placeholder="Enter tel no.">
                     </div>
                     <div class="col-md-12 text-center ">
@@ -70,14 +70,14 @@
                     <div class="col-md-12 ">
                         <div class="login-or">
                             <hr class="hr-or">
-                            <span class="span-or">or</span>
+                            <span class="span-or">หรือ</span>
                         </div>
                     </div>
                     <div class="col-md-12 mb-3">
                         <p class="text-center" style="color:#FFFFFF";>
                             <a onclick="Click_Sign_in_with_google()" class="google btn mybtn">
                                 <img id="google_img" src="{% static 'images/google.png' %}" alt="google_pic">
-                                Sign in with KMUTNB account
+                                ล็อกอินด้วยบัญชี KMUTNB
                             </a>
                         </p>
 

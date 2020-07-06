@@ -34,7 +34,7 @@ function checkout(){
     </a>
     <a href="{% url 'kmutnbtrackapp:logout' %}?lab={{ last_lab.hash }}">
         <button class="btn btn-danger my-2 my-sm-0">
-            Logout
+            ล็อกเอาท์
         </button>
     </a>
 </nav>
@@ -42,15 +42,15 @@ function checkout(){
 <!-- check out before due -->
 <div class="container">
     <div class="alert alert-warning" role="alert">
-        <h4 class="alert-heading">คุณต้องการ check out {{ lab_hash_check_out.name }} ก่อนเวลาหรือไม่?</h4>
+        <h4 class="alert-heading">คุณต้องการเช็คเอาท์ {{ lab_hash_check_out.name }} ก่อนเวลาหรือไม่?</h4>
         <p></p>
         <hr>
-        <p class="mb-0">เวลา check out จะถูกเปลี่ยนเป็นเวลา ณ ขณะนี้</p>
+        <p class="mb-0">เวลาเช็คเอาท์จะถูกเปลี่ยนเป็นเวลา ณ ขณะนี้</p>
     </div>
     <div style="display: flex; justify-content: center; align-items: center;">
             <button type="button" class="btn btn-warning" style="color:#FFFFFF"; onclick="checkout()">
                 <img id="checkout_img" src="{% static 'images/logout_2.png' %}" alt="checkout_pic">
-                Check out
+                เช็คเอาท์
             </button>
     </div>
 </div>

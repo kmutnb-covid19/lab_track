@@ -7,28 +7,31 @@
 {% endblock %}
 
 {% block script %}
-<script type="text/javascript" src="{% static '/js/log_in.js' %}"></script>
 <script type="text/javascript">
     function Click_Sign_in_with_google() {
         location.href="{% url 'social:begin' 'google-oauth2' %}?next={{ lab_hash }}";
     }
     function validate(evt) {
-      var theEvent = evt || window.event;
+        var theEvent = evt || window.event;
 
-      // Handle paste
-      if (theEvent.type === 'paste') {
-          key = event.clipboardData.getData('text/plain');
-      } else {
-      // Handle key press
-          var key = theEvent.keyCode || theEvent.which;
-          key = String.fromCharCode(key);
-      }
-      var regex = /[0-9]|\./;
-      if( !regex.test(key) ) {
-        theEvent.returnValue = false;
-        if(theEvent.preventDefault) theEvent.preventDefault();
-      }
-}
+        // Handle paste
+        if (theEvent.type === 'paste') {
+            key = event.clipboardData.getData('text/plain');
+        } else {
+        // Handle key press
+            var key = theEvent.keyCode || theEvent.which;
+            key = String.fromCharCode(key);
+        }
+        var regex = /[0-9]|\./;
+        if( !regex.test(key) ) {
+            theEvent.returnValue = false;
+            if(theEvent.preventDefault) theEvent.preventDefault();
+        }
+    }
+    function SaveTel(){
+        let phoneNumber = document.getElementById("tel").value
+        sessionStorage.setItem('tel', phoneNumber)
+    }
 </script>
 {% endblock %}
 
@@ -54,35 +57,34 @@
                 </div>
                 {% if wrong %}
                 <div class="col-md-12 text-center">
-                        <p style="color:red">Username หรือ Password ผิด กรุณาลองใหม่อีกครั้ง</p>
+                    <p style="color:red">Username หรือ Password ผิด กรุณาลองใหม่อีกครั้ง</p>
                 </div>
                 {% endif %}
-                <form action="{% url 'kmutnbtrackapp:login' %}?next={{ lab_hash }}" method="post" name="login">
+                <form action="{% url 'kmutnbtrackapp:login' %}?next={{ lab_hash }}" method="post" name="login" onsubmit="SaveTel()">
                     {% csrf_token %}
-                    <input value="{{lab_hash}}" name="next" hidden>
+                    <input value="{{ lab_hash }}" name="next" hidden>
                     <div class="form-group">
                         <label for="exampleInputEmail1">โทรศัพท์</label>
-                        <input type="tel" name="tel" minlength="10" maxlength="10" onkeypress='validate(event)' required  class="form-control" id="tel" aria-describedby="emailHelp" placeholder="Enter tel no.">
+                        <input type="tel" name="tel" class="form-control" id="tel" minlength="9" maxlength="10" onkeypress='validate(event)' required   aria-describedby="emailHelp" placeholder="08xxxxx">
                     </div>
                     <div class="col-md-12 text-center ">
                         <button type="submit" class="btn btn-block mybtn btn-primary tx-tfm">Continue</button>
                     </div>
-                    <div class="col-md-12 ">
-                        <div class="login-or">
-                            <hr class="hr-or">
-                            <span class="span-or">หรือ</span>
-                        </div>
+                </form>
+                <div class="col-md-12 ">
+                    <div class="login-or">
+                        <hr class="hr-or">
+                        <span class="span-or">หรือ</span>
                     </div>
-                    <div class="col-md-12 mb-3">
-                        <p class="text-center" style="color:#FFFFFF";>
-                            <a onclick="Click_Sign_in_with_google()" class="google btn mybtn">
-                                <img id="google_img" src="{% static 'images/google.png' %}" alt="google_pic">
-                                ล็อกอินด้วยบัญชี KMUTNB
-                            </a>
-                        </p>
-
-                    </div>
-                </form> 
+                </div>
+                <div class="col-md-12 mb-3">
+                    <p class="text-center" style="color:#FFFFFF";>
+                        <a onclick="Click_Sign_in_with_google()" class="google btn mybtn">
+                            <img id="google_img" src="{% static 'images/google.png' %}" alt="google_pic">
+                            ล็อกอินด้วยบัญชี KMUTNB
+                        </a>
+                    </p>
+                </div>
             </div>
         </div>
         </div>

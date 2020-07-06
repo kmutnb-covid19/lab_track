@@ -31,7 +31,7 @@
     function CheckTime(hour, minute){
         const UserMode = document.getElementById('time').value;
         const UserTime = document.getElementById('time_value');
-        var SelectTime = UserTime.value.split(":");
+        let SelectTime = UserTime.value.split(":");
         console.log()
         if (UserMode == "others"){
             if (true) {
@@ -162,7 +162,6 @@
                 
                 <div class="container-fluid col-12 col-sm-4">
                     <div class="form-group">
-                        
                       <input type="time" class="form-control" name="check_out_time" id="time_value" value="12:00" onchange="CheckTime({{time_now_hour}}, {{time_now_minute}}) " style='display:none;'/>
                     </div>
                 </div>
@@ -178,8 +177,6 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    OtherTime();
-</script>
+
 {% endblock %}
 

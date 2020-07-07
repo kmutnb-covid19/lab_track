@@ -4,7 +4,7 @@
 {% block title %}Checkin Successful{% endblock %}
 
 {% block style %}
-
+<link rel="stylesheet" type="text/css" href="{% static '/css/lab_checkin_successful.css'%}">
 {% endblock %}
 
 {% block script %}
@@ -12,7 +12,6 @@
 {% endblock %}
 
 {% block content %}
-<link rel="stylesheet" type="text/css" href="{% static '/css/lab_checkin_successful.css'%}">
 <!-- navbar room name -->
 <nav class="navbar navbar-dark" style="background-color: #1261A0;">
     <a class="navbar-brand" href="#">
@@ -39,7 +38,7 @@
 <div class="container">
     <div class="alert alert-success" role="alert">
         <h4 class="alert-heading">เช็คอินสำเร็จ!</h4>
-        <p class="room-name"><img src="{% static 'images/logo.png' %}"  width="30" alt="lab_pic" > ห้อง : {{ lab_name }}</p>
+        <p class="room-name"><img src="{% static 'images/logo1.png' %}"  width="30" alt="lab_pic" > ห้อง : {{ lab_name }}</p>
     </div>
     <div class="alert alert-primary" role="alert">
         <p class="mb-0 showtime">

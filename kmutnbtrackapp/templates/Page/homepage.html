@@ -1,0 +1,36 @@
+{% extends 'Page/page_base.html' %}
+{% load static %}
+
+{% block title %}Lab Track{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/homepage.css'%}">
+{% endblock %}
+
+{% block content %}
+<div id="home-page">
+    <!-- Wrap-top : Logo and About -->
+    <div id="wrap-top">
+        <div class="container pt-5 pb-5">
+            <div class="row justify-content-center logo-container">
+                <div class="col-8 text-center">
+                    <img class="img-fluid" src="pictures\Logo_LabTrack.png" alt="LabTrack">
+                </div>
+            </div>
+            <!-- Button Top -->
+            <div class="text-center">
+                <a id="btn-about" class="btn blue" href="">
+                    <div class="name">About Lab Track</div>
+                    <div class="arrow-right"></div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Wrap-content : manual -->
+    <div id="wrap-content">
+        <div class="container pt-5 pb-5">
+
+        </div>
+    </div>
+</div>
+{% endblock %}

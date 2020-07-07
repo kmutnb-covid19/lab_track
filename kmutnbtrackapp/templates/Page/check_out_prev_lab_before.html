@@ -6,38 +6,43 @@
 {% endblock %}
 
 {% block script %}
-<script type="text/javascript" src="{% static '/js/check_out_before_due.js' %}"></script>
+<script type="text/javascript"></script>
 {% endblock %}
 
 {% block content %}
 <!-- navbar room name -->
-<nav class="navbar navbar-dark" style="background-color: #355C7D;">
+<nav class="navbar navbar-dark" style="background-color: #1261A0;">
     <a class="navbar-brand" href="#">
-        <img src="{% static 'images/desktop.png' %}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
+        <img src="{% static 'images/logo.png' %}" width="30" height="auto" class="d-inline-block" alt="" loading="lazy">
         {{ lab_name }}
     </a>
-    <a class="ml-auto mr-1" style="color:white">
-        <img src="{% static 'images/people.png' %}"  width="18" alt="username_pic">
-        Logged in as : {{ request.user.first_name }} </a>
-    <a href="{% url 'kmutnbtrackapp:logout' %}?lab={{ lab_hash }}">
-        <button class="btn btn-danger my-2 my-sm-0">
-            Logout
+    <div class="btn-group btn-username">
+        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img src="{% static 'images/people.png' %}" width="22" alt="username_pic" >
         </button>
-    </a>
+        <div class="dropdown-menu dropdown-menu-right">
+            <button class="dropdown-item disabled" type="button">{{ request.user.first_name }}</button>
+            <a href="{% url 'kmutnbtrackapp:logout' %}?lab={{ lab_hash }}">
+                <button class="dropdown-item" type="button">
+                    <img id="checkout_img" src="{% static 'images/logout.png' %}" alt="checkout_pic">
+                    ออกจากระบบ
+                </button>
+            </a>
+        </div>
+    </div>
 </nav>
 
 <div class="container">
     <div class="alert alert-warning" role="alert">
-        <h4 class="alert-heading">กรุณา check out ออกจาก lab นี้ก่อน : {{ last_lab.name }}</h4>
-        <p></p>
+        <h4 class="alert-heading">กรุณาเช็คเอาท์ออกจากแล็บนี้ก่อน : {{ last_lab.name }}</h4>
         <hr>
-        <p class="mb-0">เมื่อ check out จาก lab ก่อนหน้าแล้ว ระบบ จะพาคุณไปยัง {{ new_lab.name }}</p>
+        <p class="mb-0">เมื่อเช็คเอาท์จากแล็บก่อนหน้าแล้ว ระบบ จะพาคุณไปยัง {{ new_lab.name }}</p>
     </div>
     <div style="display: flex; justify-content: center; align-items: center;">
         <a href="{% url 'kmutnbtrackapp:check_out' last_lab.hash %}?next_lab={{ new_lab.hash }}">
-            <button type="button" class="btn btn-warning" style="color:#FFFFFF";>
+            <button type="button" class="btn btn-warning" style="color:black">
                 <img id="checkout_img" src="{% static 'images/logout_2.png' %}" alt="checkout_pic">
-                Check out
+                เช็คเอาท์
             </button>
         </a>
     </div>

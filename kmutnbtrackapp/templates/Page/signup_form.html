@@ -3,7 +3,7 @@
 
 {% block title%}Login{% endblock %}
 {% block style %}
-<link rel="stylesheet" type="text/css" href="{% static '/css/log_in.css'%}">
+<link rel="stylesheet" type="text/css" href="{% static '/css/signup_form.css'%}">
 {% endblock %}
 
 {% block script %}
@@ -23,9 +23,9 @@
 {% endblock %}
 {% block content %}
 <!-- navbar LabTrack -->
-<nav class="navbar navbar-dark" style="background-color: #355C7D;">
+<nav class="navbar navbar-dark" style="background-color: #1261A0;">
     <a class="navbar-brand" href="#">
-        <img src="{% static 'images/logo.png' %}" width="40" height="auto" class="d-inline-block align-top" alt="" loading="lazy">
+        <img src="{% static 'images/logo.png' %}" width="30" height="auto" class="d-inline-block" alt="" loading="lazy">
         {{ lab_name }}
     </a>
 </nav>
@@ -33,39 +33,38 @@
 <!-- log in form -->
 <div class="container">
     <div class="row">
-        <div class="col-md-5 mx-auto">
+        <div class="col-md-10 mx-auto">
         <div id="first">
             <div class="myform form ">
                 <div class="logo mb-3">
                     <div class="col-md-12 text-center">
                         <h1>เข้าใช้งานครั้งแรก</h1>
-                    </div>
+                    </div> 
                     <div class="text-center">
-                        <p>สำหรับการเข้าใช้งานครั้งแรก</p>
-                        <p> กรุณาระบุชื่อ - นามสกุล ก่อนเข้าใช้งาน</p>
-                    </div>
+                        <p>สำหรับการเข้าใช้งานครั้งแรก<br>กรุณาระบุชื่อ - นามสกุล ก่อนเข้าใช้งาน</p>
+                    </div> 
                 </div>
-                {% if wrong == 2 %}
+                {% if wrong == 2 %} 
                 <div class="col-md-12 text-center">
-                        <p style="color:red">เบอร์โทรศัพท์นี้ ถูกใช้งานแล้ว กรุณาลองใหม่อีกครั้ง</p>
+                    <p style="color:red">หมายเลขโทรศัพท์นี้ถูกใช้งานแล้ว<br>กรุณาสแกน QR Code ใหม่อีกครั้ง</p>
                 </div>
                 {% endif %}
                 <form action="{% url 'kmutnbtrackapp:signup' lab_hash=lab_hash %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="exampleInputEmail1">First name</label>
+                        <label for="first_name">ชื่อ</label>
                         <input required type="text" class="form-control" name="first_name" id="name" placeholder="John">
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Last name</label>
+                        <label for="last_name">นามสกุล</label>
                         <input required type="text" class="form-control" name="last_name" id="surname" placeholder="Doe">
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Tel no.</label>
+                        <label for="telInput">หมายเลขโทรศัพท์</label>
                         <input readonly id="telInput" type="text" name="tel" class="form-control" aria-describedby="emailHelp" value="">
                     </div>
                     <div class="col-md-12 text-center ">
-                        <button type="submit" id="submit" class="btn btn-block mybtn btn-primary tx-tfm">Sign up</button>
+                        <button type="submit" id="submit" class="btn btn-block mybtn btn-primary tx-tfm btn-signup">ลงทะเบียน</button>
                     </div>
                 </form>
             </div>

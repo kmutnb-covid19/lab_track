@@ -1,10 +1,12 @@
+/* init html,navbar,content */
 .container {
     padding-top:4.2rem;
     padding-bottom:4.2rem;
+    font-family: 'Kanit',sans-serif;
 }
 h1 {
-    font-family: sans-serif;
-    color: #355C7D;
+    font-family: 'Kanit',sans-serif;
+    color: #1261A0;
 }
 .myform{
     position: relative;
@@ -20,8 +22,8 @@ h1 {
     border: 1px solid rgba(0,0,0,.2);
     border-radius: 1.1rem;
     outline: 0;
-    max-width: 500px;
-    border-color: #355C7D;
+    max-width: 1024px;
+    border-color: #1261A0;
 }
 .tx-tfm{
     text-transform:uppercase;
@@ -56,11 +58,10 @@ h1 {
 .google {
     color:#ffffff;
     width:100%;
-    height:40px;
     text-align:center;
     outline:none;
     border: 1px solid #ffffff;
-    background-color: #355C7D;
+    background-color: #1261A0;
 }
 form .error {
     color: #ff0000;
@@ -76,8 +77,31 @@ nav {
     width: 25px;
 }
 label {
-    color: #355C7D;
+    color: #1261A0;
 }
 input {
-    border-color: #355C7D;
+    border-color: #1261A0;
+}
+
+/* Extra small devices, Small devices and Medium devices */
+@media (max-width: 991.98px) {
+    .navbar-brand {
+        font-size: 25px;
+    }
+    .navbar-brand img {
+        width: 35px;
+    }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) and (max-width: 1366.98px) {
+    .navbar-brand {
+        font-size: 25px;
+    }
+    .navbar-brand img {
+        width: 35px;
+    }
+    .btn-login, .google, .input-phonenumber {
+        font-size: 20px;
+    }
 }

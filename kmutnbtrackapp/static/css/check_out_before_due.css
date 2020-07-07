@@ -1,12 +1,26 @@
-
+/* init html,navbar,content */
 .navbar-brand {
     cursor: default;
+    color: #ffffff;
+    font-family: 'Kanit',sans-serif;
+}
+.dropdown-user {
+    border: none;
+    color: #ffffff;
+}
+.dropdown-user:after {
+    color: #ffffff;
 }
 .alert {
     text-align: center;
     font-family: 'Kanit',sans-serif;
     margin-top: 2% ;
-}   
+}
+.alert-heading {
+    color: black;
+    font-size: 27px;
+
+}
 #checkout_img{
     width: 25px;
 }
@@ -16,4 +30,24 @@ button {
 }
 p {
     font-size: 20px;
+}
+
+/* Extra small devices, Small devices and Medium devices */
+@media (max-width: 991.98px) {
+    .navbar-brand {
+        font-size: 25px;
+    }
+    .navbar-brand img {
+        width: 35px;
+    }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) and (max-width: 1366.98px) {
+    .navbar-brand {
+        font-size: 25px;
+    }
+    .navbar-brand img {
+        width: 35px;
+    }
 }

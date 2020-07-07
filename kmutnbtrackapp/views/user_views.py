@@ -157,8 +157,8 @@ def check_in(request, lab_hash):  # when user checkin record in history
                 return render(request, 'Page/lab_checkin_successful_new.html',
                               {"lab_hash": this_lab.hash,
                                "lab_name": this_lab.name,
-                               "check_in": new_hist.checkin.astimezone(tz).strftime("%A, %d %B %Y, %H:%M"),
-                               "check_out": new_hist.checkout.astimezone(tz).strftime("%A, %d %B %Y, %H:%M")})
+                               "check_in": new_hist.checkin.astimezone(tz).strftime("%A, %d %b %Y, %H:%M"),
+                               "check_out": new_hist.checkout.astimezone(tz).strftime("%A, %d %b %Y, %H:%M")})
     else:
         error_message = "เซสชั่นหมดอายุ กรุณาสแกน QR Code ใหม่อีกครั้ง"
         return render(request, 'Page/error.html', {"error_message": error_message, "this_lab": this_lab})

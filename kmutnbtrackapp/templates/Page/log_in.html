@@ -37,9 +37,9 @@
 
 {% block content %}
 <!-- navbar LabTrack -->
-<nav class="navbar navbar-dark" style="background-color: #355C7D;">
+<nav class="navbar navbar-dark" style="background-color: #1261A0;">
     <a class="navbar-brand" href="#">
-        <img src="{% static 'images/logo.png' %}" width="40" height="auto" class="d-inline-block align-top" alt="" loading="lazy">
+        <img src="{% static 'images/logo.png' %}" width="30" height="auto" class="d-inline-block" alt="" loading="lazy">
         {{ lab_name }}
     </a>
 </nav>
@@ -47,46 +47,39 @@
 <!-- log in form -->
 <div class="container">
     <div class="row">
-        <div class="col-md-5 mx-auto">
-        <div id="first">
-            <div class="myform form ">
+        <div class="col-md-10 mx-auto">
+            <div class="myform form">
                 <div class="logo mb-3">
                     <div class="col-md-12 text-center">
-                        <h1>Login</h1>
+                        <h1>เข้าใช้งาน</h1>
                     </div>
                 </div>
-                {% if wrong %}
-                <div class="col-md-12 text-center">
-                    <p style="color:red">Username หรือ Password ผิด กรุณาลองใหม่อีกครั้ง</p>
-                </div>
-                {% endif %}
                 <form action="{% url 'kmutnbtrackapp:login' %}?next={{ lab_hash }}" method="post" name="login" onsubmit="SaveTel()">
                     {% csrf_token %}
                     <input value="{{ lab_hash }}" name="next" hidden>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Tel. no</label>
+                        <label for="exampleInputEmail1" class="input-phonenumber">หมายเลขโทรศัพท์</label>
                         <input type="tel" name="tel" class="form-control" id="tel" minlength="9" maxlength="10" onkeypress='validate(event)' required   aria-describedby="emailHelp" placeholder="08xxxxx">
                     </div>
                     <div class="col-md-12 text-center ">
-                        <button type="submit" class="btn btn-block mybtn btn-primary tx-tfm">Continue</button>
+                        <button type="submit" class="btn btn-block mybtn btn-primary tx-tfm btn-login">เข้าใช้งาน</button>
                     </div>
                 </form>
                 <div class="col-md-12 ">
                     <div class="login-or">
                         <hr class="hr-or">
-                        <span class="span-or">or</span>
+                        <span class="span-or">หรือ</span>
                     </div>
                 </div>
                 <div class="col-md-12 mb-3">
                     <p class="text-center" style="color:#FFFFFF";>
                         <a onclick="Click_Sign_in_with_google()" class="google btn mybtn">
                             <img id="google_img" src="{% static 'images/google.png' %}" alt="google_pic">
-                            Sign in with KMUTNB account
+                            เข้าใช้งานด้วยบัญชี KMUTNB
                         </a>
                     </p>
                 </div>
             </div>
-        </div>
         </div>
     </div>
 </div>   

@@ -24,6 +24,7 @@ h1 {
     outline: 0;
     max-width: 1024px;
     border-color: #1261A0;
+
 }
 .tx-tfm{
     text-transform:uppercase;
@@ -66,6 +67,9 @@ h1 {
 form .error {
     color: #ff0000;
 }
+.form-control{
+    margin-bottom: 10px;
+}
 nav {
     color: #fff;
     font-family: 'Kanit',sans-serif;
@@ -104,4 +108,12 @@ input {
     .btn-login, .google, .input-phonenumber {
         font-size: 20px;
     }
+
+
 }
+.mb-3, .my-3{
+    margin-bottom: 0px;
+}
+.container{
+        padding-top: 1rem;
+    }

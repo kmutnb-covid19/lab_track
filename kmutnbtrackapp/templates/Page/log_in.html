@@ -49,29 +49,23 @@
     <div class="row">
         <div class="col-md-10 mx-auto">
             <div class="myform form">
-                <div class="logo mb-3">
+                <div class="logo mb-3" >
                     <div class="col-md-12 text-center">
-                        <h1>เข้าใช้งาน</h1>
+                        <h1 style="margin-bottom: 0px">เข้าสู่ระบบ</h1>
                     </div>
                 </div>
-                <form action="{% url 'kmutnbtrackapp:login' %}?next={{ lab_hash }}" method="post" name="login" onsubmit="SaveTel()">
-                    {% csrf_token %}
-                    <input value="{{ lab_hash }}" name="next" hidden>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1" class="input-phonenumber">หมายเลขโทรศัพท์</label>
-                        <input type="tel" name="tel" class="form-control" id="tel" minlength="9" maxlength="10" onkeypress='validate(event)' required   aria-describedby="emailHelp" placeholder="08xxxxx">
-                    </div>
-                    <div class="col-md-12 text-center ">
-                        <button type="submit" class="btn btn-block mybtn btn-primary tx-tfm btn-login">เข้าใช้งาน</button>
-                    </div>
-                </form>
                 <div class="col-md-12 ">
-                    <div class="login-or">
+                    <div class="login-or" style="margin-top: 0px">
                         <hr class="hr-or">
-                        <span class="span-or">หรือ</span>
                     </div>
                 </div>
-                <div class="col-md-12 mb-3">
+                <div class="col-md-12 text-center" >
+                        <h1 style="font-size: 18px">สำหรับบุคคลากรและนักศึกษา</h1>
+                    <h1 style="font-size: 18px;margin-bottom: 0px;">ภายในมหาวิทยาลัย</h1>
+                    <br>
+                    </div>
+
+                <div class="col-md-12 ">
                     <p class="text-center" style="color:#FFFFFF";>
                         <a onclick="Click_Sign_in_with_google()" class="google btn mybtn">
                             <img id="google_img" src="{% static 'images/google.png' %}" alt="google_pic">
@@ -79,6 +73,28 @@
                         </a>
                     </p>
                 </div>
+                <div class="col-md-12 ">
+                    <div class="login-or">
+                        <hr class="hr-or">
+                        <span class="span-or">หรือ</span>
+                    </div>
+                </div>
+
+                <div class="col-md-12 text-center" >
+                        <h1 style="font-size: 18px">สำหรับบุคคลภายนอก</h1>
+                    </div>
+                <form action="{% url 'kmutnbtrackapp:login' %}?next={{ lab_hash }}" method="post" name="login" onsubmit="SaveTel()">
+                    {% csrf_token %}
+                    <input value="{{ lab_hash }}" name="next" hidden>
+                    <div class="form-group">
+                        <div style="text-align: center">
+
+                        <input type="tel" name="tel" class="form-control" id="tel" minlength="9" maxlength="10" onkeypress='validate(event)' required   aria-describedby="emailHelp" placeholder="กรุณากรอกหมายเลขโทรศัพท์">
+                    </div>
+                    <div class="col-md-12 text-center ">
+                        <button style="margin-top: 10px" type="submit" class="btn btn-block mybtn btn-primary tx-tfm btn-login">เข้าใช้งาน</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

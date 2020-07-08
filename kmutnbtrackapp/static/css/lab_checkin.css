@@ -13,8 +13,12 @@
 .dropdown-user:after {
     color: #ffffff;
 }
+
 .checkout_time {
     display: inline;
+}
+#checkin_img {
+    width: 30px;
 }
 #checkout_img {
     width: 30px;
@@ -49,11 +53,16 @@ h5 {
     border-radius: 25px;
     width: 50%;
 }
-
+div.login-or{
+    margin-top: 0px;
+}
 /* Extra small devices (portrait phones, less than 576px) */
 @media (max-width: 575.98px) {
     .room-name {
         font-size: 2rem;
+    }
+    #checkin_img {
+        width: 20px;
     }
     #checkout_img {
         width: 20px;

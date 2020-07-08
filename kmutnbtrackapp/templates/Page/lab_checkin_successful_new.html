@@ -4,7 +4,6 @@
 {% block title %}Checkin Successful{% endblock %}
 
 {% block style %}
-<link rel="stylesheet" type="text/css" href="{% static '/css/lab_checkin_successful.css'%}">
 {% endblock %}
 
 {% block script %}
@@ -12,6 +11,7 @@
 {% endblock %}
 
 {% block content %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/lab_checkin_successful.css'%}">
 <!-- navbar room name -->
 <nav class="navbar navbar-dark" style="background-color: #1261A0;">
     <a class="navbar-brand" href="#">
@@ -38,7 +38,7 @@
 <div class="container">
     <div class="alert alert-success" role="alert">
         <h4 class="alert-heading">เช็คอินสำเร็จ!</h4>
-        <p class="room-name"><img src="{% static 'images/logo1.png' %}"  width="30" alt="lab_pic" > ห้อง : {{ lab_name }}</p>
+        <p class="room-name"><img src="{% static 'images/logo1.png' %}"  width="40" alt="lab_pic" > ห้อง : {{ lab_name }}</p>
     </div>
     <div class="alert alert-primary" role="alert">
         <p class="mb-0 showtime">
@@ -53,7 +53,7 @@
         </p>
     </div>
     <div style="display: flex; justify-content: center; align-items: center;">
-        <button  id="checkout_button" type="button" onclick="checkout()" class="btn btn-warning" style="color:black;">
+        <button  id="checkout_button" type="button" onclick="checkout()" class="btn btn-warning btn-checkout" style="color:black;">
             <img id="checkout_img" src="{% static 'images/logout.png' %}" alt="checkout_pic">
                 เช็คเอาท์ก่อนเวลา
         </button>

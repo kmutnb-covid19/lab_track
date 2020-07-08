@@ -2,8 +2,6 @@
 /* init html,navbar,content */
 .navbar-brand {
     cursor: default;
-    font-family: 'Kanit',sans-serif;
-    color: #ffffff;
 }
 .dropdown-toggle {
     border: none;
@@ -12,7 +10,10 @@
 .dropdown-toggle:after {
     color: #ffffff;
 }
-#checkin_img, #checkout_img {
+#checkin_img {
+    width: 30px;
+}
+#checkout_img {
     width: 30px;
 }
 .container {
@@ -35,11 +36,14 @@ h4 {
     color: #ffffff;
     font-weight: lighter;
 }
+.btn-checkout {
+    border-radius: 50px;
 
+}
 /* Extra small devices (portrait phones, less than 576px) */
 @media (max-width: 575.98px) {
     h4 {
-        font-size: 40px;
+        font-size: 3rem;
     }
     .room-name {
         font-size: 2rem;
@@ -63,12 +67,6 @@ h4 {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
-    .navbar-brand {
-        font-size: 25px;
-    }
-    .navbar-brand img {
-        width: 35px;
-    }
     h4 {
         font-size: 3rem;
     }
@@ -85,12 +83,6 @@ h4 {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
-    .navbar-brand {
-        font-size: 25px;
-    }
-    .navbar-brand img {
-        width: 35px;
-    }
     h4 {
         font-size: 3rem;
     }
@@ -106,12 +98,6 @@ h4 {
 }
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1366.98px) {
-    .navbar-brand {
-        font-size: 25px;
-    }
-    .navbar-brand img {
-        width: 35px;
-    }
     h4 {
         font-size: 4rem;
     }

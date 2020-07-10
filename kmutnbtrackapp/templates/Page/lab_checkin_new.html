@@ -124,12 +124,13 @@
 <div class="container">
     <div class="card w-70 mx-auto" style="text-align: center;">
         <div class="card-body">
-            
+            <p class="card-text amount-people">
+                สวัสดี, {{ request.user.first_name }}
+            </p>
             <h5 class="card-title room-name">
                 <img src="{% static 'images/logo.png' %}"  width="40" alt="lab_pic">
                 {{ lab_name }}
             </h5>
-            
             <p class="card-text amount-people">
                 <img src="{% static 'images/people.png' %}"  width="22" alt="lab_pic">
                 จำนวนคนในแลปขณะนี้ : {{ current_people }} คน

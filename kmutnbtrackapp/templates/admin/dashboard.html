@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
      {% load static %}
     <link rel="stylesheet" href="{% static "css/style.css" %}">
@@ -13,6 +14,7 @@
     <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
      {% load static %}
     <link rel="stylesheet" href="{% static "css/style.css" %}">
+
     <upnav>
         <div class="logo"}><h4>Labtrack</h4></div>
         <ul class="upnav-link">
@@ -31,11 +33,20 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
     <script type="text/javascript">
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
-      google.charts.setOnLoadCallback(drawLineChart);
-      google.charts.setOnLoadCallback(draw_single_liner_Chart);
-      google.charts.setOnLoadCallback(donutChart);
+         google.charts.load('current', {'packages': ['corechart']});
+         google.charts.setOnLoadCallback(drawChart);
+         google.charts.setOnLoadCallback(drawLineChart);
+         google.charts.setOnLoadCallback(draw_single_liner_Chart);
+         google.charts.setOnLoadCallback(donutChart);
+        window.onresize = doALoadOfStuff;
+        function doALoadOfStuff() {
+            google.charts.load('current', {'packages': ['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+            google.charts.setOnLoadCallback(drawLineChart);
+            google.charts.setOnLoadCallback(draw_single_liner_Chart);
+            google.charts.setOnLoadCallback(donutChart);
+        }
+
 
       function draw_single_liner_Chart() {
           var key = document.getElementById("select_graph").value;
@@ -48,13 +59,15 @@
               }
               data.addRows(histrogram_data_list);
               var options = {
-                  title: 'Number of users'+" "+String(key)+" "+'in each day',
+                  title: String(key),
+                  colors: ['#fe0000'],
+                  lineWidth:7,
                   fontSize: 18,
-                  width: 1000,
-                  height: 500,
+                  width: '60%',
+                  height: 600,
                   hAxis: {format: 'M/d/yy', gridlines: {count: 15}},
-                  vAxis: { gridlines: {color: 'none'}, minValue: 0
-              }
+                  vAxis: { gridlines: {color: 'none'}, minValue: 0,},
+
                 };
               var chart = new google.visualization.LineChart(document.getElementById('histrogram'));
               chart.draw(data,options);
@@ -90,7 +103,8 @@
         var options = {
           title: 'Number of users each day',
           fontSize: 18,
-          width: 900,
+          width: '100%',
+          lineWidth:7,
           height: 500,
           hAxis: {
             format: 'M/d/yy',
@@ -111,13 +125,16 @@
       function donutChart() {
         var key = document.getElementById("select_graph").value;
         var data = {{room_status|safe}}[key]
-        console.log(data)
+
         var data = [['User count', 'Out of max'], ['user in use', data['use']], ['Remaining slot', data['max']-data['use']]]
-        console.log(data)
+
         var data = google.visualization.arrayToDataTable(data)
 
         var options = {
+            title: 'Number of users in Lab',
+            fontSize: 18,
           pieHole: 0.6,
+
           colors: ['#00afdb', '#cdcdcd'],
           pieSliceText: 'none',
           legend: { position: 'none' },
@@ -132,6 +149,12 @@
          draw_single_liner_Chart();
          donutChart();
       }
+      $(window).resize(function() {
+         donutChart();
+         draw_single_liner_Chart();
+         drawChart();
+         drawLineChart();
+      });
     </script>
     <style>
     .donutCell
@@ -144,24 +167,30 @@
         width: 256px;
         height: 256px;
     }
+
     </style>
     <title>Statistic Dashboard</title>
 </head>
 <body>
     <h1 style="color: #569ec1;font-family: Adamina, serif;margin: 10px;" align="center">Dashboard</h1>
 
-    <div id="chart_div" style="width: 60%; "></div>
-    <div id="pie_chart" style="width: 900px; height: 500px;"></div>
-    <center>
-        <select id="select_graph" onchange="changeChart()">
-            {% for key,value in histrogram_data.items %}
-               <option value="{{ key }}">{{ key }}</option>
-            {% endfor %}
-        </select>
-    </center>
-    <div id="histrogram" style="width: 60%;"></div>
+    <div id="chart_div" style="width: 60%; margin:0 auto; "></div>
+    <div id="pie_chart" style="width: 900px; height: 500px;margin:0 auto;"></div>
+    <div align="center">
+    <h2>Number of user in each Lab</h2><br>
+            <select  style="width: 20%;position: relative;" class="custom-select custom-select-lg mb-3" id="select_graph" onchange="changeChart()">
+                {% for key,value in histrogram_data.items %}
+                 <option value="{{ key }}">{{ key }}</option>
+                {% endfor %}
+            </select>
+     <p>select Lab here</p>
+    </div>
+    <div align="center">
+        <div id="histrogram" ></div>
+    </div>
+    <div align="center">
     <div id="donutchart1" class="donutDiv"></div>
-
+    </div>
 
 </body>
 

@@ -47,7 +47,10 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
             last_lab_hist = last_lab_hist[0]
 
             if last_lab_hist.lab.hash == lab_hash:  # if latest lab is same as the going lab
-                return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_lab_hist.lab})
+                return render(request, 'Page/check_out_before_due_new.html',
+                              {"last_lab": last_lab_hist.lab,
+                               "check_in": last_lab_hist.checkin.astimezone(tz).strftime("%A, %d %b %Y, %H:%M"),
+                               "check_out": last_lab_hist.checkout.astimezone(tz).strftime("%A, %d %b %Y, %H:%M")})
 
             else:  # if latest lab is another lab
                 return render(request, 'Page/check_out_prev_lab_before.html',
@@ -150,9 +153,12 @@ def check_in(request, lab_hash):  # when user checkin record in history
                                   {"lab_hash_check_out": last_lab_hist[0].lab,
                                    "new_lab": this_lab})
                 else:  # if latest lab is same as the going lab
-                    last_hist = History.objects.get(person=person, lab=this_lab, checkin__lte=now_datetime,
-                                                    checkout__gte=now_datetime)
-                    return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_hist.lab})
+                    last_lab_hist = History.objects.get(person=person, lab=this_lab, checkin__lte=now_datetime,
+                                                        checkout__gte=now_datetime)
+                    return render(request, 'Page/check_out_before_due_new.html',
+                                  {"last_lab": last_lab_hist.lab,
+                                   "check_in": last_lab_hist.checkin.astimezone(tz).strftime("%A, %d %b %Y, %H:%M"),
+                                   "check_out": last_lab_hist.checkout.astimezone(tz).strftime("%A, %d %b %Y, %H:%M")})
             elif current_people >= this_lab.max_number_of_people:  # if user exceeded lab limit
                 new_hist = History.objects.create(person=person,
                                                   lab=this_lab,

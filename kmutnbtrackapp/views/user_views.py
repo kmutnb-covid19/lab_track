@@ -6,12 +6,11 @@ Imports should be grouped in the following order:
 3.Local application/library specific imports.
 """
 
-import base64
 import datetime
 import re
 
 from django.contrib.auth import logout, login
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -48,10 +47,14 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
             last_lab_hist = last_lab_hist[0]
 
             if last_lab_hist.lab.hash == lab_hash:  # if latest lab is same as the going lab
-                return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_lab_hist.lab})
+                return render(request, 'Page/check_out_before_due_new.html',
+                              {"last_lab": last_lab_hist.lab,
+                               "check_in": last_lab_hist.checkin.astimezone(tz).strftime("%A, %d %b %Y, %H:%M"),
+                               "check_out": last_lab_hist.checkout.astimezone(tz).strftime("%A, %d %b %Y, %H:%M")})
 
             else:  # if latest lab is another lab
-                return render(request, 'Page/check_out_prev_lab_before.html', {"last_lab": last_lab_hist.lab, "new_lab": this_lab})
+                return render(request, 'Page/check_out_prev_lab_before.html',
+                              {"last_lab": last_lab_hist.lab, "new_lab": this_lab})
 
         else:  # goto checkin page
             time_option = compare_current_time()
@@ -81,25 +84,25 @@ def login_api(request):  # api when stranger login
     if request.method == "POST":
         lab_hash = request.GET.get('next', '')
         tel_no = request.POST['tel']
-        if User.objects.filter(username=tel_no).exists(): # if phone number already in database
+        if User.objects.filter(username=tel_no).exists():  # if phone number already in database
             user = User.objects.get(username=tel_no)
             login(request, user,
                   backend='django.contrib.auth.backends.ModelBackend')  # login with username only
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
-        else: # phone number not in database
+        else:  # phone number not in database
             return HttpResponseRedirect(reverse('kmutnbtrackapp:signup', args=(lab_hash,)))
 
 
 def signup_api(request, lab_hash):  # when stranger click 'Signup and Checkin'
     if request.method == "GET":
         lab_name = Lab.objects.get(hash=lab_hash).name
-        return render(request, 'Page/signup_form.html', {'lab_hash': lab_hash, 'lab_name': lab_name,})
-    
+        return render(request, 'Page/signup_form.html', {'lab_hash': lab_hash, 'lab_name': lab_name, })
+
     # Receive data from POST
     if request.method == "POST":
         lab_name = Lab.objects.get(hash=lab_hash).name
         tel_no = request.POST["tel"]
-        if not re.match(r"[0-9]|\.", tel_no): # if input is not phone number
+        if not re.match(r"[0-9]|\.", tel_no):  # if input is not phone number
             error_message = "รูปแบบเบอร์ไม่ถูกต้อง กรุณาสแกน QR Code ใหม่อีกครั้ง"
             return render(request, 'Page/error.html', {"error_message": error_message})
         first_name = request.POST.get('first_name', '')
@@ -116,7 +119,7 @@ def signup_api(request, lab_hash):  # when stranger click 'Signup and Checkin'
             # then login
             login(request, u, backend='django.contrib.auth.backends.ModelBackend')
             return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
-    
+
 
 def logout_api(request):  # api for logging out
     logout(request)
@@ -134,26 +137,45 @@ def check_in(request, lab_hash):  # when user checkin record in history
     if request.method == "POST":
         checkout_time_str = request.POST['check_out_time']  # get check out time
         now_datetime = datetime.datetime.now(tz)
+        midnight_time = now_datetime.replace(hour=23, minute=59, second=59, microsecond=0)
 
         checkout_datetime = now_datetime.replace(hour=int(checkout_time_str.split(":")[0]),
-                                                 minute=int(checkout_time_str.split(":")[1]))  # get check out time in object datetime
+                                                 minute=int(checkout_time_str.split(":")[
+                                                                1]))  # get check out time in object datetime
         if Lab.objects.filter(hash=lab_hash).exists():  # check that lab does exists
+            current_people = len(History.objects.filter(lab=this_lab,
+                                                        checkout__gte=now_datetime,
+                                                        checkout__lte=midnight_time))
             last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
             if last_lab_hist.exists():  # if have a history that intersect between now
-                if last_lab_hist[0].lab.hash != lab_hash:  # if latest lab is same as the going lab
-                    return render(request, 'Page/check_out_prev_lab_before.html', {"lab_hash_check_out": last_lab_hist[0].lab,
-                                                                      "new_lab": this_lab})
-                else:  # if latest lab is another lab
-                    last_hist = History.objects.get(person=person, lab=this_lab, checkin__lte=now_datetime,
-                                                    checkout__gte=now_datetime)
-                    return render(request, 'Page/check_out_before_due_new.html', {"last_lab": last_hist.lab})
-
+                if last_lab_hist[0].lab.hash != lab_hash:  # if latest lab is another lab
+                    return render(request, 'Page/check_out_prev_lab_before.html',
+                                  {"lab_hash_check_out": last_lab_hist[0].lab,
+                                   "new_lab": this_lab})
+                else:  # if latest lab is same as the going lab
+                    last_lab_hist = History.objects.get(person=person, lab=this_lab, checkin__lte=now_datetime,
+                                                        checkout__gte=now_datetime)
+                    return render(request, 'Page/check_out_before_due_new.html',
+                                  {"last_lab": last_lab_hist.lab,
+                                   "check_in": last_lab_hist.checkin.astimezone(tz).strftime("%A, %d %b %Y, %H:%M"),
+                                   "check_out": last_lab_hist.checkout.astimezone(tz).strftime("%A, %d %b %Y, %H:%M")})
+            elif current_people >= this_lab.max_number_of_people:  # if user exceeded lab limit
+                new_hist = History.objects.create(person=person,
+                                                  lab=this_lab,
+                                                  checkin=now_datetime,
+                                                  checkout=checkout_datetime)
+                return render(request, 'Page/lab_checkin_successful_new.html',
+                              {"lab_hash": this_lab.hash,
+                               "lab_name": this_lab.name,
+                               "exceed_lab_limit": True,
+                               "maximum_people": this_lab.max_number_of_people,
+                               "check_in": new_hist.checkin.astimezone(tz).strftime("%A, %d %b %Y, %H:%M"),
+                               "check_out": new_hist.checkout.astimezone(tz).strftime("%A, %d %b %Y, %H:%M")})
             else:
                 new_hist = History.objects.create(person=person,
                                                   lab=this_lab,
                                                   checkin=now_datetime,
                                                   checkout=checkout_datetime)
-
                 return render(request, 'Page/lab_checkin_successful_new.html',
                               {"lab_hash": this_lab.hash,
                                "lab_name": this_lab.name,

@@ -36,10 +36,20 @@
 
 <!-- lab checkin successful! -->
 <div class="container">
+    {% if exceed_lab_limit %}
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">คำเตือน</h4>
+        <p class="time-checkin">คุณเช็คอินเกินโควต้าที่ห้องแลปสามารถรับได้ ({{ maximum_people }} คน)</p>
+        <p class="time-checkin">โปรดแจ้งอาจารย์ประจำแลป เพื่อดำเนินการต่อ</p>
+        <hr>
+        <p class="room-name"><img src="{% static 'images/logo1.png' %}"  width="40" alt="lab_pic" > ห้อง : {{ lab_name }}</p>
+    </div>
+    {% else %}
     <div class="alert alert-success" role="alert">
         <h4 class="alert-heading">เช็คอินสำเร็จ!</h4>
         <p class="room-name"><img src="{% static 'images/logo1.png' %}"  width="40" alt="lab_pic" > ห้อง : {{ lab_name }}</p>
     </div>
+    {% endif %}
     <div class="alert alert-primary" role="alert">
         <p class="mb-0 showtime">
             <img id="checkin_img" src="{% static 'images/check in.png' %}" alt="checkin_pic">

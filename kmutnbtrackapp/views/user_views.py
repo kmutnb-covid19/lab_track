@@ -34,13 +34,13 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
 
     this_lab = Lab.objects.get(hash=lab_hash)
 
+    now_datetime = datetime.datetime.now(tz)
     if not request.user.is_authenticated:  # if user hasn't login
         lab_name = this_lab.name
         return render(request, 'Page/log_in.html', {"lab_name": lab_name, "lab_hash": lab_hash})
         # render page for logging in in that lab
     else:  # if user already login
         person = Person.objects.get(user=request.user)
-        now_datetime = datetime.datetime.now(tz)
         # if have latest history which checkout not at time
         if History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime).exists():
             last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
@@ -61,12 +61,17 @@ def lab_home_page(request, lab_hash):  # this function is used when user get in 
             midnight_time = now_datetime.replace(hour=23, minute=59, second=59, microsecond=0)
             current_people = History.objects.filter(lab=this_lab, checkout__gte=now_datetime,
                                                     checkout__lte=midnight_time).count()
+            lab_exceeded_limit = False
+            if current_people >= this_lab.max_number_of_people:
+                lab_exceeded_limit = True
             return render(request, 'Page/lab_checkin_new.html', {"lab_name": this_lab.name,
                                                                  "lab_hash": this_lab.hash,
                                                                  "time_option": time_option,
                                                                  "time_now_hour": now_datetime.hour,
                                                                  "time_now_minute": now_datetime.minute + 5,
-                                                                 "current_people": current_people
+                                                                 "current_people": current_people,
+                                                                 "lab_exceeded_limit": lab_exceeded_limit,
+                                                                 "maximum_people": this_lab.max_number_of_people
                                                                  })  # render page for checkin
 
 
@@ -143,9 +148,6 @@ def check_in(request, lab_hash):  # when user checkin record in history
                                                  minute=int(checkout_time_str.split(":")[
                                                                 1]))  # get check out time in object datetime
         if Lab.objects.filter(hash=lab_hash).exists():  # check that lab does exists
-            current_people = len(History.objects.filter(lab=this_lab,
-                                                        checkout__gte=now_datetime,
-                                                        checkout__lte=midnight_time))
             last_lab_hist = History.objects.filter(person=person, checkin__lte=now_datetime, checkout__gte=now_datetime)
             if last_lab_hist.exists():  # if have a history that intersect between now
                 if last_lab_hist[0].lab.hash != lab_hash:  # if latest lab is another lab
@@ -159,26 +161,23 @@ def check_in(request, lab_hash):  # when user checkin record in history
                                   {"last_lab": last_lab_hist.lab,
                                    "check_in": last_lab_hist.checkin.astimezone(tz).strftime("%A, %d %b %Y, %H:%M"),
                                    "check_out": last_lab_hist.checkout.astimezone(tz).strftime("%A, %d %b %Y, %H:%M")})
-            elif current_people >= this_lab.max_number_of_people:  # if user exceeded lab limit
-                new_hist = History.objects.create(person=person,
-                                                  lab=this_lab,
-                                                  checkin=now_datetime,
-                                                  checkout=checkout_datetime)
-                return render(request, 'Page/lab_checkin_successful_new.html',
-                              {"lab_hash": this_lab.hash,
-                               "lab_name": this_lab.name,
-                               "exceed_lab_limit": True,
-                               "maximum_people": this_lab.max_number_of_people,
-                               "check_in": new_hist.checkin.astimezone(tz).strftime("%A, %d %b %Y, %H:%M"),
-                               "check_out": new_hist.checkout.astimezone(tz).strftime("%A, %d %b %Y, %H:%M")})
             else:
                 new_hist = History.objects.create(person=person,
                                                   lab=this_lab,
                                                   checkin=now_datetime,
                                                   checkout=checkout_datetime)
+                current_people = History.objects.filter(lab=this_lab, checkout__gte=now_datetime,
+                                                        checkout__lte=midnight_time).count()
+                if current_people > this_lab.max_number_of_people:
+                    print(current_people)
+                    print(this_lab.max_number_of_people)
+                    new_hist.exceeded_limit = True
+                    new_hist.save()
                 return render(request, 'Page/lab_checkin_successful_new.html',
                               {"lab_hash": this_lab.hash,
                                "lab_name": this_lab.name,
+                               "exceeded_limit": new_hist.exceeded_limit,
+                               "maximum_people": this_lab.max_number_of_people,
                                "check_in": new_hist.checkin.astimezone(tz).strftime("%A, %d %b %Y, %H:%M"),
                                "check_out": new_hist.checkout.astimezone(tz).strftime("%A, %d %b %Y, %H:%M")})
     else:

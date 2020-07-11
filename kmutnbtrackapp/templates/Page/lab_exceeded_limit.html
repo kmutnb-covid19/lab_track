@@ -1,7 +1,7 @@
 {% extends 'Page/page_base.html' %}
 {% load static %}
 
-{% block title %}Checkin Successful{% endblock %}
+{% block title %}Checkin Unsuccessful{% endblock %}
 
 {% block style %}
 {% endblock %}
@@ -36,28 +36,12 @@
 
 <!-- lab checkin successful! -->
 <div class="container">
-    {% if exceeded_limit %}
-    <div class="alert alert-warning" role="alert">
-    {% else %}
-    <div class="alert alert-success" role="alert">
-    {% endif %}
-        <h4 class="alert-heading">เช็คอินสำเร็จ!</h4>
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">คำเตือน</h4>
+        <p class="time-checkin">คุณเช็คอินเกินโควต้าที่ห้องแลปสามารถรับได้ ({{ maximum_people }} คน)</p>
+        <p class="time-checkin">โปรดแจ้งอาจารย์ประจำแลป เพื่อดำเนินการต่อ</p>
+        <hr>
         <p class="room-name"><img src="{% static 'images/logo1.png' %}"  width="40" alt="lab_pic" > ห้อง : {{ lab_name }}</p>
-        {% if exceeded_limit %}
-        <p class="time-checkin">คำเตือน : คุณได้ทำการเช็คอินเกินโควต้าของห้องแลป ({{ maximum_people }} คน)</p>
-            {% endif %}
-    </div>
-    <div class="alert alert-primary" role="alert">
-        <p class="mb-0 showtime">
-            <img id="checkin_img" src="{% static 'images/check in.png' %}" alt="checkin_pic">
-            เวลาเช็คอิน
-            <p class="time-checkin">{{ check_in }}</p>
-        </p>
-        <p class="mb-0 showtime">
-            <img id="checkout_img" src="{% static 'images/logout_2.png' %}" alt="checkout_pic">
-            เวลาเช็คเอาท์ที่ระบุ
-            <p class="time-checkout">{{ check_out }}</p>
-        </p>
     </div>
 </div>
 {% endblock %}

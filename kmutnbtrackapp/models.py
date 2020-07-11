@@ -18,6 +18,7 @@ class Lab(models.Model):
     def __str__(self):
         return self.name
 
+
 class Person(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50, default="", blank=True)
@@ -36,6 +37,7 @@ class History(models.Model):
     lab = models.ForeignKey(Lab, on_delete=models.CASCADE)
     checkin = models.DateTimeField(null=True, auto_now_add=True)
     checkout = models.DateTimeField(null=True)
+    exceeded_limit = models.BooleanField(default=False)
 
     def __str__(self):
         return self.lab.name

@@ -121,6 +121,15 @@
 </nav>
 
 <!-- check out before due -->
+{% if lab_exceeded_limit %}
+    <div class="container" style="text-align: center;">
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">คำเตือน</h4>
+            <p class="time-checkin">ห้องแลปเกินโควต้าที่สามารถเช็คอินได้ ({{ maximum_people }} คน)</p>
+            <p class="time-checkin">โปรดแจ้งอาจารย์ประจำแลป เพื่อขออนุญาตทำการเช็คอิน</p>
+        </div>
+    </div>
+{% endif %}
 <div class="container">
     <div class="card w-70 mx-auto" style="text-align: center;">
         <div class="card-body">

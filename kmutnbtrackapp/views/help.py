@@ -79,8 +79,11 @@ def filter_risk_user(mode, keyword):
         for user in target_historys:  # for each row of infected person
             session_historys = query_search('lab', user.lab, user.checkin, user.checkout, "risk")  #
             for session in session_historys:
-                risk_people_data.append((session.person.student_id,
+                std_id = session.person.student_id
+                tel = session.person.user.username
+                risk_people_data.append((std_id if std_id != '' else "-",
                                          session.person.first_name + ' ' + session.person.last_name,
+                                         tel if tel != '' and tel[0] == "0" else "-",
                                          session.lab,
                                          session.checkin,
                                          session.checkout,

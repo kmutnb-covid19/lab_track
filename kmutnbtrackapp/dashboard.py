@@ -1,7 +1,9 @@
 import datetime
 import json
 import time
+from datetime import timedelta
 from kmutnbtrackapp.views.help import tz
+
 
 def get_data_metadata():
     """Load metadata file as json"""
@@ -42,6 +44,16 @@ def prepare_pie_data(meta_data):
     return data
 
 
+def create_empty_date(start, last):
+    date_range = []
+    start_date = datetime.datetime(int(start.split("/")[0]), int(start.split("/")[1]), int(start.split("/")[2]))
+    last_date = datetime.datetime(int(last.split("/")[0]), int(last.split("/")[1]), int(last.split("/")[2]))
+    while start_date <= last_date:
+        date_range.append(str(start_date.year) + "/" + str(start_date.month) + "/" + str(start_date.day))
+        start_date += timedelta(days=1)
+    return date_range
+
+
 def prepare_liner_data(meta_data):
     """Prepare liner chart data before send to template"""
     # format example [new Date(2015, 0, 1), 5]
@@ -53,10 +65,16 @@ def prepare_liner_data(meta_data):
                 duplicate[day] += meta_data['lab'][lab_name][day]
             else:
                 duplicate[day] = meta_data['lab'][lab_name][day]
-    for day in duplicate:
-        data.append([int(time.mktime(datetime.datetime(int(day.split("/")[0]), int(day.split("/")[1]),
-                                                       int(day.split("/")[2])).timetuple())) * 1000,
-                     duplicate[day]])
+    date_list = create_empty_date(list(duplicate.keys())[0], list(duplicate.keys())[-1])
+    for day in date_list:
+        if day in list(duplicate.keys()):
+            data.append([int(time.mktime(datetime.datetime(int(day.split("/")[0]), int(day.split("/")[1]),
+                                                           int(day.split("/")[2])).timetuple())) * 1000,
+                         duplicate[day]])
+        else:
+            data.append([int(time.mktime(datetime.datetime(int(day.split("/")[0]), int(day.split("/")[1]),
+                                                           int(day.split("/")[2])).timetuple())) * 1000,
+                         0])
     data.sort()
     return data
 
@@ -72,10 +90,16 @@ def prepare_single_liner_data(meta_data):
                 duplicate[day] += meta_data['lab'][lab_name][day]
             else:
                 duplicate[day] = meta_data['lab'][lab_name][day]
-        for day in duplicate:
-            data.append([int(time.mktime(datetime.datetime(int(day.split("/")[0]), int(day.split("/")[1]),
-                                                           int(day.split("/")[2])).timetuple())) * 1000,
-                         duplicate[day]])
+        date_list = create_empty_date(list(duplicate.keys())[0], list(duplicate.keys())[-1])
+        for day in date_list:
+            if day in list(duplicate.keys()):
+                data.append([int(time.mktime(datetime.datetime(int(day.split("/")[0]), int(day.split("/")[1]),
+                                                               int(day.split("/")[2])).timetuple())) * 1000,
+                             duplicate[day]])
+            else:
+                data.append([int(time.mktime(datetime.datetime(int(day.split("/")[0]), int(day.split("/")[1]),
+                                                               int(day.split("/")[2])).timetuple())) * 1000,
+                             0])
         classify_data[lab_name] = data
     return classify_data
 
@@ -88,7 +112,7 @@ def prepare_room_status(lab, user):
         room_status[lab_properties['name']]['use'] = 0
 
     on_use_user = user.filter(checkin__lte=datetime.datetime.now(tz),
-                             checkout__gte=datetime.datetime.now(tz) + datetime.timedelta(minutes=1))
+                              checkout__gte=datetime.datetime.now(tz) + datetime.timedelta(minutes=1))
 
     for room_name in on_use_user:
         room_status[str(room_name)]['use'] += 1

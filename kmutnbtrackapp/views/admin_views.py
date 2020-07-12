@@ -186,15 +186,16 @@ def notify_user(request, mode, keyword):
             student_id = each_user[0]
             first_last_name = each_user[1]
             each_user_email = each_user[2]
-            user_email.append(each_user_email)
-            lab_name = ''
-            for each_lab in each_user[3:]:
-                lab_name += str(each_lab) + ', '
-            lab_name = lab_name[:-2]
-            user_data[each_user_email] = {'student_id': student_id,
-                                          'first_last_name': first_last_name,
-                                          'user_email': each_user_email,
-                                          'lab_name': lab_name}
+            if each_user_email != '':
+                user_email.append(each_user_email)
+                lab_name = ''
+                for each_lab in each_user[3:]:
+                    lab_name += str(each_lab) + ', '
+                lab_name = lab_name[:-2]
+                user_data[each_user_email] = {'student_id': student_id,
+                                            'first_last_name': first_last_name,
+                                            'user_email': each_user_email,
+                                            'lab_name': lab_name}
         subject = 'แจ้งเตือนกลุ่มผู้มีความเสี่ยงติดเชื้อ COVID-19'
         email = EmailMessage(subject, to=user_email)
         email.template_id = 'notify-labtrack'

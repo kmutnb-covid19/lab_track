@@ -56,13 +56,21 @@ h1 {
     margin-top: 0px !important;
     margin-bottom: 0px !important;
 }
+#google_img {
+    border-radius: 50%;
+}
 .google {
     color:#ffffff;
     width:100%;
     text-align:center;
     outline:none;
-    border: 1px solid #ffffff;
-    background-color: #1261A0;
+    border: 1px solid #4285F4;
+    background-color: #4285F4;
+}
+.btn-login{
+    color:#1260a0ea;
+    border: 1px solid #1260a0b0;
+    background-color: #ffffff;
 }
 form .error {
     color: #ff0000;

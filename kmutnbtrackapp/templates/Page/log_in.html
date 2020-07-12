@@ -63,13 +63,13 @@
                         <h1 style="font-size: 18px">สำหรับบุคคลากรและนักศึกษา</h1>
                     <h1 style="font-size: 18px;margin-bottom: 0px;">ภายในมหาวิทยาลัย</h1>
                     <br>
-                    </div>
+                </div>
 
                 <div class="col-md-12 ">
                     <p class="text-center" style="color:#FFFFFF";>
                         <a onclick="Click_Sign_in_with_google()" class="google btn mybtn">
-                            <img id="google_img" src="{% static 'images/google.png' %}" alt="google_pic">
-                            เข้าใช้งานด้วยบัญชี KMUTNB
+                            <img id="google_img" src="{% static 'images/google.jpg' %}" alt="google_pic">
+                            เข้าใช้งานด้วยบัญชี <b>KMUTNB</b>
                         </a>
                     </p>
                 </div>
@@ -92,7 +92,9 @@
                         <input type="tel" name="tel" class="form-control" id="tel" minlength="9" maxlength="10" onkeypress='validate(event)' required   aria-describedby="emailHelp" placeholder="กรุณากรอกหมายเลขโทรศัพท์">
                     </div>
                     <div class="col-md-12 text-center ">
-                        <button style="margin-top: 10px" type="submit" class="btn btn-block mybtn btn-primary tx-tfm btn-login">เข้าใช้งาน</button>
+                        <button style="margin-top: 10px" type="submit" class="btn btn-block mybtn tx-tfm btn-login">
+                            เข้าใช้งานด้วยหมายเลขโทรศัพท์
+                        </button>
                     </div>
                 </form>
             </div>

@@ -125,9 +125,13 @@
       function donutChart() {
         var key = document.getElementById("select_graph").value;
         var data = {{room_status|safe}}[key]
-
-        var data = [['User count', 'Out of max'], ['user in use', data['use']], ['Remaining slot', data['max']-data['use']]]
-
+        if ((data['max']-data['use']) >= 0){
+            var data = [['User count', 'Out of max'], ['User in use', data['use']], ['Remaining slot', data['max']-data['use']]]
+            color_options = ['#00afdb', '#cdcdcd']
+        } else {
+            var data = [['User count', 'Out of max'], ['User over load', 1]]
+            color_options = ['#ff0000', '#cdcdcd']
+        }
         var data = google.visualization.arrayToDataTable(data)
 
         var options = {
@@ -135,7 +139,7 @@
             fontSize: 18,
           pieHole: 0.6,
 
-          colors: ['#00afdb', '#cdcdcd'],
+          colors: color_options,
           pieSliceText: 'none',
           legend: { position: 'none' },
           tooltip: { text: 'percentage' },

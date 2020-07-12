@@ -3,15 +3,14 @@
 
 {% block title %}Checkin Successful{% endblock %}
 
-{% block style %}
-{% endblock %}
-
 {% block script %}
 <script type="text/javascript"></script>
 {% endblock %}
 
 {% block content %}
+<!-- don't move this, ajax load only <body> of this page-->
 <link rel="stylesheet" type="text/css" href="{% static '/css/lab_checkin_successful.css'%}">
+
 <!-- navbar room name -->
 <nav class="navbar navbar-dark" style="background-color: #1261A0;">
     <a class="navbar-brand" href="#">
@@ -44,8 +43,8 @@
         <h4 class="alert-heading">เช็คอินสำเร็จ!</h4>
         <p class="room-name"><img src="{% static 'images/logo1.png' %}"  width="40" alt="lab_pic" > ห้อง : {{ lab_name }}</p>
         {% if exceeded_limit %}
-        <p class="time-checkin">คำเตือน : คุณได้ทำการเช็คอินเกินโควต้าของห้องแลป ({{ maximum_people }} คน)</p>
-            {% endif %}
+            <p class="time-checkin">คำเตือน : คุณได้ทำการเช็คอินเกินโควต้าของห้องแลป ({{ maximum_people }} คน)</p>
+        {% endif %}
     </div>
     <div class="alert alert-primary" role="alert">
         <p class="mb-0 showtime">

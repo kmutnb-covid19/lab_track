@@ -27,6 +27,7 @@ urlpatterns = [
     path('auth/', include('social_django.urls', namespace='social')),
     path('privacy/', TemplateView.as_view(template_name="Page/privacy.html"), name='privacy_policy'),
     path('admin/qrcode/<str:lab_hash>/', views.generate_qr_code, name='generate_qr_code'),
+    path('lab/<str:lab_hash>/qrcode', views.generate_qr_code, name='generate_qr_code2'),
 
     path('admin/dashboard/', views.call_dashboard, name='dashboard'),
     path('admin/history/search/riskpeople/', views.risk_people_search, name='risk_people_search'),

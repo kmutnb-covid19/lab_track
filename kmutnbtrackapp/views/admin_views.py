@@ -7,11 +7,11 @@ Imports should be grouped in the following order:
 """
 
 import csv
-
 import qrcode
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
+
 from django.contrib import messages
 from django.core import management
 from django.core.mail import EmailMessage
@@ -127,6 +127,53 @@ def risk_people_search(request):
                    'keyword': keyword, 'select_mode': mode,
                    })
 
+def generate_qr_code(request, lab_hash):
+    lab_name = Lab.objects.get(hash=lab_hash).name
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=20,
+        border=0,
+    )
+    qr.add_data(f"https://labtrack.cony.codes/lab/{lab_hash}/")
+    qr.make()
+    img_qr = qr.make_image()
+
+    img_frame = Image.open("kmutnbtrackapp/static/qrcode_src/QR_frame.png", 'r')
+
+    pos = (80+30, 295+19)
+    img_frame.paste(img_qr, pos)
+
+    drawer = ImageDraw.Draw(img_frame)
+
+    font_size = 66
+    font = ImageFont.truetype("kmutnbtrackapp/static/qrcode_src/GOTHICB.ttf", font_size)
+    ascent, descent = font.getmetrics()
+    (width, baseline), (offset_x, offset_y) = font.font.getsize(lab_name)
+
+    if len(lab_name) > 30:
+        drawer.text((100 , 190), "Lab name too long!!!", (128, 0, 0), font=font)
+
+    elif len(lab_name) > 14:  # long name -> reduce font size
+        while width >= 580:
+            font_size -= 1
+            font = ImageFont.truetype("kmutnbtrackapp/static/qrcode_src/GOTHICB.ttf", font_size)
+            ascent, descent = font.getmetrics()
+            (width, baseline), (offset_x, offset_y) = font.font.getsize(lab_name)
+
+    drawer.text((400 - int((width + 74)/2) + 74, 220 - ascent), lab_name, (0, 0, 0), font=font) 
+    
+    flag_img = Image.open("kmutnbtrackapp/static/qrcode_src/maps-and-flags.png", 'r')
+    flag_img = flag_img.resize((74,74), resample=Image.LANCZOS)
+    pos = (int(400 - (width + 74)/2 - 3), 
+            int(220 - ascent + offset_y + (ascent - offset_y)/2 - 74/2 ))
+    img_frame.paste(flag_img, pos, mask=flag_img.split()[1])
+
+    img_frame.save(f'media/{lab_name}_qrcode.png', "PNG", quality=100)
+    with open(f'media/{lab_name}_qrcode.png', "rb") as f:
+        response = HttpResponse(f.read(), content_type="image/png")
+        response['Content-Disposition'] = 'inline; filename=' + f'media/{lab_name}_qrcode.png'
+        return response
 
 @superuser_login_required
 def export_risk_csv(request):
@@ -207,54 +254,7 @@ def notify_user(request, mode, keyword):
                        })
 
 
-@supervisor_login_required
-def generate_qr_code(request, lab_hash):
-    lab_name = Lab.objects.get(hash=lab_hash).name
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=20,
-        border=0,
-    )
-    qr.add_data(f"https://labtrack.cony.codes/lab/{lab_hash}/")
-    qr.make()
-    img_qr = qr.make_image()
 
-    img_frame = Image.open("kmutnbtrackapp/static/qrcode_src/QR_frame.png", 'r')
-
-    pos = (80+30, 295+19)
-    img_frame.paste(img_qr, pos)
-
-    drawer = ImageDraw.Draw(img_frame)
-
-    font_size = 66
-    font = ImageFont.truetype("kmutnbtrackapp/static/qrcode_src/GOTHICB.ttf", font_size)
-    ascent, descent = font.getmetrics()
-    (width, baseline), (offset_x, offset_y) = font.font.getsize(lab_name)
-
-    if len(lab_name) > 30:
-        drawer.text((100 , 190), "Lab name too long!!!", (128, 0, 0), font=font)
-
-    elif len(lab_name) > 14:  # long name -> reduce font size
-        while width >= 580:
-            font_size -= 1
-            font = ImageFont.truetype("kmutnbtrackapp/static/qrcode_src/GOTHICB.ttf", font_size)
-            ascent, descent = font.getmetrics()
-            (width, baseline), (offset_x, offset_y) = font.font.getsize(lab_name)
-
-    drawer.text((400 - int((width + 74)/2) + 74, 220 - ascent), lab_name, (0, 0, 0), font=font) 
-    
-    flag_img = Image.open("kmutnbtrackapp/static/qrcode_src/maps-and-flags.png", 'r')
-    flag_img = flag_img.resize((74,74), resample=Image.LANCZOS)
-    pos = (int(400 - (width + 74)/2 - 3), 
-            int(220 - ascent + offset_y + (ascent - offset_y)/2 - 74/2 ))
-    img_frame.paste(flag_img, pos, mask=flag_img.split()[1])
-
-    img_frame.save(f'media/{lab_name}_qrcode.png', "PNG", quality=100)
-    with open(f'media/{lab_name}_qrcode.png', "rb") as f:
-        response = HttpResponse(f.read(), content_type="image/png")
-        response['Content-Disposition'] = 'inline; filename=' + f'media/{lab_name}_qrcode.png'
-        return response
 
 
 @supervisor_login_required

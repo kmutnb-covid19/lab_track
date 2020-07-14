@@ -1,3 +1,4 @@
+
 import datetime
 
 from django.db.models import Q
@@ -99,6 +100,8 @@ def filter_risk_user(mode, keyword):
     return risk_people_data, risk_people_notify
 
 
+
+
 def superuser_login_required(func):
     def wrapper(request, *args, **kw):
         if request.user.is_superuser:
@@ -117,3 +120,4 @@ def supervisor_login_required(func):
             return render(request, 'Page/error.html', {"error_message": "Permission denied"})
 
     return wrapper
+

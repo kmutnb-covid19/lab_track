@@ -58,5 +58,6 @@
             <p class="time-checkout">{{ check_out }}</p>
         </p>
     </div>
+    <a href="{% url 'generate_qr_code2' lab_hash %}" type="button" class="btn btn-secondary btn-checkin">แชร์ qrcode</a>
 </div>
 {% endblock %}

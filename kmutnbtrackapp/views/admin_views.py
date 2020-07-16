@@ -34,7 +34,7 @@ def history_search(request, page=1):
     stop = request.GET.get('to', '')
     mode = request.GET.get('mode', '')
     histories, all_history = query_search(mode, keyword, start, stop, "normal")
-    
+
     p = Paginator(all_history, 36)
     num_pages = p.num_pages
     shown_history = p.page(page)
@@ -76,6 +76,9 @@ def history_search(request, page=1):
 @supervisor_login_required
 def view_lab(request, lab_hash):
     this_lab = Lab.objects.get(hash=lab_hash)
+    print(request.user.groups.filter(name=this_lab.name))
+    if not (request.user.is_superuser or request.user.groups.filter(name=this_lab.name).exists()):
+        return render(request, 'Page/error.html', {"error_message": "Permission denied"})
     now_datetime = datetime.datetime.now(tz)
     midnight_time = now_datetime.replace(hour=23, minute=59, second=59, microsecond=0)
     current_people = History.objects.filter(lab=this_lab,
@@ -160,11 +163,11 @@ def generate_qr_code(request, lab_hash):
             ascent, descent = font.getmetrics()
             (width, baseline), (offset_x, offset_y) = font.font.getsize(lab_name)
 
-    drawer.text((400 - int((width + 74)/2) + 74, 220 - ascent), lab_name, (0, 0, 0), font=font) 
-    
+    drawer.text((400 - int((width + 74)/2) + 74, 220 - ascent), lab_name, (0, 0, 0), font=font)
+
     flag_img = Image.open("kmutnbtrackapp/static/qrcode_src/maps-and-flags.png", 'r')
     flag_img = flag_img.resize((74,74), resample=Image.LANCZOS)
-    pos = (int(400 - (width + 74)/2 - 3), 
+    pos = (int(400 - (width + 74)/2 - 3),
             int(220 - ascent + offset_y + (ascent - offset_y)/2 - 74/2 ))
     img_frame.paste(flag_img, pos, mask=flag_img.split()[1])
 

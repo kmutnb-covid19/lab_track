@@ -263,20 +263,22 @@ def call_dashboard(request):
     """load and manage metadata"""
     meta_data = get_data_metadata()
     dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(tz), "normal")
-
     for user in dataset:
-        if str(user.lab) in meta_data['lab']:
-            if (str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)) in \
-                    meta_data['lab'][str(user.lab)]:
-                meta_data['lab'][str(user.lab)][
-                    str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] += 1
+        try:
+            if str(user.lab) in meta_data['lab']:
+                if (str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)) in \
+                        meta_data['lab'][str(user.lab)]:
+                    meta_data['lab'][str(user.lab)][
+                        str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] += 1
+                else:
+                    meta_data['lab'][str(user.lab)][
+                        str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] = 1
             else:
+                meta_data['lab'][str(user.lab)] = {}
                 meta_data['lab'][str(user.lab)][
                     str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] = 1
-        else:
-            meta_data['lab'][str(user.lab)] = {}
-            meta_data['lab'][str(user.lab)][
-                str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] = 1
+        except AttributeError:
+            pass
     meta_data["latest time"] = datetime.datetime.now(tz).strftime('%Y-%m-%dT%H:%M:%S.%f')
     write_metadata(meta_data)
     """prepare data before sent to template"""

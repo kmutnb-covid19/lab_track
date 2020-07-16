@@ -178,14 +178,11 @@
         </thead>
             {% if shown_history != "EMPTY" %}
                 <tbody id="table_body">
-                    {% for h in shown_history %}
-                        <tr>
-                        <td>{{ h.person.student_id }}</td>
-                        <td>{{ h.person.first_name }} {{ h.person.last_name }}</td>
-                        <td></td>
-                        <td>{{ h.lab.name }}</td>
-                        <td>{{ h.checkin }}</td>
-                        <td>{{ h.checkout }}</td>
+                    {% for each_user in shown_history %}
+                    <tr>
+                        {% for each_data in each_user %}
+                            <td>{{ each_data }}</td>
+                        {% endfor %}
                     </tr>
                     {% endfor %}
                 </tbody>

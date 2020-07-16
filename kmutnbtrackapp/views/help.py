@@ -1,4 +1,3 @@
-
 import datetime
 
 from django.db.models import Q
@@ -60,7 +59,18 @@ def query_search(mode, keyword, start, stop, search_mode):
                 histories = histories.filter(Q(person__last_name__startswith=keyword[1]))
         elif mode == "lab":
             histories = histories.filter(Q(lab__name__startswith=keyword))
-    return histories
+    all_history = []
+    for each_history in histories:
+        std_id = each_history.person.student_id
+        tel = each_history.person.user.username
+        all_history.append((std_id if std_id != '' else "-",
+                                         each_history.person.first_name + ' ' + each_history.person.last_name,
+                                         tel if tel != '' and tel[0] == "0" else "-",
+                                         each_history.lab,
+                                         each_history.checkin,
+                                         each_history.checkout,
+                                         ))
+    return histories, all_history
 
 
 def sort_lab_name_risk_search(each_user):
@@ -75,10 +85,10 @@ def filter_risk_user(mode, keyword):
     """filter user if there near by infected in time"""
     risk_people_data = []
     risk_people_notify = []
-    target_historys = query_search(mode, keyword, 0, 0, "risk")  # get all history with only the infected person
+    target_historys, not_use = query_search(mode, keyword, 0, 0, "risk")  # get all history with only the infected person
     if target_historys != 'EMPTY':
         for user in target_historys:  # for each row of infected person
-            session_historys = query_search('lab', user.lab, user.checkin, user.checkout, "risk")  #
+            session_historys, not_use = query_search('lab', user.lab, user.checkin, user.checkout, "risk")  #
             for session in session_historys:
                 std_id = session.person.student_id
                 tel = session.person.user.username
@@ -100,8 +110,6 @@ def filter_risk_user(mode, keyword):
     return risk_people_data, risk_people_notify
 
 
-
-
 def superuser_login_required(func):
     def wrapper(request, *args, **kw):
         if request.user.is_superuser:
@@ -114,10 +122,10 @@ def superuser_login_required(func):
 
 def supervisor_login_required(func):
     def wrapper(request, *args, **kw):
-        if request.user.is_superuser or request.user.groups.filter(name='Supervisor').exists():
+        if request.user.is_superuser or request.user.groups.all().exists():
+            print("yes")
             return func(request, *args, **kw)
         else:
             return render(request, 'Page/error.html', {"error_message": "Permission denied"})
 
     return wrapper
-

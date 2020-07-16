@@ -92,7 +92,6 @@
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'day');
         data.addColumn('number', 'Number of user');
-
         var liner_data_list = [];
         for (var i = 0; i < {{liner_data}}.length; i++
       ) {
@@ -153,12 +152,6 @@
          draw_single_liner_Chart();
          donutChart();
       }
-      $(window).resize(function() {
-         donutChart();
-         draw_single_liner_Chart();
-         drawChart();
-         drawLineChart();
-      });
     </script>
     <style>
     .donutCell

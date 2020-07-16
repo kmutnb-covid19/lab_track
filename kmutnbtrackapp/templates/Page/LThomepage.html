@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Labtrack - ConyCodes</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cabin:700">
+    {% load static %}
+    <link rel="stylesheet" href="{% static "css/assets/fonts/font-awesome.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/assets/bootstrap/css/bootstrap.min.css" %}">
+
+</head>
+
+<body id="page-top">
+<style>
+@media (min-width: 200px) {
+    #mainNav.navbar-shrink {
+        background-color: #1261a0;
+    }
+
+}
+@media (min-width: 321px) and (max-width: 600px) {
+    iframe {
+        width: auto;
+        height: auto;
+    }
+}
+@media (min-width: 100px) and (max-width: 320px) {
+    iframe {
+        width: 260px;
+        height: auto;
+    }
+}
+    .section-title {
+  max-width: 350px;
+  margin: auto;
+  padding: 15px;
+  text-align: center;
+}
+
+
+.section-title h1 {
+  font-size: 24px;
+  text-transform: uppercase;
+  color: #2ca5b9;
+}
+
+.section-title .divider {
+  position: relative;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 30px;
+  margin-top: 30px;
+}
+
+.section-title .divider:before {
+  position: absolute;
+  content: '';
+  width: 30px;
+  height: 30px;
+  border: 1px solid #f0f0f0;
+  left: 50%;
+  margin-left: -15px;
+  top: 50%;
+  background: #fff;
+  margin-top: -15px;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.section-title .divider:after {
+  position: absolute;
+  content: '';
+  width: 20px;
+  height: 20px;
+  border: 1px solid #2ca5b9;
+  left: 50%;
+  margin-left: -10px;
+  top: 50%;
+  background: #2ca5b9;
+  margin-top: -10px;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+    .team-boxed {
+    color: #313437;
+
+}
+
+.team-boxed p {
+    color: #7d8285
+}
+
+.team-boxed h2 {
+    font-weight: bold;
+    margin-bottom: 40px;
+    padding-top: 40px;
+    color: inherit
+}
+
+@media (max-width:767px) {
+    .team-boxed h2 {
+        margin-bottom: 25px;
+        padding-top: 25px;
+        font-size: 24px
+    }
+}
+
+.team-boxed .intro {
+    font-size: 16px;
+    max-width: 500px;
+    margin: 0 auto
+}
+
+.team-boxed .intro p {
+    margin-bottom: 0
+}
+
+.team-boxed .people {
+    padding: 50px 0
+}
+
+.team-boxed .item {
+    text-align: center
+}
+
+.team-boxed .item .box {
+    text-align: center;
+    padding: 30px;
+    background-color: #fff;
+    margin-bottom: 30px;
+    border-radius: 10px
+}
+
+.team-boxed .item .name {
+    font-weight: bold;
+    margin-top: 28px;
+    margin-bottom: 8px;
+    color: inherit
+}
+
+.team-boxed .item .title {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: rgb(151,157,155);
+    letter-spacing: 2px;
+    font-size: 13px
+}
+
+.team-boxed .item .description {
+    font-size: 15px
+}
+
+.team-boxed .item img {
+    max-width: 160px
+}
+
+.team-boxed .social {
+    font-size: 18px;
+    color: #a2a8ae
+}
+
+.team-boxed .social:hover {
+    font-size: 18px;
+    color: #f80808
+}
+
+.team-boxed .social a {
+    color: inherit;
+    margin: 0 10px;
+    display: inline-block;
+    opacity: 0.7;
+    padding: 6px
+}
+
+.team-boxed .social a:hover {
+    opacity: 1
+}
+
+.fa {
+    font-size: 28px
+}
+
+.intro h1 {
+    color: #fff
+}
+
+.intro {
+    margin-top: 23px
+}
+
+.box img {
+    cursor: pointer;
+    width: 9em
+}
+    .row.people{
+        padding-top: 7.5px;
+        padding-bottom: 7.5px;
+    }
+</style>
+
+    <nav class="navbar navbar-light navbar-expand-md navbar navbar-expand-lg fixed-top"  id="mainNav">
+        <div class="container"><a class="navbar-brand js-scroll-trigger" href="#">Labtrack</a><button data-toggle="collapse" class="navbar-toggler navbar-toggler-right" data-target="#navbarResponsive" type="button" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"
+                value="Menu"><i class="fa fa-bars"></i></button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="nav navbar-nav ml-auto">
+                    <li class="nav-item nav-link js-scroll-trigger" role="presentation"><a class="nav-link active js-scroll-trigger" href="#about">About</a></li>
+                    <li class="nav-item nav-link js-scroll-trigger" role="presentation"><a class="nav-link js-scroll-trigger" href="#download">Manual</a></li>
+                    <li class="nav-item nav-link js-scroll-trigger" role="presentation"><a class="nav-link js-scroll-trigger" href="#creator">creator</a></li>
+                    <li class="nav-item nav-link js-scroll-trigger" role="presentation"><a class="nav-link js-scroll-trigger" href="#contact">contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <header class="masthead" style="background-image:url({% static 'css/assets/img/LT2.jpg' %});")>
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <h1 class="brand-heading">Labtrack</h1>
+                        <p class="intro-text">Application for tracking covid-19</p><a class="btn btn-link btn-circle" role="button" href="#about"><i class="fa fa-angle-double-down animated"></i></a></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <section id="about" class="content-section text-center" style="background-image:url({% static 'images/BG02.png' %});">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h2 style="margin-bottom: 10px">ABOUT LABTRACK</h2>
+                    <div class="col-sm-12">
+                        <!-- Section Title -->
+	                        <div class="section-title">
+                                <div class="divider">
+                                </div>
+                            </div>
+                        </div>
+
+                    <p >LABTRACK คือ Application ที่สร้างขึ้นมาเพื่อช่วยในการค้นหา </p>
+                    <p >ผู้ที่มีความเสี่ยงที่จะติดเชื้อ จากผู้ที่เป็นโรค covid-19</p>
+                    <p>โดย Application นี้สร้างขึ้นโดยคณะ <a href="https://cony.codes/">Cony.codes</a>  </p>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="download" class="download-section content-section text-center" style="background-image:url({% static 'images/BG06.jpg' %});">
+        <div class="container">
+            <div class="col-lg-8 mx-auto">
+                <h1 style="font-size: 36px; margin-bottom: 10px">Manual</h1>
+                <h1 style="font-size: 36px; margin-bottom: 50px">คู่มือการใช้งาน</h1>
+
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/SckcZOy4kPo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+    </section>
+    <section id="creator" class="content-section text-center" style="background-image:url({% static 'images/bglong2.png' %});">
+
+
+        <div class="team-boxed">
+            <div class="container">
+                <div class="intro">
+                    <h1 class="text-center">Meet our team</h1>
+                </div>
+                <div class="col-sm-12">
+                                <!-- Section Title -->
+                                    <div class="section-title">
+                                        <div class="divider">
+                                        </div>
+                                    </div>
+                                </div>
+
+                <div class="row people" >
+                    <div class="col-md-1 col-lg-4 item">
+                        </div>
+                    <div class="col-md-1 col-lg-4 item">
+                        <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/unknown.jpg" %}">
+                            <h3 class="name">Sopon a.</h3>
+                            <p class="title" style="font-size: 15px">Advisor</p>
+
+                            <div class="social"><a href="mailto:sopon.a@eng.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="row people">
+                    <div class="col-md-6 col-lg-4 item">
+                        <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/sunne.png" %}">
+                            <h3 class="name">JIRAPHAT C.</h3>
+                            <p class="title">Back-End-Developer</p>
+
+                            <div class="social"><a href="mailto:s6101012630054@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 item">
+                        <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/toppo.png" %}">
+                            <h3 class="name">SIRI K.</h3>
+                            <p class="title">Back-End-Developer</p>
+
+                            <div class="social"><a href="mailto:s6101012620164@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 item">
+                        <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/mme.png" %}">
+                            <h3 class="name">PASAKORN P.</h3>
+                            <p class="title">Tester / QA</p>
+                            <div class="social"><a href="mailto:s6101012630135@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="row people">
+                    <div class="col-md-6 col-lg-4 item">
+                        <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/karnn.png" %}">
+                            <h3 class="name">Pattaranan S.</h3>
+                            <p class="title">Back-End-Developer</p>
+
+                           <div class="social"><a href="mailto:s6101012620121@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 item">
+                        <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/pee1.jpg" %}">
+                            <h3 class="name">Watcharawut P.</h3>
+                            <p class="title">Back-End-Developer</p>
+
+                           <div class="social"><a href="mailto:s6101012620121@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 item">
+                        <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/tong.jpg" %}">
+                            <h3 class="name">Nattakrit J.</h3>
+                            <p class="title">Back-End-Developer</p>
+                            <div class="social"><a href="mailto:s6101012610037@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row people">
+                    <div class="col-md-6 col-lg-4 item">
+                        <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/pakin.jpg" %}">
+                            <h3 class="name">Pakin M.</h3>
+                            <p class="title">Front-End-Developer</p>
+
+                            <div class="social"><a href="mailto:s6101012630127@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 item">
+                        <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/punch1.png" %}">
+                            <h3 class="name">Supansa T.</h3>
+                            <p class="title">Front-End-Developer</p>
+
+                            <div class="social"><a href="mailto:s6201012620113@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 item">
+                        <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/ohm1.jpg" %}">
+                            <h3 class="name">DETMON C.</h3>
+                            <p class="title">Front-End-Developer</p>
+                            <div class="social"><a href="mailto:s6101012620061@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row people">
+                    <div class="col-md-6 col-lg-4 item">
+                        <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px"  data-bs-hover-animate="pulse" src="{% static "images/best.jpg" %}">
+                            <h3 class="name">Pichet P.</h3>
+                            <p class="title">Back-End-Developer</p>
+
+                            <div class="social"><a href="mailto:zunchero@gmail.com?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 item">
+                        <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/kay.png" %}">
+                            <h3 class="name">Kitsanapong R.</h3>
+                            <p class="title">Front-End-Developer</p>
+
+                            <div class="social"><a href="mailto:s6101012630011@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 item">
+                        <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/pure.jpg" %}">
+                            <h3 class="name">Pakkapong R.</h3>
+                            <p class="title">Tester / QA</p>
+                            <div class="social"><a href="mailto:s6101012630119@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+            </div>
+        </div>
+
+
+    </section>
+
+
+
+
+<section id="contact" class="content-section text-center" style="background-image:url({% static 'images/BG11.png' %});">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h2 style="margin-bottom: 0px;">Contact us</h2>
+                    <div class="row">
+                        <div class="col-sm-12">
+                        <!-- Section Title -->
+	                        <div class="section-title">
+                                <div class="divider">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="margin-top: 50px;">หากติดปัญหาหรือมีข้อสงสัยอื่นๆ
+                    </p>
+                    <p style="margin-top: 15px;margin-bottom: 50px">สามารถติดต่อสอบถามหรือแจ้งปัญหาที่เกี่ยวกับโปรแกรม Labtrack เข้ามาได้ที่
+                    </p>
+
+                    <ul class="list-inline banner-social-buttons">
+                        <li class="list-inline-item">&nbsp;<a href="https://www.facebook.com/ConyCodes-103477144748375/"  class="btn btn-primary btn-lg btn-default " type="button"><i class="fa fa-facebook fa-fw" ></i><span style="width: 50px;font-size: 16px;" class="network-name">&nbsp; Facebook</span></a></li>
+                        <li class="list-inline-item">&nbsp;<a href="mailto:support@cony.codes?subject = Feedback&body = Message"  class="btn btn-primary btn-lg btn-default " type="button"><i class="fa fa-envelope fa-fw"></i><span style="width: 50px;font-size: 16px;" class="network-name">&nbsp; Mail</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer >
+        <div class="container text-center col-5" >
+            <h1 style="font-size: 24px;">LABTRACK</h1>
+            <p>Copyright ©&nbsp;ConyCodes 2020</p>
+        </div>
+    </footer>
+    <script src="{% static 'css/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'css/assets/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <script src="{% static 'css/assets/js/grayscale.js' %}"></script>
+</body>
+
+</html>

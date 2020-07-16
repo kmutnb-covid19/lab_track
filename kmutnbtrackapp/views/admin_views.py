@@ -33,9 +33,9 @@ def history_search(request, page=1):
     start = request.GET.get('from', '')
     stop = request.GET.get('to', '')
     mode = request.GET.get('mode', '')
-    histories = query_search(mode, keyword, start, stop, "normal")
+    histories, all_history = query_search(mode, keyword, start, stop, "normal")
 
-    p = Paginator(histories, 36)
+    p = Paginator(all_history, 36)
     num_pages = p.num_pages
     shown_history = p.page(page)
 
@@ -76,7 +76,8 @@ def history_search(request, page=1):
 @supervisor_login_required
 def view_lab(request, lab_hash):
     this_lab = Lab.objects.get(hash=lab_hash)
-    if not request.user.groups.filter(name=this_lab.name).exists():
+    print(request.user.groups.filter(name=this_lab.name))
+    if not (request.user.is_superuser or request.user.groups.filter(name=this_lab.name).exists()):
         return render(request, 'Page/error.html', {"error_message": "Permission denied"})
     now_datetime = datetime.datetime.now(tz)
     midnight_time = now_datetime.replace(hour=23, minute=59, second=59, microsecond=0)
@@ -99,16 +100,15 @@ def export_normal_csv(request):
     keyword = request.GET.get('keyword', '')
     start = request.GET.get('from', '')
     stop = request.GET.get('to', '')
-    histories = query_search(mode, keyword, start, stop, "normal")
+    histories, all_history = query_search(mode, keyword, start, stop, "normal")
     response = HttpResponse(content_type='text/csv')
     writer = csv.writer(response)
     writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
-    for user in histories:
-        writer.writerow([str(user.person.student_id),
-                         user.person,
-                         user.lab,
-                         user.checkin.astimezone(tz),
-                         user.checkout.astimezone(tz)])
+    for user in all_history:
+        user = list(user)
+        user[4] = user[4].astimezone(tz)
+        user[5] = user[5].astimezone(tz)
+        writer.writerow(user)
     response['Content-Disposition'] = 'attachment; filename="file_log.csv"'
     return response
 
@@ -164,12 +164,12 @@ def generate_qr_code(request, lab_hash):
             ascent, descent = font.getmetrics()
             (width, baseline), (offset_x, offset_y) = font.font.getsize(lab_name)
 
-    drawer.text((400 - int((width + 74) / 2) + 74, 220 - ascent), lab_name, (0, 0, 0), font=font)
+    drawer.text((400 - int((width + 74)/2) + 74, 220 - ascent), lab_name, (0, 0, 0), font=font)
 
     flag_img = Image.open("kmutnbtrackapp/static/qrcode_src/maps-and-flags.png", 'r')
-    flag_img = flag_img.resize((74, 74), resample=Image.LANCZOS)
-    pos = (int(400 - (width + 74) / 2 - 3),
-           int(220 - ascent + offset_y + (ascent - offset_y) / 2 - 74 / 2))
+    flag_img = flag_img.resize((74,74), resample=Image.LANCZOS)
+    pos = (int(400 - (width + 74)/2 - 3),
+            int(220 - ascent + offset_y + (ascent - offset_y)/2 - 74/2 ))
     img_frame.paste(flag_img, pos, mask=flag_img.split()[1])
 
     img_frame.save(f'media/{lab_name}_qrcode.png', "PNG", quality=100)
@@ -265,20 +265,22 @@ def call_dashboard(request):
     """load and manage metadata"""
     meta_data = get_data_metadata()
     dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(tz), "normal")
-
     for user in dataset:
-        if str(user.lab) in meta_data['lab']:
-            if (str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)) in \
-                    meta_data['lab'][str(user.lab)]:
-                meta_data['lab'][str(user.lab)][
-                    str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] += 1
+        try:
+            if str(user.lab) in meta_data['lab']:
+                if (str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)) in \
+                        meta_data['lab'][str(user.lab)]:
+                    meta_data['lab'][str(user.lab)][
+                        str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] += 1
+                else:
+                    meta_data['lab'][str(user.lab)][
+                        str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] = 1
             else:
+                meta_data['lab'][str(user.lab)] = {}
                 meta_data['lab'][str(user.lab)][
                     str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] = 1
-        else:
-            meta_data['lab'][str(user.lab)] = {}
-            meta_data['lab'][str(user.lab)][
-                str(user.checkout.year) + "/" + str(user.checkout.month) + "/" + str(user.checkout.day)] = 1
+        except AttributeError:
+            pass
     meta_data["latest time"] = datetime.datetime.now(tz).strftime('%Y-%m-%dT%H:%M:%S.%f')
     write_metadata(meta_data)
     """prepare data before sent to template"""

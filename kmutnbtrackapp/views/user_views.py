@@ -24,7 +24,15 @@ def home(request):
         if not request.user.is_authenticated:  # check if user do not login
             return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_hash,)))
         return HttpResponseRedirect(reverse("kmutnbtrackapp:lab_home", args=(lab_hash,)))
-    return HttpResponse('Waiting for beautiful homepage....')
+    return render(request, 'Page/LThomepage.html')
+
+def joke(request):
+    if request.GET.get('next'):
+        lab_hash = request.GET.get('next')
+        if not request.user.is_authenticated:  # check if user do not login
+            return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_hash,)))
+        return HttpResponseRedirect(reverse("kmutnbtrackapp:lab_home", args=(lab_hash,)))
+    return render(request, 'Page/Jhomepage.html')
 
 
 def lab_home_page(request, lab_hash):  # this function is used when user get in home page

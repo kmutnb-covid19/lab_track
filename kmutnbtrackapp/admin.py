@@ -28,18 +28,6 @@ class LabAdmin(admin.ModelAdmin):
             return obj.name
 
 
-    def get_queryset(self, request):
-        queryset = super(LabAdmin, self).get_queryset(request)
-        self.request = request
-        return queryset
-
-    def names(self, obj):
-        if self.request.user.is_superuser:
-            return obj.name
-        if not self.request.user.groups.filter(name=obj.name).exists():
-            return ""
-        return obj.name
-
     def my_url_field(self, obj):
         if self.request.user.is_superuser:
             return format_html('<button><a href="/admin/qrcode/%s/" download>%s</a></button>' % (obj.hash, obj.name))

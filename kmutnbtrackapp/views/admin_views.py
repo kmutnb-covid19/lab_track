@@ -33,9 +33,9 @@ def history_search(request, page=1):
     start = request.GET.get('from', '')
     stop = request.GET.get('to', '')
     mode = request.GET.get('mode', '')
-    histories = query_search(mode, keyword, start, stop, "normal")
-
-    p = Paginator(histories, 36)
+    histories, all_history = query_search(mode, keyword, start, stop, "normal")
+    
+    p = Paginator(all_history, 36)
     num_pages = p.num_pages
     shown_history = p.page(page)
 
@@ -97,16 +97,15 @@ def export_normal_csv(request):
     keyword = request.GET.get('keyword', '')
     start = request.GET.get('from', '')
     stop = request.GET.get('to', '')
-    histories = query_search(mode, keyword, start, stop, "normal")
+    histories, all_history = query_search(mode, keyword, start, stop, "normal")
     response = HttpResponse(content_type='text/csv')
     writer = csv.writer(response)
     writer.writerow(['Student ID', 'Person Name', 'Phone number', 'Lab Name', 'Check in time', 'Check out time'])
-    for user in histories:
-        writer.writerow([str(user.person.student_id),
-                         user.person,
-                         user.lab,
-                         user.checkin.astimezone(tz),
-                         user.checkout.astimezone(tz)])
+    for user in all_history:
+        user = list(user)
+        user[4] = user[4].astimezone(tz)
+        user[5] = user[5].astimezone(tz)
+        writer.writerow(user)
     response['Content-Disposition'] = 'attachment; filename="file_log.csv"'
     return response
 

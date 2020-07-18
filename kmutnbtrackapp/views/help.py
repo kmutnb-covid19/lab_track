@@ -64,12 +64,12 @@ def query_search(mode, keyword, start, stop, search_mode):
         std_id = each_history.person.student_id
         tel = each_history.person.user.username
         all_history.append((std_id if std_id != '' else "-",
-                                         each_history.person.first_name + ' ' + each_history.person.last_name,
-                                         tel if tel != '' and tel[0] == "0" else "-",
-                                         each_history.lab,
-                                         each_history.checkin,
-                                         each_history.checkout,
-                                         ))
+                            each_history.person.first_name + ' ' + each_history.person.last_name,
+                            tel if tel != '' and tel[0] == "0" else "-",
+                            each_history.lab,
+                            each_history.checkin,
+                            each_history.checkout,
+                            ))
     return histories, all_history
 
 
@@ -85,7 +85,8 @@ def filter_risk_user(mode, keyword):
     """filter user if there near by infected in time"""
     risk_people_data = []
     risk_people_notify = []
-    target_historys, not_use = query_search(mode, keyword, 0, 0, "risk")  # get all history with only the infected person
+    target_historys, not_use = query_search(mode, keyword, 0, 0,
+                                            "risk")  # get all history with only the infected person
     if target_historys != 'EMPTY':
         for user in target_historys:  # for each row of infected person
             session_historys, not_use = query_search('lab', user.lab, user.checkin, user.checkout, "risk")  #

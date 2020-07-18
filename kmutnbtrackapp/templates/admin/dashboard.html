@@ -15,21 +15,7 @@
      {% load static %}
     <link rel="stylesheet" href="{% static "css/style.css" %}">
 
-    <upnav>
-        <div class="logo"}><h4>Labtrack</h4></div>
-        <ul class="upnav-link">
-            <li><a  href="{% url 'admin:index' %}">Labtrack Admin Dashboard</a> </li>
-            <li><a href="{% url 'risk_people_search' %}">Risk People Search</a> </li>
-            <li><a href="{% url 'history_search' %}">History Search</a> </li>
-            <li><a href="{% url 'dashboard' %}">Statistic Dashboard</a> </li>
-            <li><a href="{% url 'backup' %}">Backup Database</a> </li>
-        </ul>
-        <div class="burger">
-            <div class="line1"></div>
-            <div class="line2"></div>
-            <div class="line3"></div>
-        </div>
-    </upnav>
+    {% include "admin/admin_navbar.html" %}
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
     <script type="text/javascript">

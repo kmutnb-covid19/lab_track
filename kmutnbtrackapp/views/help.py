@@ -115,7 +115,7 @@ def superuser_login_required(func):
         if request.user.is_superuser:
             return func(request, *args, **kw)
         else:
-            return render(request, 'Page/error.html', {"error_message": "Permission denied"})
+            return render(request, 'admin/admin_error.html', {"error_message": "Permission denied"})
 
     return wrapper
 
@@ -126,6 +126,6 @@ def supervisor_login_required(func):
             print("yes")
             return func(request, *args, **kw)
         else:
-            return render(request, 'Page/error.html', {"error_message": "Permission denied"})
+            return render(request, 'admin/admin_error.html', {"error_message": "Permission denied"})
 
     return wrapper

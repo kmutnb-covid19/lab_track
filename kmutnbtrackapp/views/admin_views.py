@@ -18,8 +18,6 @@ from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect
-from django.urls import reverse
-from django.templatetags.static import static
 
 from kmutnbtrackapp.dashboard import *
 from kmutnbtrackapp.views.help import *
@@ -89,7 +87,8 @@ def view_lab(request, lab_hash):
             out_local_time = datetime.datetime.now(tz)
             person.checkout = out_local_time
             person.save()
-        return HttpResponseRedirect(reverse('kmutnbtrackapp:view_lab', args=(lab_hash,)))
+        messages.info(request, 'All the people in %s has been cleared successfully' % this_lab.name)
+        return HttpResponseRedirect('/admin/kmutnbtrackapp/lab/')
     return render(request, 'admin/view_lab.html', {'this_lab': this_lab, 'shown_history': current_people})
 
 
@@ -129,6 +128,7 @@ def risk_people_search(request):
                    'keyword': keyword, 'select_mode': mode,
                    })
 
+
 def generate_qr_code(request, lab_hash):
     lab_name = Lab.objects.get(hash=lab_hash).name
     qr = qrcode.QRCode(
@@ -143,7 +143,7 @@ def generate_qr_code(request, lab_hash):
 
     img_frame = Image.open("kmutnbtrackapp/static/qrcode_src/QR_frame.png", 'r')
 
-    pos = (80+30, 295+19)
+    pos = (80 + 30, 295 + 19)
     img_frame.paste(img_qr, pos)
 
     drawer = ImageDraw.Draw(img_frame)
@@ -154,7 +154,7 @@ def generate_qr_code(request, lab_hash):
     (width, baseline), (offset_x, offset_y) = font.font.getsize(lab_name)
 
     if len(lab_name) > 30:
-        drawer.text((100 , 190), "Lab name too long!!!", (128, 0, 0), font=font)
+        drawer.text((100, 190), "Lab name too long!!!", (128, 0, 0), font=font)
 
     elif len(lab_name) > 14:  # long name -> reduce font size
         while width >= 580:
@@ -163,12 +163,12 @@ def generate_qr_code(request, lab_hash):
             ascent, descent = font.getmetrics()
             (width, baseline), (offset_x, offset_y) = font.font.getsize(lab_name)
 
-    drawer.text((400 - int((width + 74)/2) + 74, 220 - ascent), lab_name, (0, 0, 0), font=font)
+    drawer.text((400 - int((width + 74) / 2) + 74, 220 - ascent), lab_name, (0, 0, 0), font=font)
 
     flag_img = Image.open("kmutnbtrackapp/static/qrcode_src/maps-and-flags.png", 'r')
-    flag_img = flag_img.resize((74,74), resample=Image.LANCZOS)
-    pos = (int(400 - (width + 74)/2 - 3),
-            int(220 - ascent + offset_y + (ascent - offset_y)/2 - 74/2 ))
+    flag_img = flag_img.resize((74, 74), resample=Image.LANCZOS)
+    pos = (int(400 - (width + 74) / 2 - 3),
+           int(220 - ascent + offset_y + (ascent - offset_y) / 2 - 74 / 2))
     img_frame.paste(flag_img, pos, mask=flag_img.split()[1])
 
     img_frame.save(f'media/{lab_name}_qrcode.png', "PNG", quality=100)
@@ -176,6 +176,7 @@ def generate_qr_code(request, lab_hash):
         response = HttpResponse(f.read(), content_type="image/png")
         response['Content-Disposition'] = 'inline; filename=' + f'media/{lab_name}_qrcode.png'
         return response
+
 
 @superuser_login_required
 def export_risk_csv(request):
@@ -242,9 +243,9 @@ def notify_user(request, mode, keyword):
                     lab_name += str(each_lab) + ', '
                 lab_name = lab_name[:-2]
                 user_data[each_user_email] = {'student_id': student_id,
-                                            'first_last_name': first_last_name,
-                                            'user_email': each_user_email,
-                                            'lab_name': lab_name}
+                                              'first_last_name': first_last_name,
+                                              'user_email': each_user_email,
+                                              'lab_name': lab_name}
         subject = 'แจ้งเตือนกลุ่มผู้มีความเสี่ยงติดเชื้อ COVID-19'
         email = EmailMessage(subject, to=user_email)
         email.template_id = 'notify-labtrack'
@@ -254,9 +255,6 @@ def notify_user(request, mode, keyword):
         return render(request, 'admin/notify_status.html',
                       {'notify_status': True,
                        })
-
-
-
 
 
 @supervisor_login_required

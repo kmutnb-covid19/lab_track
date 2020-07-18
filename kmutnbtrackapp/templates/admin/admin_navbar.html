@@ -1,0 +1,48 @@
+<upnav>
+        <div class="logo"}><h4>Labtrack</h4></div>
+        <ul class="upnav-link">
+            {% if request.user.is_superuser %}
+                <li><a  href="{% url 'admin:index' %}">Labtrack Admin Dashboard</a> </li>
+                <li><a href="{% url 'risk_people_search' %}">Risk People Search</a> </li>
+                <li><a href="{% url 'history_search' %}">History Search</a> </li>
+                <li><a href="{% url 'dashboard' %}">Statistic Dashboard</a> </li>
+                <li><a href="{% url 'backup' %}">Backup Database</a> </li>
+            {% else %}
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a></a> </li>
+                <li><a  href="{% url 'admin:index' %}">Labtrack Admin Dashboard</a> </li>
+                <li><a href="{% url 'dashboard' %}">Statistic Dashboard</a> </li>
+            {% endif %}
+        </ul>
+        <div class="burger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+</upnav>

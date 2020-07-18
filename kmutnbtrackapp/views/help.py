@@ -39,7 +39,7 @@ def query_search(mode, keyword, start, stop, search_mode):
                                               "%Y-%m-%dT%H:%M")  # convert from "2020-06-05T03:29" to Datetime object
         except:
             stop = datetime.datetime.now(tz)
-    if search_mode == "normal":
+    if search_mode == "normal" or search_mode == "dashboard":
         histories = histories.exclude(Q(checkout__gt=stop) | Q(checkout__lt=start))
     elif search_mode == "risk" and keyword != "":
         histories = histories.exclude(Q(checkin__gt=stop) | Q(checkout__lt=start))
@@ -70,7 +70,10 @@ def query_search(mode, keyword, start, stop, search_mode):
                             each_history.checkin,
                             each_history.checkout,
                             ))
-    return histories, all_history
+    if search_mode == "dashboard":
+        return histories
+    else:
+        return histories, all_history
 
 
 def sort_lab_name_risk_search(each_user):

@@ -46,8 +46,8 @@ def prepare_pie_data(meta_data):
 
 def create_empty_date(start, last):
     date_range = []
-    start_date = datetime.datetime(int(start.split("/")[0]), int(start.split("/")[1]), int(start.split("/")[2]))
-    last_date = datetime.datetime(int(last.split("/")[0]), int(last.split("/")[1]), int(last.split("/")[2]))
+    start_date = datetime.date(int(start.split("/")[0]), int(start.split("/")[1]), int(start.split("/")[2]))
+    last_date = datetime.date.today()
     while start_date <= last_date:
         date_range.append(str(start_date.year) + "/" + str(start_date.month) + "/" + str(start_date.day))
         start_date += timedelta(days=1)

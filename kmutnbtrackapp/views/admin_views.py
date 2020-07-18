@@ -263,7 +263,7 @@ def call_dashboard(request):
 
     """load and manage metadata"""
     meta_data = get_data_metadata()
-    dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(tz), "normal")
+    dataset = query_search('', '', meta_data["latest time"], datetime.datetime.now(tz), "dashboard")
     for user in dataset:
         try:
             if str(user.lab) in meta_data['lab']:
@@ -287,7 +287,6 @@ def call_dashboard(request):
     liner_data = prepare_liner_data(meta_data)
     histrogram_data = prepare_single_liner_data(meta_data)
     room_stauts = prepare_room_status(Lab.objects.values('name', 'max_number_of_people'), History.objects)
-    print(room_stauts)
     return render(request, 'admin/dashboard.html', {
         'pie_data': json.dumps(pie_data),
         'liner_data': json.dumps(liner_data),

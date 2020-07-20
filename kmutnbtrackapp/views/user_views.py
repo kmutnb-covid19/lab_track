@@ -7,6 +7,7 @@ Imports should be grouped in the following order:
 """
 
 import datetime
+import random
 import re
 
 from django.contrib.auth import logout, login
@@ -24,15 +25,8 @@ def home(request):
         if not request.user.is_authenticated:  # check if user do not login
             return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_hash,)))
         return HttpResponseRedirect(reverse("kmutnbtrackapp:lab_home", args=(lab_hash,)))
-    return render(request, 'Page/LThomepage.html')
-
-def joke(request):
-    if request.GET.get('next'):
-        lab_hash = request.GET.get('next')
-        if not request.user.is_authenticated:  # check if user do not login
-            return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_hash,)))
-        return HttpResponseRedirect(reverse("kmutnbtrackapp:lab_home", args=(lab_hash,)))
-    return render(request, 'Page/Jhomepage.html')
+    list_homepage = ['Page/LThomepage.html', 'Page/Jhomepage.html']
+    return render(request, random.choices(list_homepage, weights=(90, 10), k=1)[0])
 
 
 def lab_home_page(request, lab_hash):  # this function is used when user get in home page

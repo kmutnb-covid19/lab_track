@@ -29,6 +29,9 @@
                 <form action="{% url 'notify' mode keyword %}" method="POST">
                     {% csrf_token %}
                     <div class="form-group">
+                        {% if fail %}
+                        <a style="color: red">คุณพิมพ์ ยืนยัน ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง</a>
+                        {% endif %}
                         <label for="confirm">กรุณาพิมพ์ "ยืนยัน" เพื่อยืนยันการส่งการแจ้งเตือนไปยังอีเมลของผู้ที่เกี่ยวข้องกับ {{ keyword }} </label>
                         <input class="form-control" type="text" name="confirm" id="confirm" maxlength="254" required>
                     </div>

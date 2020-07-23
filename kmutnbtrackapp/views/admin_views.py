@@ -255,6 +255,11 @@ def notify_user(request, mode, keyword):
         return render(request, 'admin/notify_status.html',
                       {'notify_status': True,
                        })
+    else:
+        return render(request, 'admin/notify_confirm.html', {'mode': mode,
+                                                             'keyword': keyword,
+                                                             'fail': True,
+                                                             })
 
 
 @supervisor_login_required

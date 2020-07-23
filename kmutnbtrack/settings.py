@@ -80,6 +80,11 @@ TEMPLATES = [
     },
 ]
 
+ADMINS = [('ConyCodes Support', 'support@cony.codes'),
+          ('Nattakrit Jatupattaradit', 's6101012610037@email.kmutnb.ac.th'),
+          ('Pakkapong Rattanapukdeekun', 's6101012630119@email.kmutnb.ac.th'),
+          ('Pasakorn Phareyart', 's6101012630135@email.kmutnb.ac.th')]
+
 WSGI_APPLICATION = 'kmutnbtrack.wsgi.application'
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 

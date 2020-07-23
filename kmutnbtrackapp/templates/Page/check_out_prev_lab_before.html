@@ -38,12 +38,14 @@
         <hr>
         <p class="mb-0">เมื่อเช็คเอาท์จากแล็บก่อนหน้าแล้ว ระบบ จะพาคุณไปยัง {{ new_lab.name }}</p>
     </div>
-    <div style="display: flex; justify-content: center; align-items: center;">
+    <div style=" justify-content: center; align-items: center;">
         <a href="{% url 'kmutnbtrackapp:check_out' last_lab.hash %}?next_lab={{ new_lab.hash }}">
-            <button type="button" class="btn btn-warning" style="color:black">
+            <button type="button" class="btn btn-danger" style="color:white;width: 100%;">
                 <img id="checkout_img" src="{% static 'images/logout_2.png' %}" alt="checkout_pic">
                 เช็คเอาท์
             </button>
+
+
         </a>
     </div>
 </div>

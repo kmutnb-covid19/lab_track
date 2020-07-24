@@ -15,7 +15,7 @@
 
 </head>
 
-<body id="page-top">
+<body id="page-top" >
 <style>
     #mainNav{
         text-shadow: 0px 0px 11px blue;
@@ -232,6 +232,7 @@ label{
     color: black;
     font-family: 'Kanit', sans-serif;
 }
+
 </style>
 
     <nav class="navbar navbar-light navbar-expand-md navbar navbar-expand-lg fixed-top"  id="mainNav">
@@ -445,6 +446,7 @@ label{
                             </div>
                         </div>
                     </div>
+
                     <p style="margin-top: 50px;">หากติดปัญหาหรือมีข้อสงสัยอื่นๆ
                     </p>
                     <p style="margin-top: 15px;margin-bottom: 50px">สามารถติดต่อสอบถามหรือแจ้งปัญหาที่เกี่ยวกับโปรแกรม Labtrack เข้ามาได้ที่
@@ -468,46 +470,115 @@ label{
                             <div class="col-md-10 d-flex justify-content-center p-3 mb-5 bg-white rounded" >
                                 <div class="col-md-8 justify-content-center"style="padding-top: 10%;padding-bottom: 10%" >
                                     <h2 class="text-center" style="color:black;font-family: 'Kanit', sans-serif;">สมัครใช้งานการติดตามผู้เข้าใช้ห้อง lab (Labtrack)</h2>
-                                    <form method="post" action="{% url 'staff_signup' %}">
+                                    <form class="needs-validation" novalidate  method="post" action="{% url 'staff_signup' %}">
                                     {% csrf_token %}
-                                        
+
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="first_name" >ชื่อจริง</label>
-                                            <input type="text" class="form-control" id="first_name" placeholder="สมหมาย" name="first_name">
+                                            <input type="text" class="form-control" id="first_name" placeholder="สมหมาย" name="first_name" required>
+                                             <div class="invalid-feedback">
+                                                 กรุณาใส่ชื่อจริง
+                                            </div>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label  for="last_name">นามสกุล</label>
-                                            <input type="text" class="form-control" id="last_name" placeholder="รักเรียน" name="last_name">
+                                            <input type="text" class="form-control" id="last_name" placeholder="รักเรียน" name="last_name" required>
+                                             <div class="invalid-feedback">
+                                                 กรุณาใส่นามสกุล
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="form-group">
+
+                                         <div class="form-group">
                                         <label for="email">อีเมล</label>
-                                        <input type="email" class="form-control" id="email" placeholder="Email" name="email">
+                                             {% if email_flag %}
+                                                 <input type="email" class="form-control is-invalid" id="email" placeholder="Email" name="email" required>
+                                                 <div class="invalid-feedback">
+                                                         อีเมลนี้มีอยู่แล้วในระบบ
+                                                 </div>
+                                            {% else %}
+                                        <input type="email" class="form-control" id="email" placeholder="Email" name="email" required>
+                                                 <div class="invalid-feedback">
+                                                    กรุณาใส่อีเมล
+                                                 </div>
+                                        {% endif %}
+
                                     </div>
+
                                     <div class="form-group ">
-                                        <label for="username">Username สำหรับ staff</label>
-                                        <input type="text" class="form-control" id="username" placeholder="Username" name="username">
-                                    </div>
+                                        {% if username_flag %}
+                                            <label for="username">Username สำหรับ staff</label>
+                                            <input type="text" class="form-control is-invalid" id="username" placeholder="Username" name="username" required>
+                                            <div class="invalid-feedback">
+                                                 Username นี้มีอยู่แล้วในระบบ
+                                            </div>
+                                        {% else %}
+                                            <label for="username">Username สำหรับ staff</label>
+                                            <input type="text" class="form-control" id="username" placeholder="Username" name="username" required>
+                                            <div class="invalid-feedback">
+                                                 กรุณาใส่ Username
+                                            </div>
+                                        {% endif %}
+
+                                        </div>
                                     <div class="form-group">
                                         <label for="pwd1">Password</label>
-                                        <input type="password" class="form-control" id="pwd1" placeholder="Password" name="password1">
+                                        <input type="password" class="form-control" id="pwd1" placeholder="Password" name="password1" required>
+                                         <div class="invalid-feedback">
+                                                 กรุณาใส่ Password
+                                            </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="pwd2">ยืนยัน Password</label>
-                                        <input type="password" class="form-control" id="pwd2" placeholder="ยืนยัน Password" name="password2">
-                                    </div>
-                                    <div class="form-row">
-                                        <div class="form-group col-md-6">
-                                            <label for="pwd2">ชื่อ Lab</label>
-                                            <input type="text" class="form-control" id="lab_name" placeholder="ชื่อ Lab" name="lab_name">
+                                    {% if password_flag %}
+                                        <div class="form-group">
+                                            <label for="pwd2">ยืนยัน Password</label>
+                                            <input type="password" class="form-control is-invalid" id="pwd2" placeholder="ยืนยัน Password" name="password2" required>
+                                             <div class="invalid-feedback">
+                                                     Password ไม่ตรงกัน
+                                                </div>
                                         </div>
+                                    {% else %}
+                                        <div class="form-group">
+                                        <label for="pwd2">ยืนยัน Password</label>
+                                        <input type="password" class="form-control" id="pwd2" placeholder="ยืนยัน Password" name="password2" required>
+                                         <div class="invalid-feedback">
+                                                 กรุณาใส่ Password confirmed
+                                            </div>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if lab_flag %}
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="pwd2">ชื่อ Lab</label>
+                                                <input type="text" class="form-control is-invalid" id="lab_name" placeholder="ชื่อ Lab" name="lab_name" required>
+                                                <div class="invalid-feedback">
+                                                 ชื่อ Lab นี้มีอยู่แล้วในระบบ
+                                                </div>
+                                            </div>
+
+                                    {% else %}
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="pwd2">ชื่อ Lab</label>
+                                                <input type="text" class="form-control" id="lab_name" placeholder="ชื่อ Lab" name="lab_name" required>
+                                                <div class="invalid-feedback">
+                                                 กรุณาใส่ชื่อ Lab
+                                                </div>
+                                            </div>
+
+                                    {% endif %}
+
                                         <div class="form-group col-md-6">
                                             <label for="pwd2">จำนวนคนสูงสุดที่ lab รับได้</label>
-                                            <input type="number" class="form-control" id="max_lab" placeholder="จำนวนคนสูงสุดที่ lab รับได้" name="max_lab">
+                                            <input type="number" class="form-control" id="max_lab" placeholder="จำนวนคนสูงสุดที่ lab รับได้" name="max_lab" required>
+                                             <div class="invalid-feedback">
+                                                 กรุณาใส่จำนวนคนสูงสุดที่ lab รับได้
+                                            </div>
                                         </div>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary" style="margin-top:5%;width: 100%">Submit</button>
+                                        </div>
+
+                                    <button  type="submit" class="btn btn-success " style="margin-top:5%;width: 100%;font-family: 'Kanit', sans-serif;color: white;font-size: 20px;">ยืนยัน</button>
                                     </form>
                                 </div>
                             </div>
@@ -516,7 +587,6 @@ label{
                 </div>
             </div>
         </div>
-
     </section>
 
     <footer style="padding-top: 40px;padding-bottom: 10px;">
@@ -524,7 +594,12 @@ label{
             <h1 style="font-size: 24px;">LABTRACK</h1>
             <p>Copyright ©&nbsp;ConyCodes 2020</p>
         </div>
-
+    {% if correct_flag %}
+        <div id="alertlabel" class="alert alert-success text-center fixed-bottom alert-dismissible fade show" style=""  data-aos="fade" role="alert">
+          <strong style="font-family: 'Kanit', sans-serif;">เราได้รับขอมูลของคุณแล้ว โปรดตรวจสอบอีเมลของคุณ</strong>
+          </button>
+        </div>
+    {% endif %}
     </footer>
     <script src="{% static 'css/assets/js/jquery.min.js' %}"></script>
     <script src="{% static 'css/assets/bootstrap/js/bootstrap.min.js' %}"></script>
@@ -532,13 +607,39 @@ label{
     <script src="{% static 'css/assets/js/bs-init.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.js"></script>
-    {% if error_flag %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
     <script type='text/javascript'>
+        {% if correct_flag %}
         $(document).ready(function(){
-        window.location = '#sonjai'
+        window.location = '#sonjai';
+        setTimeout(function(){ $("#alertlabel").fadeOut('fast');  }, 5000);
         });
+        {% endif %}
+        {% if username_flag or password_flag or email_flag or lab_flag %}
+        $(document).ready(function(){
+        window.location = '#sonjai';
+        });
+        {% endif %}
+
+        // <------------------------------check valid part -------------------------->
+        (function() {'use strict';
+          window.addEventListener('load', function() {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function(form) {
+              form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+              }, false);
+            });
+          }, false);
+        })();
     </script>
-{% endif %}
 </body>
 
 </html>

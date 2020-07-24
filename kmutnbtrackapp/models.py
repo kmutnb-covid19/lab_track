@@ -45,7 +45,6 @@ class History(models.Model):
 
 class LabPending(models.Model):
     staff_user = models.ForeignKey(User, on_delete=models.CASCADE)
-    staff_email = models.CharField(max_length=60, blank=True, null=True)
     name = models.CharField(max_length=60, blank=True, null=True)
     max = models.IntegerField(blank=True, default=20)
 

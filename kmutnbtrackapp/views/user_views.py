@@ -10,7 +10,7 @@ import datetime
 import re
 
 from django.contrib.auth import logout, login
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
@@ -18,7 +18,6 @@ from django.core.mail import EmailMessage
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import render
 from django.urls import reverse
-
 
 from kmutnbtrackapp.models import *
 from kmutnbtrackapp.views.help import tz, compare_current_time
@@ -31,8 +30,7 @@ def home(request):
         if not request.user.is_authenticated:  # check if user do not login
             return HttpResponseRedirect(reverse("kmutnbtrackapp:login", args=(lab_hash,)))
         return HttpResponseRedirect(reverse("kmutnbtrackapp:lab_home", args=(lab_hash,)))
-    list_homepage = ['Page/LThomepage.html', 'Page/Jhomepage.html']
-    return render(request, random.choices(list_homepage, weights=(90, 10), k=1)[0])
+    return render(request, 'Page/homepage.html')
 
 
 def lab_home_page(request, lab_hash):  # this function is used when user get in home page
@@ -147,7 +145,11 @@ def check_in(request, lab_hash):  # when user checkin record in history
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(lab_hash,)))
     person = Person.objects.get(user=request.user)
-    this_lab = Lab.objects.get(hash=lab_hash)
+    if Lab.objects.filter(hash=lab_hash).exists():
+        this_lab = Lab.objects.get(hash=lab_hash)
+    else:
+        error_message = "QR code ไม่ถูกต้อง"
+        return render(request, 'Page/error.html', {"error_message": error_message})
 
     if request.method == "POST":
         checkout_time_str = request.POST['check_out_time']  # get check out time
@@ -190,6 +192,9 @@ def check_in(request, lab_hash):  # when user checkin record in history
                                "maximum_people": this_lab.max_number_of_people,
                                "check_in": new_hist.checkin.astimezone(tz).strftime("%A, %d %b %Y, %H:%M"),
                                "check_out": new_hist.checkout.astimezone(tz).strftime("%A, %d %b %Y, %H:%M")})
+        else:
+            error_message = "เซสชั่นหมดอายุ กรุณาสแกน QR Code ใหม่อีกครั้ง"
+            return render(request, 'Page/error.html', {"error_message": error_message, "this_lab": this_lab})
     else:
         error_message = "เซสชั่นหมดอายุ กรุณาสแกน QR Code ใหม่อีกครั้ง"
         return render(request, 'Page/error.html', {"error_message": error_message, "this_lab": this_lab})
@@ -226,14 +231,13 @@ def staff_signup(request):
         if LabPending.objects.filter(name=request.POST['lab_name']):
             lab_flag = True
         if (username_flag or email_flag or password_flag or lab_flag) is True:
-            return render(request, 'Page/LThomepage.html', {'username_flag': username_flag, 'email_flag': email_flag,
-                                                            'password_flag': password_flag, 'lab_flag': lab_flag})
+            return render(request, 'Page/homepage.html', {'username_flag': username_flag, 'email_flag': email_flag,
+                                                          'password_flag': password_flag, 'lab_flag': lab_flag})
         if form.is_valid():
             user = form.save(commit=False)
             user.is_active = False
             user.save()
-            LabPending.objects.create(staff_user=user, name=request.POST['lab_name'], max=request.POST['max_lab'],
-                                      staff_email=form.cleaned_data.get('email'))
+            LabPending.objects.create(staff_user=user, name=request.POST['lab_name'], max=request.POST['max_lab'])
             current_site = get_current_site(request)
             mail_subject = request.POST['lab_name'] + ' Lab request'
             to_email = 'test@cony.codes'
@@ -253,12 +257,12 @@ def staff_signup(request):
             message_requester = {form.cleaned_data.get('email'): {'username': user.username,
                                                                   'lab_name': request.POST['lab_name'],
                                                                   'max_lab': request.POST['max_lab']}}
-            email = EmailMessage('Labtrack confirmation', to=[form.cleaned_data.get('email')])
+            email = EmailMessage('เราได้รับคำขอใช้งาน Labtrack แล้ว', to=[form.cleaned_data.get('email')])
             email.template_id = 'lab-request-user'
             email.merge_data = message_requester
             email.send()
-            return render(request, 'Page/LThomepage.html', {'correct_flag': True})
+            return render(request, 'Page/homepage.html', {'correct_flag': True})
         else:
-            return render(request, 'Page/LThomepage.html', {'error_flag': True})
+            return render(request, 'Page/homepage.html', {'error_flag': True})
     else:
         return HttpResponseRedirect('/')

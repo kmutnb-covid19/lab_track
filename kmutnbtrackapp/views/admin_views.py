@@ -335,9 +335,9 @@ def activate(request, uidb64, token):
         new_group.user_set.add(user)
         new_lab_data.delete()
 
-        mail_subject = new_lab_data.name + " has been activated."
-        lab_activated = {new_lab_data.staff_email: {'username': user.username, 'lab_name': new_lab_data.name}}
-        email = EmailMessage(mail_subject, to=[new_lab_data.staff_email])
+        mail_subject = new_lab_data.name + " ได้รับการยืนยีนแล้ว"
+        lab_activated = {user.email: {'username': user.username, 'lab_name': new_lab_data.name}}
+        email = EmailMessage(mail_subject, to=[user.email])
         email.template_id = 'lab-create-confirm'
         email.merge_data = lab_activated
         email.send()

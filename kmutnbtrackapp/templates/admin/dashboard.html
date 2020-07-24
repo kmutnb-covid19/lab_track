@@ -36,14 +36,16 @@
 
       function draw_single_liner_Chart() {
           var key = document.getElementById("select_graph").value;
+          var day = document.getElementById("day").value;
           var data = new google.visualization.DataTable();
           data.addColumn('date', 'Time of Day');
           data.addColumn('number', 'Number of user');
           var histrogram_data_list = [];
-          for (var i = 0; i < {{histrogram_dump|safe}}[key].length; i++) {
+          var lastitem = ({{ histrogram_dump|safe }}).length
+           for (var i = 0; i < {{histrogram_dump|safe}}[key].length; i++) {
                 histrogram_data_list.push([new Date({{histrogram_dump|safe}}[key][i][0]), {{histrogram_dump|safe}}[key][i][1]]);
               }
-              data.addRows(histrogram_data_list);
+              data.addRows(histrogram_data_list.slice(-day,histrogram_data_list.lastIndexOf(histrogram_data_list)));
               var options = {
                   title: String(key),
                   colors: ['#fe0000'],
@@ -74,16 +76,17 @@
       }
 
       function drawLineChart() {
-
+         var day = document.getElementById("day").value;
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'day');
         data.addColumn('number', 'Number of user');
-        var liner_data_list = [];
+       var liner_data_list = [];
         for (var i = 0; i < {{liner_data}}.length; i++
       ) {
             liner_data_list.push([new Date({{liner_data}}[i][0]), {{liner_data}}[i][1]]);
         }
-        data.addRows(liner_data_list);
+        data.addRows(liner_data_list.slice(-day,liner_data_list.lastIndexOf(liner_data_list)));
+
 
         var options = {
           title: 'Number of users each day',
@@ -109,15 +112,15 @@
 
       function donutChart() {
         var key = document.getElementById("select_graph").value;
-        var data = {{room_status|safe}}[key]
+        var data = {{room_status|safe}}[key];
         if ((data['max']-data['use']) >= 0){
-            var data = [['User count', 'Out of max'], ['User in use', data['use']], ['Remaining slot', data['max']-data['use']]]
+            var data = [['User count', 'Out of max'], ['User in use', data['use']], ['Remaining slot', data['max']-data['use']]];
             color_options = ['#00afdb', '#cdcdcd']
         } else {
-            var data = [['User count', 'Out of max'], ['User over load', 1]]
+            var data = [['User count', 'Out of max'], ['User over load', 1]];
             color_options = ['#ff0000', '#cdcdcd']
         }
-        var data = google.visualization.arrayToDataTable(data)
+        var data = google.visualization.arrayToDataTable(data);
 
         var options = {
             title: 'Number of users in Lab',
@@ -136,6 +139,7 @@
       }
       function changeChart() {
          draw_single_liner_Chart();
+         drawLineChart()
          donutChart();
       }
     </script>
@@ -156,7 +160,13 @@
 </head>
 <body>
     <h1 style="color: #569ec1;font-family: Adamina, serif;margin: 10px;" align="center">Dashboard</h1>
-
+     <div align="center">
+         <h2>Select Date</h2>
+    <select  style="width: 20%;position: relative;" class="custom-select custom-select-lg mb-3" id="day" onchange="changeChart()">
+                 <option value=7>this week</option>
+                 <option value=30>this month</option>
+            </select>
+     </div>
     <div id="chart_div" style="width: 60%; margin:0 auto; "></div>
     <div id="pie_chart" style="width: 900px; height: 500px;margin:0 auto;"></div>
     <div align="center">

@@ -211,7 +211,17 @@ def check_out(request, lab_hash):  # api
 def staff_signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
-        if form.is_valid():
+        if User.objects.filter(username=request.POST['username']):
+            return render(request, 'Page/LThomepage.html', {'username_flag': True})
+        elif User.objects.filter(email=request.POST['email']):
+            return render(request, 'Page/LThomepage.html', {'email_flag': True})
+        elif request.POST['password1'] != request.POST['password2']:
+            return render(request, 'Page/LThomepage.html', {'password_flag': True})
+        elif Lab.objects.filter(name=request.POST['lab_name']):
+            return render(request, 'Page/LThomepage.html', {'lab_flag': True})
+        elif LabPending.objects.filter(name=request.POST['lab_name']):
+            return render(request, 'Page/LThomepage.html', {'lab_flag': True})
+        elif form.is_valid():
             user = form.save(commit=False)
             user.is_active = False
             user.save()
@@ -243,3 +253,5 @@ def staff_signup(request):
             return render(request, 'Page/LThomepage.html', {'correct_flag': True})
         else:
             return render(request, 'Page/LThomepage.html', {'error_flag': True})
+    else:
+        return HttpResponseRedirect('/')

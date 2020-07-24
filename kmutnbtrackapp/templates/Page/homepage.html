@@ -550,7 +550,7 @@ label{
                                     {% if lab_flag %}
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
-                                                <label for="pwd2">ชื่อ Lab</label>
+                                                <label for="lab_name">ชื่อ Lab</label>
                                                 <input type="text" class="form-control is-invalid" id="lab_name" placeholder="ชื่อ Lab" name="lab_name" required>
                                                 <div class="invalid-feedback">
                                                  ชื่อ Lab นี้มีอยู่แล้วในระบบ
@@ -560,7 +560,7 @@ label{
                                     {% else %}
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
-                                                <label for="pwd2">ชื่อ Lab</label>
+                                                <label for="lab_name">ชื่อ Lab</label>
                                                 <input type="text" class="form-control" id="lab_name" placeholder="ชื่อ Lab" name="lab_name" required>
                                                 <div class="invalid-feedback">
                                                  กรุณาใส่ชื่อ Lab
@@ -570,7 +570,7 @@ label{
                                     {% endif %}
 
                                         <div class="form-group col-md-6">
-                                            <label for="pwd2">จำนวนคนสูงสุดที่ lab รับได้</label>
+                                            <label for="max_lab">จำนวนคนสูงสุดที่ lab รับได้</label>
                                             <input type="number" class="form-control" id="max_lab" placeholder="จำนวนคนสูงสุดที่ lab รับได้" name="max_lab" required>
                                              <div class="invalid-feedback">
                                                  กรุณาใส่จำนวนคนสูงสุดที่ lab รับได้
@@ -578,7 +578,12 @@ label{
                                         </div>
                                         </div>
 
-                                    <button  type="submit" class="btn btn-success " style="margin-top:5%;width: 100%;font-family: 'Kanit', sans-serif;color: white;font-size: 20px;">ยืนยัน</button>
+                                    <div class="form-group">
+                                        <label for="pwd2">โปรดยืนยันว่าคุณไม่ใช่หุ่นยนต์</label>
+                                        <div class="g-recaptcha" data-callback="recaptchaCallback" data-sitekey="6LdYxrUZAAAAAI9HXjGaZniXZgr_f2mL2QTqo55Q"></div>
+                                    </div>
+
+                                    <button id="submit_btn" disabled type="submit" class="btn btn-success " style="margin-top:5%;width: 100%;font-family: 'Kanit', sans-serif;color: white;font-size: 20px;">ยืนยัน</button>
                                     </form>
                                 </div>
                             </div>
@@ -608,6 +613,7 @@ label{
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <script type='text/javascript'>
         {% if correct_flag %}
@@ -639,6 +645,10 @@ label{
             });
           }, false);
         })();
+
+        function recaptchaCallback() {
+            $('#submit_btn').removeAttr('disabled');
+        };
     </script>
 </body>
 

@@ -209,19 +209,26 @@ def check_out(request, lab_hash):  # api
 
 
 def staff_signup(request):
+    username_flag = False
+    email_flag = False
+    password_flag = False
+    lab_flag = False
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if User.objects.filter(username=request.POST['username']):
-            return render(request, 'Page/LThomepage.html', {'username_flag': True})
-        elif User.objects.filter(email=request.POST['email']):
-            return render(request, 'Page/LThomepage.html', {'email_flag': True})
-        elif request.POST['password1'] != request.POST['password2']:
-            return render(request, 'Page/LThomepage.html', {'password_flag': True})
-        elif Lab.objects.filter(name=request.POST['lab_name']):
-            return render(request, 'Page/LThomepage.html', {'lab_flag': True})
-        elif LabPending.objects.filter(name=request.POST['lab_name']):
-            return render(request, 'Page/LThomepage.html', {'lab_flag': True})
-        elif form.is_valid():
+            username_flag = True
+        if User.objects.filter(email=request.POST['email']):
+            email_flag = True
+        if request.POST['password1'] != request.POST['password2']:
+            password_flag = True
+        if Lab.objects.filter(name=request.POST['lab_name']):
+            lab_flag = True
+        if LabPending.objects.filter(name=request.POST['lab_name']):
+            lab_flag = True
+        if (username_flag or email_flag or password_flag or lab_flag) is True:
+            return render(request, 'Page/LThomepage.html', {'username_flag': username_flag, 'email_flag': email_flag,
+                                                            'password_flag': password_flag, 'lab_flag': lab_flag})
+        if form.is_valid():
             user = form.save(commit=False)
             user.is_active = False
             user.save()

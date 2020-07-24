@@ -209,8 +209,6 @@ def check_out(request, lab_hash):  # api
 
 
 def staff_signup(request):
-    if request.method == 'GET':
-        return render(request, 'Page/staff_signup.html')
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -242,7 +240,6 @@ def staff_signup(request):
             email.template_id = 'lab-request-user'
             email.merge_data = message_requester
             email.send()
-            return HttpResponse('ระบบ ได้รับคำขอของคุณแล้ว โปรดตรวจสอบอีเมล โปรดตรวจสอบอีเมลของคุณ')
-    else:
-        form = SignUpForm()
-    return render(request, 'Page/staff_signup.html', {'form': form})
+            return render(request, 'Page/LThomepage.html', {'correct_flag': True})
+        else:
+            return render(request, 'Page/LThomepage.html', {'error_flag': True})

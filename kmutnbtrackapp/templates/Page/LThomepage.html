@@ -11,6 +11,7 @@
     {% load static %}
     <link rel="stylesheet" href="{% static "css/assets/fonts/font-awesome.min.css" %}">
     <link rel="stylesheet" href="{% static "css/assets/bootstrap/css/bootstrap.min.css" %}">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
 
 </head>
 
@@ -227,7 +228,10 @@
         padding-top: 7.5px;
         padding-bottom: 7.5px;
     }
-
+label{
+    color: black;
+    font-family: 'Kanit', sans-serif;
+}
 </style>
 
     <nav class="navbar navbar-light navbar-expand-md navbar navbar-expand-lg fixed-top"  id="mainNav">
@@ -239,22 +243,24 @@
                     <li class="nav-item nav-link js-scroll-trigger" role="presentation"><a class="nav-link js-scroll-trigger" href="#download">Manual</a></li>
                     <li class="nav-item nav-link js-scroll-trigger" role="presentation"><a class="nav-link js-scroll-trigger" href="#creator">creator</a></li>
                     <li class="nav-item nav-link js-scroll-trigger" role="presentation"><a class="nav-link js-scroll-trigger" href="#contact">contact</a></li>
+                    <li class="nav-item nav-link js-scroll-trigger" role="presentation"><a class="nav-link js-scroll-trigger" href="#sonjai" >สนใจติดต่อ</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <header class="masthead" style="background-image:url({% static 'images/homepage.jpg' %});")>
+
+    <header class="masthead" style="background-image:url({% static 'images/homepage.jpg' %}); background-size: cover;background-position: center center;background-repeat: no-repeat;">
         <div class="intro-body">
             <div class="container">
                 <div class="row" data-aos="fade">
                     <div class="col-lg-8 mx-auto">
                         <h1 class="brand-heading" style="text-shadow: 0px 0px 11px gray;">Labtrack</h1>
-                        <p class="intro-text" style="text-shadow: 0px 0px 30px black;">Application ที่สร้างขึ้นมาเพื่อช่วยในการค้นหา ผู้ที่มีความเสี่ยงที่จะติดเชื้อ</p>
-                         <p class="intro-text" style="text-shadow: 0px 0px 30px black;"> จากผู้ที่เป็นโรค covid-19</p>
-                        <p class="intro-text" style="text-shadow: 0px 0px 30px black;">โดย Application นี้สร้างขึ้นโดยทีม <a href="https://cony.codes/" style="color:greenyellow;text-shadow: 0px 0px 15px black;">Cony.codes</a>  </p>
+                        <p class="intro-text" style="text-shadow: 0px 0px 30px black;font-family: 'Kanit', sans-serif;">Application ที่สร้างขึ้นมาเพื่อช่วยในการค้นหา ผู้ที่มีความเสี่ยงที่จะติดเชื้อ</p>
+                         <p class="intro-text" style="text-shadow: 0px 0px 30px black;font-family: 'Kanit', sans-serif;"> จากผู้ที่เป็นโรค covid-19</p>
+                        <p class="intro-text" style="text-shadow: 0px 0px 30px black;font-family: 'Kanit', sans-serif;">โดย Application นี้สร้างขึ้นโดยทีม <a href="https://cony.codes/" style="color:greenyellow;text-shadow: 0px 0px 15px black;">Cony.codes</a>  </p>
 
-                        <a class="btn btn-link btn-circle"  role="button" style="text-shadow: 0px 0px 10px blue" href="#download"><i class="fa fa-angle-double-down animated"  ></i></a></div>
+                        <a class="btn btn-link btn-circle"  role="button" style="text-shadow: 0px 0px 10px black" href="#download"><i class="fa fa-angle-double-down animated"  ></i></a></div>
                 </div>
             </div>
         </div>
@@ -262,17 +268,17 @@
 
 
 
-    <section id="download" class="download-section content-section text-center" style="background-image:url({% static 'images/BG06.jpg' %});">
+    <section id="download" class="download-section content-section text-center" style="background-image:url({% static 'images/BG06.jpg' %});background-size: cover;background-position: center center;background-repeat: no-repeat;">
         <div class="container" data-aos="fadeIn">
             <div class="col-lg-8 mx-auto">
-                <h1 style="font-size: 36px; margin-bottom: 10px">Manual</h1>
-                <h1 style="font-size: 36px; margin-bottom: 50px">คู่มือการใช้งาน</h1>
+                <h1 style="font-size: 36px; margin-bottom: 10px;pxfont-family: 'Kanit', sans-serif;">Manual</h1>
+                <h1 style="font-size: 36px; margin-bottom: 50px;font-family: 'Kanit', sans-serif;">คู่มือการใช้งาน</h1>
 
                 <iframe width="560" height="315" src="https://www.youtube.com/embed/ZijjKNMI7ho" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
     </section>
-    <section id="creator" class="content-section text-center" style="background-image:url({% static 'images/bglong2.png' %});">
+    <section id="creator" class="content-section text-center" style="background-image:url({% static 'images/bglong2.png' %});background-size: cover;background-repeat: no-repeat;">
 
 
         <div class="team-boxed">
@@ -287,8 +293,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-
 
 
                 <div class="row people">
@@ -420,21 +424,14 @@
                     <div class="col-md-1 col-lg-2 item" >
                     </div>
                 </div>
-
-
-
-
-
             </div>
         </div>
-
-
     </section>
 
 
 
 
-<section id="contact" class="content-section text-center" style="background-image:url({% static 'images/BG11.png' %});padding-top: 40px; padding-bottom: 30px">
+<section id="contact" class="content-section text-center" style="background-image:url({% static 'images/BG11.png' %});padding-top: 40px; padding-bottom: 30px;background-size: cover;background-repeat: no-repeat;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto">
@@ -462,6 +459,66 @@
         </div>
     </section>
 
+<section id="sonjai" class="content-section " style="background-color: rgb(1,10,16);padding-top: 40px; padding-bottom: 30px;background-size: cover;background-repeat: no-repeat;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 justify-content-center" >
+                    <div class="container" style="margin-top: 50px;">
+                        <div class="row d-flex justify-content-center ">
+                            <div class="col-md-10 d-flex justify-content-center p-3 mb-5 bg-white rounded" >
+                                <div class="col-md-8 justify-content-center"style="padding-top: 10%;padding-bottom: 10%" >
+                                    <h2 class="text-center" style="color:black;font-family: 'Kanit', sans-serif;">สมัครใช้งานการติดตามผู้เข้าใช้ห้อง lab (Labtrack)</h2>
+                                    <form method="post" action="{% url 'staff_signup' %}">
+                                    {% csrf_token %}
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="first_name" >ชื่อจริง</label>
+                                            <input type="text" class="form-control" id="first_name" placeholder="สมหมาย" name="first_name">
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label  for="last_name">นามสกุล</label>
+                                            <input type="text" class="form-control" id="last_name" placeholder="รักเรียน" name="last_name">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email">อีเมล</label>
+                                        <input type="email" class="form-control" id="email" placeholder="Email" name="email">
+                                    </div>
+                                    <div class="form-group ">
+                                        <label for="username">Username สำหรับ staff</label>
+                                        <input type="text" class="form-control" id="username" placeholder="Username" name="username">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="pwd1">Password</label>
+                                        <input type="password" class="form-control" id="pwd1" placeholder="Password" name="password1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="pwd2">ยืนยัน Password</label>
+                                        <input type="password" class="form-control" id="pwd2" placeholder="ยืนยัน Password" name="password2">
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="pwd2">ชื่อ Lab</label>
+                                            <input type="text" class="form-control" id="lab_name" placeholder="ชื่อ Lab" name="lab_name">
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="pwd2">จำนวนคนสูงสุดที่ lab รับได้</label>
+                                            <input type="number" class="form-control" id="max_lab" placeholder="จำนวนคนสูงสุดที่ lab รับได้" name="max_lab">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" style="margin-top:5%;width: 100%">Submit</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
     <footer style="padding-top: 40px;padding-bottom: 10px;">
         <div class="container text-center col-6" >
             <h1 style="font-size: 24px;">LABTRACK</h1>
@@ -475,7 +532,13 @@
     <script src="{% static 'css/assets/js/bs-init.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.js"></script>
-
+    {% if error_flag %}
+    <script type='text/javascript'>
+        $(document).ready(function(){
+        window.location = '#sonjai'
+        });
+    </script>
+{% endif %}
 </body>
 
 </html>

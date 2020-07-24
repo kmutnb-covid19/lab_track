@@ -325,10 +325,8 @@ def activate(request, uidb64, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.is_staff = True
-        permission1 = Permission.objects.filter(name="Can view lab")[0]
-        permission2 = Permission.objects.filter(name="Can view lab")[1]
-        user.user_permissions.add(permission1)
-        user.user_permissions.add(permission2)
+        permission = Permission.objects.get(name="Can view lab")
+        user.user_permissions.add(permission)
         user.save()
         Person.objects.create(user=user, first_name=user.first_name, last_name=user.last_name, is_student=False)
         new_lab_data = LabPending.objects.get(staff_user=user)

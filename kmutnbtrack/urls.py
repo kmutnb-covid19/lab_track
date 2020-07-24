@@ -41,6 +41,6 @@ urlpatterns = [
     path('admin/history/search/history/download_normal_csv/', views.export_normal_csv, name='download_normal_csv'),
     path('admin/backup', views.backup, name='backup'),
     path('admin/', admin.site.urls, name='admin'),
-    path('staff_signup/', views.staff_signup, name="signup"),
+    path('staff_signup/', views.staff_signup, name="staff_signup"),
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
 ]

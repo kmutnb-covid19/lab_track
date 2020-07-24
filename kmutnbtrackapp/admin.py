@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import History, Lab, Person
+from .models import History, Lab, LabPending, Person
 
 
 # Register your models here.
@@ -39,4 +39,5 @@ class HistoryAdmin(admin.ModelAdmin):
 
 admin.site.register(History, HistoryAdmin)
 admin.site.register(Lab, LabAdmin)
+admin.site.register(LabPending)
 admin.site.register(Person)

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.urls import reverse
 
 from .models import History, Lab, LabPending, Person
 
@@ -8,7 +9,7 @@ from .models import History, Lab, LabPending, Person
 
 
 class LabAdmin(admin.ModelAdmin):
-    list_display = ('name', 'view_lab', 'my_url_field',)
+    list_display = ('name', 'action',)
     readonly_fields = ["hash"]
     empty_changelist_value = 'unknown'
 
@@ -19,17 +20,16 @@ class LabAdmin(admin.ModelAdmin):
         else:
             return queryset.filter(name=request.user.groups.first())
 
-    def my_url_field(self, obj):
-        return format_html('<button><a href="/admin/qrcode/%s/" download>%s</a></button>' % (obj.hash, obj.name))
+    def action(self, obj):
+        return format_html(
+            '<a class="button" href="{}">View current user</a>&nbsp;&nbsp;&nbsp;&nbsp;'
+            '<a class="button" href="{}" download>Download QR Code</a>',
+            reverse('view_lab', args=[obj.hash]),
+            reverse('generate_qr_code', args=[obj.hash]),
+        )
 
-    my_url_field.allow_tags = True
-    my_url_field.short_description = 'Download QR code'
-
-    def view_lab(self, obj):
-        return format_html('<button><a href="/admin/clear/%s/">View %s</a></button>' % (obj.hash, obj.name))
-
-    view_lab.allow_tags = True
-    view_lab.short_description = 'View current user in lab'
+    action.short_description = 'Actions'
+    action.allow_tags = True
 
 
 class HistoryAdmin(admin.ModelAdmin):

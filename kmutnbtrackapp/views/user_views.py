@@ -240,7 +240,7 @@ def staff_signup(request):
             LabPending.objects.create(staff_user=user, name=request.POST['lab_name'], max=request.POST['max_lab'])
             current_site = get_current_site(request)
             mail_subject = request.POST['lab_name'] + ' Lab request'
-            to_email = 'test@cony.codes'
+            to_email = 'labrequest@cony.codes'
             message_admin = {to_email: {'user': user.username, 'domain': current_site.domain,
                                         'user_first_name': user.first_name, 'user_last_name': user.last_name,
                                         'user_email': user.email,

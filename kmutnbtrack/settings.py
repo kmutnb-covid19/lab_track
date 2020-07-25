@@ -81,7 +81,7 @@ TEMPLATES = [
     },
 ]
 
-ADMINS = [('ConyCodes Support', 'support@cony.codes'),
+ADMINS = [('ConyCodes Logs', 'logs@cony.codes'),
           ('Nattakrit Jatupattaradit', 's6101012610037@email.kmutnb.ac.th'),
           ('Pakkapong Rattanapukdeekun', 's6101012630119@email.kmutnb.ac.th'),
           ('Pasakorn Phareyart', 's6101012630135@email.kmutnb.ac.th')]

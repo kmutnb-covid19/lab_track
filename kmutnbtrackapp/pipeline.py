@@ -10,8 +10,12 @@ from kmutnbtrackapp.models import Person
 def get_student_id(backend, user, response, *args, **kwargs):
     username = (response.get('email')).split("@")[0]
     user = User.objects.get(username=username)
-    first_name = (response.get('name')).split(" ")[0]
-    last_name = (response.get('name')).split(" ")[1]
+    try:
+        first_name = (response.get('name')).split(" ")[0]
+        last_name = (response.get('name')).split(" ")[1]
+    except IndexError:
+        first_name = (response.get('name'))
+        last_name = ""
     if response.get('email').startswith('s') and str(response.get('email')[1]).isdigit():
         student_id = re.findall(r'\d+', response.get('email'))
         if not Person.objects.filter(user=user.id).exists():

@@ -41,3 +41,12 @@ class History(models.Model):
 
     def __str__(self):
         return self.lab.name
+
+
+class LabPending(models.Model):
+    staff_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=60, blank=True, null=True)
+    max = models.IntegerField(blank=True, default=20)
+
+    def __str__(self):
+        return self.name

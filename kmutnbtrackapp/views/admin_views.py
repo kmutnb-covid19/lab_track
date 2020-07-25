@@ -17,7 +17,11 @@ from django.core import management
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect, HttpResponse
+from django.utils.http import urlsafe_base64_decode
 from django.shortcuts import redirect
+from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.models import Group, Permission
 
 from kmutnbtrackapp.dashboard import *
 from kmutnbtrackapp.views.help import *
@@ -310,3 +314,34 @@ def backup(request):
 
     messages.info(request, 'Database has been backed up successfully!')
     return HttpResponseRedirect('/admin')
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = get_user_model()._default_manager.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.is_staff = True
+        permission = Permission.objects.get(name="Can view lab")
+        user.user_permissions.add(permission)
+        user.save()
+        Person.objects.create(user=user, first_name=user.first_name, last_name=user.last_name, is_student=False)
+        new_lab_data = LabPending.objects.get(staff_user=user)
+        Lab.objects.create(name=new_lab_data.name, max_number_of_people=new_lab_data.max)
+        new_group = Group.objects.create(name=new_lab_data.name)
+        new_group.user_set.add(user)
+        new_lab_data.delete()
+
+        mail_subject = new_lab_data.name + " ได้รับการยืนยีนแล้ว"
+        lab_activated = {user.email: {'username': user.username, 'lab_name': new_lab_data.name}}
+        email = EmailMessage(mail_subject, to=[user.email])
+        email.template_id = 'lab-create-confirm'
+        email.merge_data = lab_activated
+        email.send()
+        messages.info(request, '%s has been activated successfully' % new_lab_data.name)
+        return HttpResponseRedirect('/admin/')
+    else:
+        return HttpResponse('ลิ้งค์ยินยันผิดพลาด ให้รีบแจ้งผู้ส่งคำขอโดยด่วน')

@@ -15,5 +15,4 @@ urlpatterns = [
     path('home/', views.home, name='home'),
     path('check_in/<str:lab_hash>/', views.check_in, name='check_in'),
     path('check_out/<str:lab_hash>/', views.check_out, name='check_out'),
-    path('admin/clear/<str:lab_hash>/', views.view_lab, name='view_lab'),
 ]

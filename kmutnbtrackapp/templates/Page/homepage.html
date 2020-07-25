@@ -585,7 +585,7 @@ label{
                                         </div>
                                     </div>
 
-                                    <button id="submit_btn" disabled type="submit" class="btn btn-success " style="margin-top:5%;width: 100%;font-family: 'Kanit', sans-serif;color: white;font-size: 20px;">ยืนยัน</button>
+                                    <button id="submit_btn" disabled type="submit" class="btn btn-secondary" style="margin-top:5%;width: 100%;font-family: 'Kanit', sans-serif;color: white;font-size: 20px;">ยืนยัน</button>
                                     </form>
                                 </div>
                             </div>
@@ -650,6 +650,8 @@ label{
 
         function recaptchaCallback() {
             $('#submit_btn').removeAttr('disabled');
+            $('#submit_btn').removeClass('btn-secondary')
+            $('#submit_btn').addClass('btn-success');
         };
     </script>
 </body>

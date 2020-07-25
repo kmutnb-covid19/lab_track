@@ -23,19 +23,35 @@
             <div class="myform form ">
                 <div class="logo mb-3">
                     <div class="col-md-12 text-center">
+                        {% if send_email %}
                         <h1>ยืนยันการส่งอีเมล</h1>
+                        {% elif clear_lab %}
+                        <h1>ยืนยันการ clear user</h1>
+                        {% endif %}
                     </div>
                 </div>
-                <form action="{% url 'notify' mode keyword %}" method="POST">
+                {% if send_email %}
+                    <form action="{% url 'notify' mode keyword %}" method="POST">
+                    {% elif clear_lab %}
+                    <form action="{% url 'kmutnbtrackapp:view_lab' lab_hash=this_lab.hash %}" method="POST">
+                {% endif %}
                     {% csrf_token %}
                     <div class="form-group">
                         {% if fail %}
                         <a style="color: red">คุณพิมพ์ ยืนยัน ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง</a>
                         {% endif %}
+                    {% if send_email %}
                         <label for="confirm">กรุณาพิมพ์ "ยืนยัน" เพื่อยืนยันการส่งการแจ้งเตือนไปยังอีเมลของผู้ที่เกี่ยวข้องกับ {{ keyword }} </label>
+                    {% elif clear_lab %}
+                    <label for="confirm">กรุณาพิมพ์ "ยืนยัน" เพื่อยืนยันการ clear user ออกจาก {{ this_lab.name }} </label>
+                    {% endif %}
                         <input class="form-control" type="text" name="confirm" id="confirm" maxlength="254" required>
                     </div>
+            {% if send_email %}
                     <button type="submit" class="btn btn-block mybtn btn-primary tx-tfm">ส่งอีเมล</button>
+            {% elif clear_lab %}
+            <button type="submit" class="btn btn-block mybtn btn-primary tx-tfm">ยืนยัน</button>
+            {% endif %}
                 </form>
             </div>
         </div>

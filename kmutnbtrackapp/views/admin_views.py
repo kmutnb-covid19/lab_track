@@ -78,7 +78,6 @@ def history_search(request, page=1):
 @supervisor_login_required
 def view_lab(request, lab_hash):
     this_lab = Lab.objects.get(hash=lab_hash)
-    print(request.user.groups.filter(name=this_lab.name))
     if not (request.user.is_superuser or request.user.groups.filter(name=this_lab.name).exists()):
         return render(request, 'Page/error.html', {"error_message": "Permission denied"})
     now_datetime = datetime.datetime.now(tz)
@@ -86,13 +85,15 @@ def view_lab(request, lab_hash):
     current_people = History.objects.filter(lab=this_lab,
                                             checkout__gte=now_datetime,
                                             checkout__lte=midnight_time)
-    if request.GET.get('confirm') == 'true':
+    if request.method == "POST" and request.POST.get('confirm', '') == "ยืนยัน":
         for person in current_people:
             out_local_time = datetime.datetime.now(tz)
             person.checkout = out_local_time
             person.save()
         messages.info(request, 'All the people in %s has been cleared successfully' % this_lab.name)
         return HttpResponseRedirect('/admin/kmutnbtrackapp/lab/')
+    elif request.method == "POST" and request.POST.get('confirm', '') != "ยืนยัน":
+        return render(request, 'admin/notify_confirm.html', {'clear_lab': True, 'this_lab': this_lab, 'fail': True})
     return render(request, 'admin/view_lab.html', {'this_lab': this_lab, 'shown_history': current_people})
 
 
@@ -205,15 +206,22 @@ def export_risk_csv(request):
 
 
 @superuser_login_required
-def notify_confirm(request):
-    mode = request.GET.get('mode', '')
-    keyword = request.GET.get('keyword', '')
-    if keyword != "":
-        return render(request, 'admin/notify_confirm.html', {'mode': mode,
-                                                             'keyword': keyword,
-                                                             })
-    else:
-        return redirect(risk_people_search)
+def notify_confirm(request, where):
+    lab_hash = request.GET.get('lab_hash', '')
+    if not lab_hash == '':
+        this_lab = Lab.objects.get(hash=lab_hash)
+    if where == 'risk_people_search':
+        mode = request.GET.get('mode', '')
+        keyword = request.GET.get('keyword', '')
+        if keyword != "":
+            return render(request, 'admin/notify_confirm.html', {'mode': mode,
+                                                                 'keyword': keyword,
+                                                                 'send_email': True,
+                                                                 })
+        else:
+            return redirect(risk_people_search)
+    elif where == 'clear_lab':
+        return render(request, 'admin/notify_confirm.html', {'clear_lab': True, 'this_lab': this_lab})
 
 
 @superuser_login_required
@@ -262,6 +270,7 @@ def notify_user(request, mode, keyword):
     else:
         return render(request, 'admin/notify_confirm.html', {'mode': mode,
                                                              'keyword': keyword,
+                                                             'send_email': True,
                                                              'fail': True,
                                                              })
 

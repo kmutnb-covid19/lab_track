@@ -32,7 +32,7 @@ urlpatterns = [
     path('admin/dashboard/', views.call_dashboard, name='dashboard'),
     path('admin/history/search/riskpeople/', views.risk_people_search, name='risk_people_search'),
     path('admin/history/search/riskpeople/<int:page>', views.risk_people_search),
-    path('admin/history/search/riskpeople/notify_confirm/', views.notify_confirm, name='notify_confirm'),
+    path('admin/history/search/riskpeople/notify_confirm/<str:where>', views.notify_confirm, name='notify_confirm'),
     url(r'^admin/history/search/riskpeople/notify/(?P<mode>.+)/(?P<keyword>.+)/$', views.notify_user, name='notify'),
     path('admin/history/search/riskpeople/download_risk_csv/', views.export_risk_csv, name='download_risk_csv'),
     path('admin/history/search/history/', RedirectView.as_view(url='/admin/history/search/history/1/', permanent=False),

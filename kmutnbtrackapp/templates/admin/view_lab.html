@@ -105,7 +105,7 @@
 <center>
     {% if shown_history %}
         <h3 style="font-family: Adamina, serif;margin: 10px;" align="center">People in lab : {{ shown_history.count }}</h3>
-    <button><a href="?confirm=true">Clear all people in {{ this_lab.name }}</a></button>
+    <button><a href="{% url 'notify_confirm' where='clear_lab' %}?lab_hash={{ this_lab.hash }}">Clear all people in {{ this_lab.name }}</a></button>
     {% else %}
         <h3 style="font-family: Adamina, serif;margin: 10px;" align="center">No one currently in {{ this_lab.name }}</h3>
         <button><a href="/admin/kmutnbtrackapp/lab">Back to Lab Page</a></button>

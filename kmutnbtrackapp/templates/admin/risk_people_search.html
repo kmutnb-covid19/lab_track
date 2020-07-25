@@ -113,7 +113,7 @@
 
             <button class="btn btn-primary default-all-input-btn" type="submit" type="submit" value="search"><i style="font-size: 15px;" class="fa fa-search"></i> Search</button>
 
-            <button class="btn btn-primary default-all-input-btn" type="submit" formaction="{% url 'notify_confirm' %}"><i class="fa fa-bell" style="font-size: 15px;"> </i> notify risk people</button>
+            <button class="btn btn-primary default-all-input-btn" type="submit" formaction="{% url 'notify_confirm' where='risk_people_search' %}"><i class="fa fa-bell" style="font-size: 15px;"> </i> notify risk people</button>
 
             <button class="btn btn-primary default-all-input-btn" type="submit" formaction="{% url 'download_risk_csv' %}"><i style="font-size: 15px;" class="fa fa-download"></i> download csv file</button>
 

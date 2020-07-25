@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cabin:700">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.css">
     {% load static %}
+
     <link rel="stylesheet" href="{% static "css/assets/fonts/font-awesome.min.css" %}">
     <link rel="stylesheet" href="{% static "css/assets/bootstrap/css/bootstrap.min.css" %}">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
@@ -232,7 +233,68 @@ label{
     color: black;
     font-family: 'Kanit', sans-serif;
 }
+#logo{
 
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    animation: fill-anime 1.8s ease forwards 4.0s;
+}
+    #logo path:nth-child(1){
+        stroke-dasharray: 572;
+        stroke-dashoffset: 572;
+        animation: line-anim 2s ease forwards;
+    }
+    #logo path:nth-child(2){
+        stroke-dasharray:490 ;
+        stroke-dashoffset: 490;
+        animation: line-anim 2s ease forwards 0.3s;
+    }
+    #logo path:nth-child(3){
+        stroke-dasharray: 610;
+        stroke-dashoffset: 610;
+        animation: line-anim 2s ease forwards 0.6s;
+    }
+    #logo path:nth-child(4){
+        stroke-dasharray: 336 ;
+        stroke-dashoffset: 336;
+        animation: line-anim 2s ease forwards 0.9s;
+    }
+    #logo path:nth-child(5){
+        stroke-dasharray: 549 ;
+        stroke-dashoffset: 549;
+        animation: line-anim 2s ease forwards 1.2s;
+    }
+
+    #logo path:nth-child(6){
+        stroke-dasharray: 490;
+        stroke-dashoffset: 490;
+        animation: line-anim 2s ease forwards 1.8s;
+    }
+    #logo path:nth-child(7){
+        stroke-dasharray: 508;
+        stroke-dashoffset: 508;
+        animation: line-anim 2s ease forwards 2.1s;
+    }
+    #logo path:nth-child(8){
+        stroke-dasharray: 512;
+        stroke-dashoffset: 512;
+        animation: line-anim 2s ease forwards 2.4s;
+    }
+    @keyframes line-anim {
+        to{
+            stroke-dashoffset: 0;
+        }
+    }
+    @keyframes fill-anime {
+        from{
+            fill: transparent;
+        }
+        to{
+            fill: #FFFFFF;
+        }
+    }
 </style>
 
     <nav class="navbar navbar-light navbar-expand-md navbar navbar-expand-lg fixed-top"  id="mainNav">
@@ -251,12 +313,24 @@ label{
     </nav>
 
 
+<svg id="logo" width="693" height="103" viewBox="0 0 693 103" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.192 91.344H48.328V102H0.0880127V1.632H13.192V91.344Z"  stroke="white" & stroke-width="4"/>
+<path d="M121.572 79.68H77.7963L69.7323 102H55.9083L92.1963 2.208H107.316L143.46 102H129.636L121.572 79.68ZM117.828 69.024L99.6843 18.336L81.5403 69.024H117.828Z" stroke="white" & stroke-width="4"/>
+<path d="M209.532 50.304C213.18 50.88 216.492 52.368 219.468 54.768C222.54 57.168 224.94 60.144 226.668 63.696C228.492 67.248 229.404 71.04 229.404 75.072C229.404 80.16 228.108 84.768 225.516 88.896C222.924 92.928 219.132 96.144 214.14 98.544C209.244 100.848 203.436 102 196.716 102H159.276V1.632H195.276C202.092 1.632 207.9 2.784 212.7 5.088C217.5 7.296 221.1 10.32 223.5 14.16C225.9 18 227.1 22.32 227.1 27.12C227.1 33.072 225.468 38.016 222.204 41.952C219.036 45.792 214.812 48.576 209.532 50.304ZM172.38 44.976H194.412C200.556 44.976 205.308 43.536 208.668 40.656C212.028 37.776 213.708 33.792 213.708 28.704C213.708 23.616 212.028 19.632 208.668 16.752C205.308 13.872 200.46 12.432 194.124 12.432H172.38V44.976ZM195.564 91.2C202.092 91.2 207.18 89.664 210.828 86.592C214.476 83.52 216.3 79.248 216.3 73.776C216.3 68.208 214.38 63.84 210.54 60.672C206.7 57.408 201.564 55.776 195.132 55.776H172.38V91.2H195.564Z" stroke="white" & stroke-width="4"/>
+<path d="M309.364 1.632V12.288H282.004V102H268.9V12.288H241.396V1.632H309.364Z"  stroke="white" & stroke-width="4"/>
+<path d="M378.342 102L354.438 60.96H338.598V102H325.494V1.632H357.894C365.478 1.632 371.862 2.928 377.046 5.52C382.326 8.112 386.262 11.616 388.854 16.032C391.446 20.448 392.742 25.488 392.742 31.152C392.742 38.064 390.726 44.16 386.694 49.44C382.758 54.72 376.806 58.224 368.838 59.952L394.038 102H378.342ZM338.598 50.448H357.894C364.998 50.448 370.326 48.72 373.878 45.264C377.43 41.712 379.206 37.008 379.206 31.152C379.206 25.2 377.43 20.592 373.878 17.328C370.422 14.064 365.094 12.432 357.894 12.432H338.598V50.448Z" stroke="white" & stroke-width="4"/>
+<path d="M472.432 79.68H428.656L420.592 102H406.768L443.056 2.208H458.176L494.32 102H480.496L472.432 79.68ZM468.688 69.024L450.544 18.336L432.4 69.024H468.688Z" stroke="white" & stroke-width="4"/>
+<path d="M505.239 51.744C505.239 41.952 507.447 33.168 511.863 25.392C516.279 17.52 522.279 11.376 529.863 6.96C537.543 2.544 546.039 0.335999 555.351 0.335999C566.295 0.335999 575.847 2.976 584.007 8.256C592.167 13.536 598.119 21.024 601.863 30.72H586.167C583.383 24.672 579.351 20.016 574.071 16.752C568.887 13.488 562.647 11.856 555.351 11.856C548.343 11.856 542.055 13.488 536.487 16.752C530.919 20.016 526.551 24.672 523.383 30.72C520.215 36.672 518.631 43.68 518.631 51.744C518.631 59.712 520.215 66.72 523.383 72.768C526.551 78.72 530.919 83.328 536.487 86.592C542.055 89.856 548.343 91.488 555.351 91.488C562.647 91.488 568.887 89.904 574.071 86.736C579.351 83.472 583.383 78.816 586.167 72.768H601.863C598.119 82.368 592.167 89.808 584.007 95.088C575.847 100.272 566.295 102.864 555.351 102.864C546.039 102.864 537.543 100.704 529.863 96.384C522.279 91.968 516.279 85.872 511.863 78.096C507.447 70.32 505.239 61.536 505.239 51.744Z" stroke="white" & stroke-width="4"/>
+<path d="M675.801 102L634.473 56.208V102H621.369V1.632H634.473V48.144L675.945 1.632H692.505L647.001 51.888L692.937 102H675.801Z" stroke="white" & stroke-width="4"/>
+</svg>
+
+
     <header class="masthead" style="background-image:url({% static 'images/homepage.jpg' %}); background-size: cover;background-position: center center;background-repeat: no-repeat;">
         <div class="intro-body">
             <div class="container">
-                <div class="row" data-aos="fade">
+                <div class="row" data-aos="fade" data-aos-delay="3000" data-aos-duration="2000">
                     <div class="col-lg-8 mx-auto">
-                        <h1 class="brand-heading" style="text-shadow: 0px 0px 11px gray;">Labtrack</h1>
+
                         <p class="intro-text" style="text-shadow: 0px 0px 30px black;font-family: 'Kanit', sans-serif;">Application ที่สร้างขึ้นมาเพื่อช่วยในการค้นหา ผู้ที่มีความเสี่ยงที่จะติดเชื้อ</p>
                          <p class="intro-text" style="text-shadow: 0px 0px 30px black;font-family: 'Kanit', sans-serif;"> จากผู้ที่เป็นโรค covid-19</p>
                         <p class="intro-text" style="text-shadow: 0px 0px 30px black;font-family: 'Kanit', sans-serif;">โดย Application นี้สร้างขึ้นโดยทีม <a href="https://cony.codes/" style="color:greenyellow;text-shadow: 0px 0px 15px black;">Cony.codes</a>  </p>
@@ -432,7 +506,7 @@ label{
 
 
 
-<section id="contact" class="content-section text-center" style="background-image:url({% static 'images/BG11.png' %});padding-top: 40px; padding-bottom: 30px;background-size: cover;background-repeat: no-repeat;">
+<section id="contact" class="content-section text-center" style="background-image:url({% static 'images/BG11.png' %});padding-top: 10%; padding-bottom: 10%;background-size: cover;background-repeat: no-repeat;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto">
@@ -550,7 +624,7 @@ label{
                                     {% if lab_flag %}
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
-                                                <label for="lab_name">ชื่อ Lab</label>
+                                                <label for="pwd2">ชื่อ Lab</label>
                                                 <input type="text" class="form-control is-invalid" id="lab_name" placeholder="ชื่อ Lab" name="lab_name" required>
                                                 <div class="invalid-feedback">
                                                  ชื่อ Lab นี้มีอยู่แล้วในระบบ
@@ -558,9 +632,9 @@ label{
                                             </div>
 
                                     {% else %}
-                                        <div class="form-row " style="margin-bottom: 5%">
+                                        <div class="form-row">
                                             <div class="form-group col-md-6">
-                                                <label for="lab_name">ชื่อ Lab</label>
+                                                <label for="pwd2">ชื่อ Lab</label>
                                                 <input type="text" class="form-control" id="lab_name" placeholder="ชื่อ Lab" name="lab_name" required>
                                                 <div class="invalid-feedback">
                                                  กรุณาใส่ชื่อ Lab
@@ -569,22 +643,20 @@ label{
 
                                     {% endif %}
 
-                                        <div class="form-group col-md-6" >
-                                            <label for="max_lab">จำนวนคนสูงสุดที่ lab รับได้</label>
+                                        <div class="form-group col-md-6">
+                                            <label for="pwd2">จำนวนคนสูงสุดที่ lab รับได้</label>
                                             <input type="number" class="form-control" id="max_lab" placeholder="จำนวนคนสูงสุดที่ lab รับได้" name="max_lab" required>
                                              <div class="invalid-feedback">
                                                  กรุณาใส่จำนวนคนสูงสุดที่ lab รับได้
                                             </div>
                                         </div>
                                         </div>
-
-                                    <div class="form-group d-flex justify-content-center ">
+                                        <div class="form-group d-flex justify-content-center ">
                                         <div style="text-align: center">
                                         <label  for="pwd2">โปรดยืนยันว่าคุณไม่ใช่หุ่นยนต์</label>
                                         <div class="g-recaptcha " style="text-align: center" data-callback="recaptchaCallback" data-sitekey="6LdYxrUZAAAAAI9HXjGaZniXZgr_f2mL2QTqo55Q"></div>
                                         </div>
                                     </div>
-
                                     <button id="submit_btn" disabled type="submit" class="btn btn-secondary" style="margin-top:5%;width: 100%;font-family: 'Kanit', sans-serif;color: white;font-size: 20px;">ยืนยัน</button>
                                     </form>
                                 </div>
@@ -608,6 +680,11 @@ label{
         </div>
     {% endif %}
     </footer>
+
+
+
+
+    <script src="{% static 'js/logo-animation.js' %}"></script>
     <script src="{% static 'css/assets/js/jquery.min.js' %}"></script>
     <script src="{% static 'css/assets/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'css/assets/js/grayscale.js' %}"></script>
@@ -647,8 +724,7 @@ label{
             });
           }, false);
         })();
-
-        function recaptchaCallback() {
+         function recaptchaCallback() {
             $('#submit_btn').removeAttr('disabled');
             $('#submit_btn').removeClass('btn-secondary')
             $('#submit_btn').addClass('btn-success');

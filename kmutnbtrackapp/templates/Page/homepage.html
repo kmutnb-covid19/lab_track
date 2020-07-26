@@ -9,325 +9,47 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cabin:700">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.css">
     {% load static %}
-
     <link rel="stylesheet" href="{% static "css/assets/fonts/font-awesome.min.css" %}">
     <link rel="stylesheet" href="{% static "css/assets/bootstrap/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/csshomepage.css" %}">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
 
 </head>
 
 <body id="page-top" >
-<style>
-    #mainNav{
-        text-shadow: 0px 0px 11px blue;
-        padding: 0px 0px;
-    }
-@media (min-width: 601px) {
-    #mainNav.navbar-shrink {
-        background-color: #1261a0;
-        padding: 0px 0px;
 
-
-    }
-
-}
-
-@media (min-width: 321px) and (max-width: 600px) {
-    iframe {
-        width: auto;
-        height: auto;
-    }
-    #mainNav.navbar-shrink {
-        background-color: #1261a0;
-        padding: 10px 10px;
-
-    }
-    #mainNav{
-        padding: 10px 10px;
-    }
-}
-@media (min-width: 100px) and (max-width: 320px) {
-    iframe {
-        width: 260px;
-        height: auto;
-    }
-    #mainNav.navbar-shrink {
-        background-color: #1261a0;
-        padding: 10px 10px;
-
-    }
-    #mainNav{
-        padding: 10px 10px;
-    }
-}
-    .section-title {
-  max-width: 350px;
-  margin: auto;
-  padding: 15px;
-  text-align: center;
-}
-
-
-.section-title h1 {
-  font-size: 24px;
-  text-transform: uppercase;
-  color: #2ca5b9;
-}
-
-.section-title .divider {
-  position: relative;
-  border-bottom: 1px solid #f0f0f0;
-  margin-bottom: 30px;
-  margin-top: 30px;
-}
-
-.section-title .divider:before {
-  position: absolute;
-  content: '';
-  width: 30px;
-  height: 30px;
-  border: 1px solid #f0f0f0;
-  left: 50%;
-  margin-left: -15px;
-  top: 50%;
-  background: #fff;
-  margin-top: -15px;
-  -webkit-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  transform: rotate(45deg);
-}
-
-.section-title .divider:after {
-  position: absolute;
-  content: '';
-  width: 20px;
-  height: 20px;
-  border: 1px solid #2ca5b9;
-  left: 50%;
-  margin-left: -10px;
-  top: 50%;
-  background: #2ca5b9;
-  margin-top: -10px;
-  -webkit-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  transform: rotate(45deg);
-}
-    .team-boxed {
-    color: #313437;
-
-}
-
-.team-boxed p {
-    color: #7d8285
-}
-
-.team-boxed h2 {
-    font-weight: bold;
-    margin-bottom: 40px;
-    padding-top: 40px;
-    color: inherit
-}
-
-@media (max-width:767px) {
-    .team-boxed h2 {
-        margin-bottom: 25px;
-        padding-top: 25px;
-        font-size: 24px
-    }
-}
-
-.team-boxed .intro {
-    font-size: 16px;
-    max-width: 500px;
-    margin: 0 auto
-}
-
-.team-boxed .intro p {
-    margin-bottom: 0
-}
-
-.team-boxed .people {
-    padding: 50px 0
-}
-
-.team-boxed .item {
-    text-align: center
-}
-
-.team-boxed .item .box {
-    text-align: center;
-    padding: 30px;
-    background-color: #fff;
-    margin-bottom: 30px;
-    border-radius: 10px
-}
-
-.team-boxed .item .name {
-    font-weight: bold;
-    margin-top: 28px;
-    margin-bottom: 8px;
-    color: inherit
-}
-
-.team-boxed .item .title {
-    text-transform: uppercase;
-    font-weight: bold;
-    color: rgb(151,157,155);
-    letter-spacing: 2px;
-    font-size: 13px
-}
-
-.team-boxed .item .description {
-    font-size: 15px
-}
-
-.team-boxed .item img {
-    max-width: 160px
-}
-
-.team-boxed .social {
-    font-size: 18px;
-    color: #a2a8ae
-}
-
-.team-boxed .social:hover {
-    font-size: 18px;
-    color: #f80808
-}
-
-.team-boxed .social a {
-    color: inherit;
-    margin: 0 10px;
-    display: inline-block;
-    opacity: 0.7;
-    padding: 6px
-}
-
-.team-boxed .social a:hover {
-    opacity: 1
-}
-
-.fa {
-    font-size: 28px
-}
-
-.intro h1 {
-    color: #fff
-}
-
-.intro {
-    margin-top: 23px
-}
-
-.box img {
-    cursor: pointer;
-    width: 9em
-}
-    .row.people{
-        padding-top: 7.5px;
-        padding-bottom: 7.5px;
-    }
-label{
-    color: black;
-    font-family: 'Kanit', sans-serif;
-}
-#logo{
-
-    position: absolute;
-    top: 25%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    animation: fill-anime 1.8s ease forwards 4.0s;
-}
-    #logo path:nth-child(1){
-        stroke-dasharray: 572;
-        stroke-dashoffset: 572;
-        animation: line-anim 2s ease forwards;
-    }
-    #logo path:nth-child(2){
-        stroke-dasharray:490 ;
-        stroke-dashoffset: 490;
-        animation: line-anim 2s ease forwards 0.3s;
-    }
-    #logo path:nth-child(3){
-        stroke-dasharray: 610;
-        stroke-dashoffset: 610;
-        animation: line-anim 2s ease forwards 0.6s;
-    }
-    #logo path:nth-child(4){
-        stroke-dasharray: 336 ;
-        stroke-dashoffset: 336;
-        animation: line-anim 2s ease forwards 0.9s;
-    }
-    #logo path:nth-child(5){
-        stroke-dasharray: 549 ;
-        stroke-dashoffset: 549;
-        animation: line-anim 2s ease forwards 1.2s;
-    }
-
-    #logo path:nth-child(6){
-        stroke-dasharray: 490;
-        stroke-dashoffset: 490;
-        animation: line-anim 2s ease forwards 1.8s;
-    }
-    #logo path:nth-child(7){
-        stroke-dasharray: 508;
-        stroke-dashoffset: 508;
-        animation: line-anim 2s ease forwards 2.1s;
-    }
-    #logo path:nth-child(8){
-        stroke-dasharray: 512;
-        stroke-dashoffset: 512;
-        animation: line-anim 2s ease forwards 2.4s;
-    }
-    @keyframes line-anim {
-        to{
-            stroke-dashoffset: 0;
-        }
-    }
-    @keyframes fill-anime {
-        from{
-            fill: transparent;
-        }
-        to{
-            fill: #FFFFFF;
-        }
-    }
-</style>
-
+    <!-----------navbar ---------->
     <nav class="navbar navbar-light navbar-expand-md navbar navbar-expand-lg fixed-top"  id="mainNav">
-        <div class="container"><a class="navbar-brand js-scroll-trigger" href="#">Labtrack</a><button data-toggle="collapse" class="navbar-toggler navbar-toggler-right" data-target="#navbarResponsive" type="button" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"
-                value="Menu"><i class="fa fa-bars"></i></button>
+        <div class="container"><a class="navbar-brand js-scroll-trigger" href="#">Labtrack</a><button style="height: 40px" data-toggle="collapse" class="navbar-toggler navbar-toggler-right" data-target="#navbarResponsive" type="button" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"
+                value="Menu"><i style="font-size: 20px" class="fa fa-bars"></i></button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="nav navbar-nav ml-auto">
 
-                    <li class="nav-item nav-link js-scroll-trigger" role="presentation"><a class="nav-link js-scroll-trigger" href="#download">Manual</a></li>
-                    <li class="nav-item nav-link js-scroll-trigger" role="presentation"><a class="nav-link js-scroll-trigger" href="#creator">creator</a></li>
-                    <li class="nav-item nav-link js-scroll-trigger" role="presentation"><a class="nav-link js-scroll-trigger" href="#contact">contact</a></li>
-                    <li class="nav-item nav-link js-scroll-trigger" role="presentation"><a class="nav-link js-scroll-trigger" href="#sonjai" >สนใจใช้งานระบบ Labtrack</a></li>
+                    <li class="nav-item nav-link js-scroll-trigger" style="font-family: 'Kanit', sans-serif;" role="presentation"><a class="nav-link js-scroll-trigger" href="#download">คู่มือ</a></li>
+                    <li class="nav-item nav-link js-scroll-trigger" style="font-family: 'Kanit', sans-serif;" role="presentation"><a class="nav-link js-scroll-trigger" href="#creator">คณะจัดทำ</a></li>
+                    <li class="nav-item nav-link js-scroll-trigger" style="font-family: 'Kanit', sans-serif;" role="presentation"><a class="nav-link js-scroll-trigger" href="#contact">สอบถาม</a></li>
+                    <li class="nav-item nav-link js-scroll-trigger" style="font-family: 'Kanit', sans-serif;" role="presentation"><a class="nav-link js-scroll-trigger" href="#sonjai" >สนใจใช้งานระบบ Labtrack</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
+    <!----------- logo --------->
+    <svg id="logo" width="693" height="103" viewBox="0 0 693 103" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M13.192 91.344H48.328V102H0.0880127V1.632H13.192V91.344Z"  stroke="white" & stroke-width="4"/>
+    <path d="M121.572 79.68H77.7963L69.7323 102H55.9083L92.1963 2.208H107.316L143.46 102H129.636L121.572 79.68ZM117.828 69.024L99.6843 18.336L81.5403 69.024H117.828Z" stroke="white" & stroke-width="4"/>
+    <path d="M209.532 50.304C213.18 50.88 216.492 52.368 219.468 54.768C222.54 57.168 224.94 60.144 226.668 63.696C228.492 67.248 229.404 71.04 229.404 75.072C229.404 80.16 228.108 84.768 225.516 88.896C222.924 92.928 219.132 96.144 214.14 98.544C209.244 100.848 203.436 102 196.716 102H159.276V1.632H195.276C202.092 1.632 207.9 2.784 212.7 5.088C217.5 7.296 221.1 10.32 223.5 14.16C225.9 18 227.1 22.32 227.1 27.12C227.1 33.072 225.468 38.016 222.204 41.952C219.036 45.792 214.812 48.576 209.532 50.304ZM172.38 44.976H194.412C200.556 44.976 205.308 43.536 208.668 40.656C212.028 37.776 213.708 33.792 213.708 28.704C213.708 23.616 212.028 19.632 208.668 16.752C205.308 13.872 200.46 12.432 194.124 12.432H172.38V44.976ZM195.564 91.2C202.092 91.2 207.18 89.664 210.828 86.592C214.476 83.52 216.3 79.248 216.3 73.776C216.3 68.208 214.38 63.84 210.54 60.672C206.7 57.408 201.564 55.776 195.132 55.776H172.38V91.2H195.564Z" stroke="white" & stroke-width="4"/>
+    <path d="M309.364 1.632V12.288H282.004V102H268.9V12.288H241.396V1.632H309.364Z"  stroke="white" & stroke-width="4"/>
+    <path d="M378.342 102L354.438 60.96H338.598V102H325.494V1.632H357.894C365.478 1.632 371.862 2.928 377.046 5.52C382.326 8.112 386.262 11.616 388.854 16.032C391.446 20.448 392.742 25.488 392.742 31.152C392.742 38.064 390.726 44.16 386.694 49.44C382.758 54.72 376.806 58.224 368.838 59.952L394.038 102H378.342ZM338.598 50.448H357.894C364.998 50.448 370.326 48.72 373.878 45.264C377.43 41.712 379.206 37.008 379.206 31.152C379.206 25.2 377.43 20.592 373.878 17.328C370.422 14.064 365.094 12.432 357.894 12.432H338.598V50.448Z" stroke="white" & stroke-width="4"/>
+    <path d="M472.432 79.68H428.656L420.592 102H406.768L443.056 2.208H458.176L494.32 102H480.496L472.432 79.68ZM468.688 69.024L450.544 18.336L432.4 69.024H468.688Z" stroke="white" & stroke-width="4"/>
+    <path d="M505.239 51.744C505.239 41.952 507.447 33.168 511.863 25.392C516.279 17.52 522.279 11.376 529.863 6.96C537.543 2.544 546.039 0.335999 555.351 0.335999C566.295 0.335999 575.847 2.976 584.007 8.256C592.167 13.536 598.119 21.024 601.863 30.72H586.167C583.383 24.672 579.351 20.016 574.071 16.752C568.887 13.488 562.647 11.856 555.351 11.856C548.343 11.856 542.055 13.488 536.487 16.752C530.919 20.016 526.551 24.672 523.383 30.72C520.215 36.672 518.631 43.68 518.631 51.744C518.631 59.712 520.215 66.72 523.383 72.768C526.551 78.72 530.919 83.328 536.487 86.592C542.055 89.856 548.343 91.488 555.351 91.488C562.647 91.488 568.887 89.904 574.071 86.736C579.351 83.472 583.383 78.816 586.167 72.768H601.863C598.119 82.368 592.167 89.808 584.007 95.088C575.847 100.272 566.295 102.864 555.351 102.864C546.039 102.864 537.543 100.704 529.863 96.384C522.279 91.968 516.279 85.872 511.863 78.096C507.447 70.32 505.239 61.536 505.239 51.744Z" stroke="white" & stroke-width="4"/>
+    <path d="M675.801 102L634.473 56.208V102H621.369V1.632H634.473V48.144L675.945 1.632H692.505L647.001 51.888L692.937 102H675.801Z" stroke="white" & stroke-width="4"/>
+    </svg>
 
-<svg id="logo" width="693" height="103" viewBox="0 0 693 103" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M13.192 91.344H48.328V102H0.0880127V1.632H13.192V91.344Z"  stroke="white" & stroke-width="4"/>
-<path d="M121.572 79.68H77.7963L69.7323 102H55.9083L92.1963 2.208H107.316L143.46 102H129.636L121.572 79.68ZM117.828 69.024L99.6843 18.336L81.5403 69.024H117.828Z" stroke="white" & stroke-width="4"/>
-<path d="M209.532 50.304C213.18 50.88 216.492 52.368 219.468 54.768C222.54 57.168 224.94 60.144 226.668 63.696C228.492 67.248 229.404 71.04 229.404 75.072C229.404 80.16 228.108 84.768 225.516 88.896C222.924 92.928 219.132 96.144 214.14 98.544C209.244 100.848 203.436 102 196.716 102H159.276V1.632H195.276C202.092 1.632 207.9 2.784 212.7 5.088C217.5 7.296 221.1 10.32 223.5 14.16C225.9 18 227.1 22.32 227.1 27.12C227.1 33.072 225.468 38.016 222.204 41.952C219.036 45.792 214.812 48.576 209.532 50.304ZM172.38 44.976H194.412C200.556 44.976 205.308 43.536 208.668 40.656C212.028 37.776 213.708 33.792 213.708 28.704C213.708 23.616 212.028 19.632 208.668 16.752C205.308 13.872 200.46 12.432 194.124 12.432H172.38V44.976ZM195.564 91.2C202.092 91.2 207.18 89.664 210.828 86.592C214.476 83.52 216.3 79.248 216.3 73.776C216.3 68.208 214.38 63.84 210.54 60.672C206.7 57.408 201.564 55.776 195.132 55.776H172.38V91.2H195.564Z" stroke="white" & stroke-width="4"/>
-<path d="M309.364 1.632V12.288H282.004V102H268.9V12.288H241.396V1.632H309.364Z"  stroke="white" & stroke-width="4"/>
-<path d="M378.342 102L354.438 60.96H338.598V102H325.494V1.632H357.894C365.478 1.632 371.862 2.928 377.046 5.52C382.326 8.112 386.262 11.616 388.854 16.032C391.446 20.448 392.742 25.488 392.742 31.152C392.742 38.064 390.726 44.16 386.694 49.44C382.758 54.72 376.806 58.224 368.838 59.952L394.038 102H378.342ZM338.598 50.448H357.894C364.998 50.448 370.326 48.72 373.878 45.264C377.43 41.712 379.206 37.008 379.206 31.152C379.206 25.2 377.43 20.592 373.878 17.328C370.422 14.064 365.094 12.432 357.894 12.432H338.598V50.448Z" stroke="white" & stroke-width="4"/>
-<path d="M472.432 79.68H428.656L420.592 102H406.768L443.056 2.208H458.176L494.32 102H480.496L472.432 79.68ZM468.688 69.024L450.544 18.336L432.4 69.024H468.688Z" stroke="white" & stroke-width="4"/>
-<path d="M505.239 51.744C505.239 41.952 507.447 33.168 511.863 25.392C516.279 17.52 522.279 11.376 529.863 6.96C537.543 2.544 546.039 0.335999 555.351 0.335999C566.295 0.335999 575.847 2.976 584.007 8.256C592.167 13.536 598.119 21.024 601.863 30.72H586.167C583.383 24.672 579.351 20.016 574.071 16.752C568.887 13.488 562.647 11.856 555.351 11.856C548.343 11.856 542.055 13.488 536.487 16.752C530.919 20.016 526.551 24.672 523.383 30.72C520.215 36.672 518.631 43.68 518.631 51.744C518.631 59.712 520.215 66.72 523.383 72.768C526.551 78.72 530.919 83.328 536.487 86.592C542.055 89.856 548.343 91.488 555.351 91.488C562.647 91.488 568.887 89.904 574.071 86.736C579.351 83.472 583.383 78.816 586.167 72.768H601.863C598.119 82.368 592.167 89.808 584.007 95.088C575.847 100.272 566.295 102.864 555.351 102.864C546.039 102.864 537.543 100.704 529.863 96.384C522.279 91.968 516.279 85.872 511.863 78.096C507.447 70.32 505.239 61.536 505.239 51.744Z" stroke="white" & stroke-width="4"/>
-<path d="M675.801 102L634.473 56.208V102H621.369V1.632H634.473V48.144L675.945 1.632H692.505L647.001 51.888L692.937 102H675.801Z" stroke="white" & stroke-width="4"/>
-</svg>
 
-
-    <header class="masthead" style="background-image:url({% static 'images/homepage.jpg' %}); background-size: cover;background-position: center center;background-repeat: no-repeat;">
+    <header class="masthead" style="background: linear-gradient(to bottom,#33539E,#7FACD6); background-size: cover;background-position: center center;background-repeat: no-repeat;">
         <div class="intro-body">
-            <div class="container">
+            <div class="container"style="margin-top: 5%;">
                 <div class="row" data-aos="fade" data-aos-delay="3000" data-aos-duration="2000">
                     <div class="col-lg-8 mx-auto">
 
@@ -343,39 +65,38 @@ label{
 
 
 
-    <section id="download" class="download-section content-section text-center" style="background-image:url({% static 'images/BG06.jpg' %});background-size: cover;background-position: center center;background-repeat: no-repeat;">
+    <section id="download" class="download-section content-section text-center" style="background: linear-gradient(to bottom,#7FACD6,#BFB8DA); " >
         <div class="container" data-aos="fadeIn">
             <div class="col-lg-8 mx-auto">
-                <h1 style="font-size: 36px; margin-bottom: 10px;pxfont-family: 'Kanit', sans-serif;">Manual</h1>
+                <h1 style="font-size: 36px; margin-bottom: 10px;font-family: 'Kanit', sans-serif;">Manual</h1>
                 <h1 style="font-size: 36px; margin-bottom: 50px;font-family: 'Kanit', sans-serif;">คู่มือการใช้งาน</h1>
 
                 <iframe width="560" height="315" src="https://www.youtube.com/embed/ZijjKNMI7ho" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
     </section>
-    <section id="creator" class="content-section text-center" style="background-image:url({% static 'images/bglong2.png' %});background-size: cover;background-repeat: no-repeat;">
+
+    <section id="creator" class="content-section text-center" style="background: linear-gradient(to bottom,#BFB8DA,#E8D7D4);">
 
 
         <div class="team-boxed">
             <div class="container">
                 <div class="intro">
-                    <h1 class="text-center">Meet our team</h1>
+                    <h1 class="text-center" style="text-shadow: 0px 0px 10px gray">Meet our team</h1>
                 </div>
                 <div class="col-sm-12">
-                                <!-- Section Title -->
-                                    <div class="section-title">
-                                        <div class="divider">
-                                        </div>
-                                    </div>
-                                </div>
-
-
+                    <!-- Section Title -->
+                    <div class="section-title">
+                        <div class="divider">
+                        </div>
+                    </div>
+                </div>
+                <!----row people----->
                 <div class="row people">
                     <div class="col-md-6 col-lg-4 item" data-aos="fade">
                         <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/sunne.png" %}">
                             <h3 class="name">JIRAPHAT C.</h3>
                             <p class="title">Back-End-Developer</p>
-
                             <div class="social"><a href="mailto:s6101012630054@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
                         </div>
                     </div>
@@ -383,7 +104,6 @@ label{
                         <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/toppo.png" %}">
                             <h3 class="name">SIRI K.</h3>
                             <p class="title">Back-End-Developer</p>
-
                             <div class="social"><a href="mailto:s6101012620164@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
                         </div>
                     </div>
@@ -396,15 +116,11 @@ label{
                     </div>
                 </div>
 
-
-
-
                 <div class="row people">
                     <div class="col-md-6 col-lg-4 item" data-aos="fade">
                         <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/karnn.png" %}">
                             <h3 class="name">Pattaranan S.</h3>
                             <p class="title">Back-End-Developer</p>
-
                            <div class="social"><a href="mailto:s6101012620121@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
                         </div>
                     </div>
@@ -412,7 +128,6 @@ label{
                         <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/pee1.jpg" %}">
                             <h3 class="name">Watcharawut P.</h3>
                             <p class="title">Back-End-Developer</p>
-
                            <div class="social"><a href="mailto:s6101012620121@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
                         </div>
                     </div>
@@ -425,13 +140,11 @@ label{
                     </div>
                 </div>
 
-
                 <div class="row people">
                     <div class="col-md-6 col-lg-4 item" data-aos="fade">
                         <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/pakin.jpg" %}">
                             <h3 class="name">Pakin M.</h3>
                             <p class="title">Front-End-Developer</p>
-
                             <div class="social"><a href="mailto:s6101012630127@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
                         </div>
                     </div>
@@ -439,7 +152,6 @@ label{
                         <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/punch1.png" %}">
                             <h3 class="name">Supansa T.</h3>
                             <p class="title">Front-End-Developer</p>
-
                             <div class="social"><a href="mailto:s6201012620113@email.kmutnb.ac.th?subject = Feedback&body = Message"><i class="fa fa-envelope"></i></a></div>
                         </div>
                     </div>
@@ -477,6 +189,7 @@ label{
                         </div>
                     </div>
                 </div>
+
                 <div class="row people" >
                     <div class="col-md-1 col-lg-2 item" >
                     </div>
@@ -504,13 +217,11 @@ label{
     </section>
 
 
-
-
-<section id="contact" class="content-section text-center" style="background-image:url({% static 'images/BG11.png' %});padding-top: 10%; padding-bottom: 10%;background-size: cover;background-repeat: no-repeat;">
+<section id="contact" class="content-section text-center" style=" background: linear-gradient(to bottom,#E8D7D4,#A5678E);padding-top: 10%; padding-bottom: 10%;background-size: cover;background-repeat: no-repeat;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto">
-                    <h2 style="margin-bottom: 0px;">Contact us</h2>
+                    <h2 style="margin-bottom: 0px;text-shadow: 0px 0px 10px gray">Contact us</h2>
                     <div class="row">
                         <div class="col-sm-12">
                         <!-- Section Title -->
@@ -521,9 +232,9 @@ label{
                         </div>
                     </div>
 
-                    <p style="margin-top: 50px;">หากติดปัญหาหรือมีข้อสงสัยอื่นๆ
+                    <p style="margin-top: 50px;text-shadow: 0px 0px 10px black;font-family: 'Kanit', sans-serif;">หากติดปัญหาหรือมีข้อสงสัยอื่นๆ
                     </p>
-                    <p style="margin-top: 15px;margin-bottom: 50px">สามารถติดต่อสอบถามหรือแจ้งปัญหาที่เกี่ยวกับโปรแกรม Labtrack เข้ามาได้ที่
+                    <p style="margin-top: 15px;margin-bottom: 50px;text-shadow: 0px 0px 10px black;font-family: 'Kanit', sans-serif;">สามารถติดต่อสอบถามหรือแจ้งปัญหาที่เกี่ยวกับโปรแกรม Labtrack เข้ามาได้ที่
                     </p>
 
                     <ul class="list-inline banner-social-buttons">
@@ -535,7 +246,7 @@ label{
         </div>
     </section>
 
-<section id="sonjai" class="content-section " style="background-color: rgb(1,10,16);padding-top: 40px; padding-bottom: 30px;background-size: cover;background-repeat: no-repeat;">
+    <section id="sonjai" class="content-section " style="background: linear-gradient(to bottom,#A5678E,black);padding-top: 40px; padding-bottom: 30px;background-size: cover;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 justify-content-center" >

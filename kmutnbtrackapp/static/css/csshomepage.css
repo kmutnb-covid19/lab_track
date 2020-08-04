@@ -29,7 +29,7 @@
 @media (min-width: 319px) and (max-width: 600px) {
     iframe
     {
-        width: auto;
+        width: 100%;
         height: auto;
     }
     #mainNav.navbar-shrink
@@ -59,7 +59,7 @@
 @media (min-width: 100px) and (max-width: 320px) {
     iframe
     {
-        width: 260px;
+        width: 100%;
         height: auto;
     }
     #mainNav.navbar-shrink

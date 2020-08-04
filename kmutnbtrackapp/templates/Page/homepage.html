@@ -324,17 +324,17 @@
                                         </div>
                                     {% else %}
                                         <div class="form-group">
-                                        <label for="pwd2">ยืนยัน Password</label>
-                                        <input type="password" class="form-control" id="pwd2" placeholder="ยืนยัน Password" name="password2" required>
-                                         <div class="invalid-feedback">
+                                            <label for="pwd2">ยืนยัน Password</label>
+                                            <input type="password" class="form-control" id="pwd2" placeholder="ยืนยัน Password" name="password2" required>
+                                            <div class="invalid-feedback">
                                                  กรุณาใส่ Password confirmed
                                             </div>
                                     </div>
                                     {% endif %}
 
                                     {% if lab_flag %}
-                                        <div class="form-row">
-                                            <div class="form-group col-md-6">
+
+                                            <div class="form-group">
                                                 <label for="pwd2">ชื่อ Lab</label>
                                                 <input type="text" class="form-control is-invalid" id="lab_name" placeholder="ชื่อ Lab" name="lab_name" required>
                                                 <div class="invalid-feedback">
@@ -342,9 +342,9 @@
                                                 </div>
                                             </div>
 
+
                                     {% else %}
-                                        <div class="form-row">
-                                            <div class="form-group col-md-6">
+                                            <div class="form-group">
                                                 <label for="pwd2">ชื่อ Lab</label>
                                                 <input type="text" class="form-control" id="lab_name" placeholder="ชื่อ Lab" name="lab_name" required>
                                                 <div class="invalid-feedback">
@@ -352,16 +352,17 @@
                                                 </div>
                                             </div>
 
+
                                     {% endif %}
 
-                                        <div class="form-group col-md-6">
+                                        <div class="form-group">
                                             <label for="pwd2">จำนวนคนสูงสุดที่ lab รับได้</label>
                                             <input type="number" class="form-control" id="max_lab" placeholder="จำนวนคนสูงสุดที่ lab รับได้" name="max_lab" required>
                                              <div class="invalid-feedback">
                                                  กรุณาใส่จำนวนคนสูงสุดที่ lab รับได้
                                             </div>
                                         </div>
-                                        </div>
+
                                         <div class="form-group d-flex justify-content-center ">
                                         <div style="text-align: center">
                                         <label  for="pwd2">โปรดยืนยันว่าคุณไม่ใช่หุ่นยนต์</label>

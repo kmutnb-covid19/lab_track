@@ -266,3 +266,7 @@ def staff_signup(request):
             return render(request, 'Page/homepage.html', {'error_flag': True})
     else:
         return HttpResponseRedirect('/')
+
+
+def questionnaire_views(request):  # api for logging out
+    return render (request,'Page/questionnaire.html')

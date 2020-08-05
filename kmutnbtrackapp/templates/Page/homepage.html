@@ -335,7 +335,7 @@
                                     {% if lab_flag %}
 
                                             <div class="form-group">
-                                                <label for="pwd2">ชื่อ Lab</label>
+                                                <label for="lab_name">ชื่อ Lab</label>
                                                 <input type="text" class="form-control is-invalid" id="lab_name" placeholder="ชื่อ Lab" name="lab_name" required>
                                                 <div class="invalid-feedback">
                                                  ชื่อ Lab นี้มีอยู่แล้วในระบบ
@@ -345,7 +345,7 @@
 
                                     {% else %}
                                             <div class="form-group">
-                                                <label for="pwd2">ชื่อ Lab</label>
+                                                <label for="lab_name">ชื่อ Lab</label>
                                                 <input type="text" class="form-control" id="lab_name" placeholder="ชื่อ Lab" name="lab_name" required>
                                                 <div class="invalid-feedback">
                                                  กรุณาใส่ชื่อ Lab
@@ -356,11 +356,26 @@
                                     {% endif %}
 
                                         <div class="form-group">
-                                            <label for="pwd2">จำนวนคนสูงสุดที่ lab รับได้</label>
+                                            <label for="max_lab">จำนวนคนสูงสุดที่ lab รับได้</label>
                                             <input type="number" class="form-control" id="max_lab" placeholder="จำนวนคนสูงสุดที่ lab รับได้" name="max_lab" required>
                                              <div class="invalid-feedback">
                                                  กรุณาใส่จำนวนคนสูงสุดที่ lab รับได้
                                             </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="lab_head_first_name">ชื่อหัวหน้าแลป</label>
+                                            <input type="text" class="form-control" id="lab_head_first_name" placeholder="ชื่อหัวหน้าแลป" name="lab_head_first_name" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="lab_head_first_name">นามสกุลหัวหน้าแลป</label>
+                                            <input type="text" class="form-control" id="lab_head_last_name" placeholder="นามสกุลหัวหน้าแลป" name="lab_head_last_name" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="lab_head_first_name">อีเมลหัวหน้าแลป</label>
+                                            <input type="email" class="form-control" id="head_email" placeholder="อีเมลหัวหน้าแลป" name="head_email" required>
                                         </div>
 
                                         <div class="form-group d-flex justify-content-center ">

@@ -275,3 +275,5 @@ def staff_signup(request):
 
 def questionnaire_views(request):  # api for logging out
     return render(request, 'Page/questionnaire.html')
+def scrollanime(request):  # api for logging out
+    return render(request, 'Page/scrollanimation.html')

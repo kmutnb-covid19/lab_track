@@ -42,6 +42,6 @@ urlpatterns = [
     path('admin/backup', views.backup, name='backup'),
     path('admin/', admin.site.urls, name='admin'),
     path('staff_signup/', views.staff_signup, name="staff_signup"),
-    path('auth_head/<uidb64>/<token>/', views.auth_head, name='auth_head'),
-    path('auth_staff/<uidb64>/<token>/', views.auth_staff, name='auth_staff'),
+    path('auth_head/<uid_b64>/<token>/', views.auth_head, name='auth_head'),
+    path('auth_staff/<uid_b64>/<token>/', views.auth_staff, name='auth_staff'),
 ]

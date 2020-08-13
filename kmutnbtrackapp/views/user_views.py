@@ -261,7 +261,9 @@ def staff_signup(request):
 
             message_requester = {form.cleaned_data.get('email'): {'username': user.username,
                                                                   'lab_name': request.POST['lab_name'],
-                                                                  'max_lab': request.POST['max_lab']}}
+                                                                  'max_lab': request.POST['max_lab'],
+                                                                  'lab_head_name': request.POST['lab_head_first_name'] + " " + request.POST['lab_head_last_name'],
+                                                                  'head_email': request.POST['head_email']}}
             email = EmailMessage('เราได้รับคำขอใช้งาน Labtrack แล้ว', to=[form.cleaned_data.get('email')])
             email.template_id = 'lab-request-user'
             email.merge_data = message_requester

@@ -328,9 +328,9 @@ def backup(request):
     return HttpResponseRedirect('/admin')
 
 
-def auth_head(request, uidb64, token):
+def auth_head(request, uid_b64, token):
     try:
-        uid = urlsafe_base64_decode(uidb64).decode()
+        uid = urlsafe_base64_decode(uid_b64).decode()
         user = get_user_model()._default_manager.get(pk=uid)
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
@@ -339,10 +339,12 @@ def auth_head(request, uidb64, token):
         current_site = get_current_site(request)
         mail_subject = "เราได้รับคำขอสร้างแลป " + new_lab_data.name
         lab_head = {new_lab_data.head_email: {'first_name': new_lab_data.lab_head_first_name,
-                                 'last_name': new_lab_data.lab_head_last_name,
-                                 'staff_first_name': user.first_name, 'staff_last_name': user.last_name,
-                                 'lab_name': new_lab_data.name, 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                                 'token': default_token_generator.make_token(user), 'domain': current_site.domain}}
+                                              'last_name': new_lab_data.lab_head_last_name,
+                                              'staff_first_name': user.first_name, 'staff_last_name': user.last_name,
+                                              'lab_name': new_lab_data.name,
+                                              'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                                              'token': default_token_generator.make_token(user),
+                                              'domain': current_site.domain}}
         email = EmailMessage(mail_subject, to=[new_lab_data.head_email])
         email.template_id = 'lab-send-head'
         email.merge_data = lab_head
@@ -353,9 +355,9 @@ def auth_head(request, uidb64, token):
         return HttpResponse('ลิ้งค์ยินยันผิดพลาด ให้รีบแจ้งผู้ส่งคำขอโดยด่วน')
 
 
-def auth_staff(request, uidb64, token):
+def auth_staff(request, uid_b64, token):
     try:
-        uid = urlsafe_base64_decode(uidb64).decode()
+        uid = urlsafe_base64_decode(uid_b64).decode()
         user = get_user_model()._default_manager.get(pk=uid)
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None

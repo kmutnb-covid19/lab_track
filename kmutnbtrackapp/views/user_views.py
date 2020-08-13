@@ -237,7 +237,10 @@ def staff_signup(request):
             user = form.save(commit=False)
             user.is_active = False
             user.save()
-            LabPending.objects.create(staff_user=user, name=request.POST['lab_name'], max=request.POST['max_lab'])
+            LabPending.objects.create(staff_user=user, name=request.POST['lab_name'], max=request.POST['max_lab'],
+                                      lab_head_first_name=request.POST['lab_head_first_name'],
+                                      lab_head_last_name=request.POST['lab_head_last_name'],
+                                      head_email=request.POST['head_email'])
             current_site = get_current_site(request)
             mail_subject = request.POST['lab_name'] + ' Lab request'
             to_email = 'labrequest@cony.codes'
@@ -247,6 +250,8 @@ def staff_signup(request):
                                         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                                         'token': default_token_generator.make_token(user),
                                         'lab_name': request.POST['lab_name'],
+                                        'lab_head_name': request.POST['lab_head_first_name'] + " " + request.POST['lab_head_last_name'],
+                                        'head_email': request.POST['head_email'],
                                         'max_lab': request.POST['max_lab']}}
 
             email = EmailMessage(mail_subject, to=[to_email])
@@ -256,7 +261,9 @@ def staff_signup(request):
 
             message_requester = {form.cleaned_data.get('email'): {'username': user.username,
                                                                   'lab_name': request.POST['lab_name'],
-                                                                  'max_lab': request.POST['max_lab']}}
+                                                                  'max_lab': request.POST['max_lab'],
+                                                                  'lab_head_name': request.POST['lab_head_first_name'] + " " + request.POST['lab_head_last_name'],
+                                                                  'head_email': request.POST['head_email']}}
             email = EmailMessage('เราได้รับคำขอใช้งาน Labtrack แล้ว', to=[form.cleaned_data.get('email')])
             email.template_id = 'lab-request-user'
             email.merge_data = message_requester
@@ -266,3 +273,9 @@ def staff_signup(request):
             return render(request, 'Page/homepage.html', {'error_flag': True})
     else:
         return HttpResponseRedirect('/')
+
+
+def questionnaire_views(request):  # api for logging out
+    return render(request, 'Page/questionnaire.html')
+def scrollanime(request):  # api for logging out
+    return render(request, 'Page/scrollanimation.html')

@@ -53,9 +53,9 @@
                 <div class="row" data-aos="fade" data-aos-delay="3000" data-aos-duration="2000">
                     <div class="col-lg-8 mx-auto">
 
-                        <p class="intro-text" style="text-shadow: 0px 0px 30px black;font-family: 'Kanit', sans-serif;">Application ที่สร้างขึ้นมาเพื่อช่วยในการค้นหา ผู้ที่มีความเสี่ยงที่จะติดเชื้อ</p>
-                         <p class="intro-text" style="text-shadow: 0px 0px 30px black;font-family: 'Kanit', sans-serif;"> จากผู้ที่เป็นโรค covid-19</p>
-                        <p class="intro-text" style="text-shadow: 0px 0px 30px black;font-family: 'Kanit', sans-serif;">โดย Application นี้สร้างขึ้นโดยทีม <a href="https://cony.codes/" style="color:greenyellow;text-shadow: 0px 0px 15px black;">Cony.codes</a>  </p>
+                        <p class="intro-text" style="text-shadow: 0px 0px 30px black;font-family: 'Kanit', sans-serif;">Application ที่สร้างขึ้นมาเพื่อช่วยในการติดตามผู้เข้าใช้งานแลป</p>
+                         <p class="intro-text" style="text-shadow: 0px 0px 30px black;font-family: 'Kanit', sans-serif;">เพื่อแจ้งเตือนบุคคลที่ใช้แลปในเวลาเดียวกันกับผู้ที่ติดเชื้อ covid-19</p>
+                        <p class="intro-text" style="text-shadow: 0px 0px 30px black;font-family: 'Kanit', sans-serif;">โดย Application นี้สร้างขึ้นโดยทีม <a href="https://cony.codes/" style="color:greenyellow;text-shadow: 0px 0px 15px black;">ConyCodes</a>  </p>
 
                         <a class="btn btn-link btn-circle"  role="button" style="text-shadow: 0px 0px 10px black" href="#download"><i class="fa fa-angle-double-down animated"  ></i></a></div>
                 </div>
@@ -324,44 +324,60 @@
                                         </div>
                                     {% else %}
                                         <div class="form-group">
-                                        <label for="pwd2">ยืนยัน Password</label>
-                                        <input type="password" class="form-control" id="pwd2" placeholder="ยืนยัน Password" name="password2" required>
-                                         <div class="invalid-feedback">
+                                            <label for="pwd2">ยืนยัน Password</label>
+                                            <input type="password" class="form-control" id="pwd2" placeholder="ยืนยัน Password" name="password2" required>
+                                            <div class="invalid-feedback">
                                                  กรุณาใส่ Password confirmed
                                             </div>
                                     </div>
                                     {% endif %}
 
                                     {% if lab_flag %}
-                                        <div class="form-row">
-                                            <div class="form-group col-md-6">
-                                                <label for="pwd2">ชื่อ Lab</label>
+
+                                            <div class="form-group">
+                                                <label for="lab_name">ชื่อ Lab</label>
                                                 <input type="text" class="form-control is-invalid" id="lab_name" placeholder="ชื่อ Lab" name="lab_name" required>
                                                 <div class="invalid-feedback">
                                                  ชื่อ Lab นี้มีอยู่แล้วในระบบ
                                                 </div>
                                             </div>
 
+
                                     {% else %}
-                                        <div class="form-row">
-                                            <div class="form-group col-md-6">
-                                                <label for="pwd2">ชื่อ Lab</label>
+                                            <div class="form-group">
+                                                <label for="lab_name">ชื่อ Lab</label>
                                                 <input type="text" class="form-control" id="lab_name" placeholder="ชื่อ Lab" name="lab_name" required>
                                                 <div class="invalid-feedback">
                                                  กรุณาใส่ชื่อ Lab
                                                 </div>
                                             </div>
 
+
                                     {% endif %}
 
-                                        <div class="form-group col-md-6">
-                                            <label for="pwd2">จำนวนคนสูงสุดที่ lab รับได้</label>
+                                        <div class="form-group">
+                                            <label for="max_lab">จำนวนคนสูงสุดที่ lab รับได้</label>
                                             <input type="number" class="form-control" id="max_lab" placeholder="จำนวนคนสูงสุดที่ lab รับได้" name="max_lab" required>
                                              <div class="invalid-feedback">
                                                  กรุณาใส่จำนวนคนสูงสุดที่ lab รับได้
                                             </div>
                                         </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="lab_head_first_name">ชื่อหัวหน้าแลป</label>
+                                                <input type="text" class="form-control" id="lab_head_first_name" placeholder="ชื่อหัวหน้าแลป" name="lab_head_first_name" required>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="lab_head_first_name">นามสกุลหัวหน้าแลป</label>
+                                                <input type="text" class="form-control" id="lab_head_last_name" placeholder="นามสกุลหัวหน้าแลป" name="lab_head_last_name" required>
+                                            </div>
                                         </div>
+                                        <div class="form-group">
+                                            <label for="lab_head_first_name">อีเมลหัวหน้าแลป</label>
+                                            <input type="email" class="form-control" id="head_email" placeholder="อีเมลหัวหน้าแลป" name="head_email" required>
+                                        </div>
+
                                         <div class="form-group d-flex justify-content-center ">
                                         <div style="text-align: center">
                                         <label  for="pwd2">โปรดยืนยันว่าคุณไม่ใช่หุ่นยนต์</label>

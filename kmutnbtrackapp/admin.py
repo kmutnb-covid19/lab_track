@@ -18,7 +18,10 @@ class LabAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return queryset
         else:
-            return queryset.filter(name=request.user.groups.first())
+            lab_list = []
+            for lab_name in request.user.groups.all():
+                lab_list.append(lab_name.name)
+            return queryset.filter(name__in=lab_list)
 
     def action(self, obj):
         return format_html(

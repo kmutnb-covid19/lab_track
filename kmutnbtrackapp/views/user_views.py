@@ -25,14 +25,12 @@ from kmutnbtrackapp.models import *
 from kmutnbtrackapp.views.help import tz, compare_current_time
 from kmutnbtrackapp.forms import SignUpForm
 
-lab_hash_for_error = ""
-
 
 class MySocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
     def process_exception(self, request, exception):
         if hasattr(social_exceptions, exception.__class__.__name__):
-            # Here you can handle the exception as you wish
-            return HttpResponseRedirect(reverse("kmutnbtrackapp:lab_home", args=(lab_hash_for_error,)))
+            error_message = "กรุณาแสกน QR Code ใหม่อีกครั้ง และกรุณางดใช้ in-app browser เพื่อป้องกันการ error"
+            return render(request, 'Page/error.html', {"error_message": error_message})
         else:
             return super(MySocialAuthExceptionMiddleware, self).process_exception(request, exception)
 
@@ -47,8 +45,6 @@ def home(request):
 
 
 def lab_home_page(request, lab_hash):  # this function is used when user get in home page
-    global lab_hash_for_error
-    lab_hash_for_error = lab_hash
     if not Lab.objects.filter(hash=lab_hash).exists():  # lab does not exists
         error_message = "QR code ไม่ถูกต้อง"
         return render(request, 'Page/error.html', {"error_message": error_message})

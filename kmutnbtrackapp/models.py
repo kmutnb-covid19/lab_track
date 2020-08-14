@@ -26,6 +26,7 @@ class Person(models.Model):
     email = models.EmailField(default="", blank=True)
     student_id = models.CharField(max_length=13, default="", blank=True)
     is_student = models.BooleanField(default=False)
+    ask_feedback = models.BooleanField(default=False)
 
     def __str__(self):
         return self.first_name + " " + self.last_name

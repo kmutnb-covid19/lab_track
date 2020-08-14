@@ -53,7 +53,26 @@ setTimeout(showModal, 200)
 
 {% block content %}
 <!-- navbar room name -->
-
+<nav class="navbar navbar-dark" style="background-color: #1261A0;">
+    <a class="navbar-brand" href="#">
+        <img src="{% static 'images/logo.png' %}" width="30" height="auto" class="d-inline-block" alt="" loading="lazy">
+        {{ lab_name }}
+    </a>
+    <div class="btn-group btn-username">
+        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img src="{% static 'images/people.png' %}" width="22" alt="username_pic" >
+        </button>
+        <div class="dropdown-menu dropdown-menu-right">
+            <button class="dropdown-item disabled" type="button">{{ request.user.first_name }}</button>
+            <a href="{% url 'kmutnbtrackapp:logout' %}?lab={{ lab_hash }}">
+                <button class="dropdown-item" type="button">
+                    <img id="checkout_img" src="{% static 'images/logout.png' %}" alt="checkout_pic">
+                    ออกจากระบบ
+                </button>
+            </a>
+        </div>
+    </div>
+</nav>
 
 <div class="container">
   <!-- Trigger the modal with a button -->
@@ -92,6 +111,35 @@ setTimeout(showModal, 200)
       </div>
     </div>
   </div>
+</div>
+
+
+<div class="container">
+    {% if exceeded_limit %}
+    <div class="alert alert-warning" role="alert">
+    {% else %}
+    <div class="alert alert-success" role="alert">
+    {% endif %}
+        <h4 class="alert-heading">เช็คอินสำเร็จ!</h4>
+        <p class="room-name"><img src="{% static 'images/logo1.png' %}"  width="40" alt="lab_pic" > ห้อง : {{ lab_name }}</p>
+        {% if exceeded_limit %}
+            <p class="time-checkin">คำเตือน : คุณได้ทำการเช็คอินเกินโควต้าของห้องแลป ({{ maximum_people }} คน)</p>
+        {% endif %}
+    </div>
+    <div class="alert alert-primary" role="alert">
+        <p class="mb-0 showtime">
+            <img id="checkin_img" src="{% static 'images/check in.png' %}" alt="checkin_pic">
+            เวลาเช็คอิน
+            <p class="time-checkin"></p>
+        </p>
+        <p class="mb-0 showtime">
+            <img id="checkout_img" src="{% static 'images/logout_2.png' %}" alt="checkout_pic">
+            เวลาเช็คเอาท์ที่ระบุ
+            <p class="time-checkout"></p>
+        </p>
+    </div>
+    <a href="" type="button" style="width:100%;background-color: #2ca5b9;box-shadow: 0px 0px 14px 3px #2ca5b9;" class="btn btn-secondary btn-checkin">แสดง QR code</a>
+</div>
 </div>
 
 

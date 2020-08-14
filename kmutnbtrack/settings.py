@@ -61,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'kmutnbtrackapp.views.MySocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'kmutnbtrack.urls'

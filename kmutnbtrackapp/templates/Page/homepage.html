@@ -257,7 +257,17 @@
                                     <h2 class="text-center" style="color:black;font-family: 'Kanit', sans-serif;">สมัครใช้งานการติดตามผู้เข้าใช้ห้อง lab (Labtrack)</h2>
                                     <form class="needs-validation" novalidate  method="post" action="{% url 'staff_signup' %}">
                                     {% csrf_token %}
-
+                                    <div class="form-row"style="margin-bottom: 20px">
+                                    <label class="col-lg-6">ตำแหน่งของคุณ</label>
+                                    <div class="col-lg-3" >
+                                        <input  type="radio" onchange="setForm(this.value)" name="joke" value="form1" checked/>
+                                        <label >ผู้ช่วยสอน</label>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <input type="radio" onchange="setForm(this.value)" name="joke" value="form2" />
+                                        <label >หัวหน้าแลป</label>
+                                    </div>
+                                    </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="first_name" >ชื่อจริง</label>
@@ -362,6 +372,8 @@
                                                  กรุณาใส่จำนวนคนสูงสุดที่ lab รับได้
                                             </div>
                                         </div>
+
+                                    <div id="form1">
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                                 <label for="lab_head_first_name">ชื่อหัวหน้าแลป</label>
@@ -377,6 +389,11 @@
                                             <label for="lab_head_first_name">อีเมลหัวหน้าแลป</label>
                                             <input type="email" class="form-control" id="head_email" placeholder="อีเมลหัวหน้าแลป" name="head_email" required>
                                         </div>
+                                    </div>
+                                    <div  id="form2" style="display: none">
+                                    </div>
+
+
 
                                         <div class="form-group d-flex justify-content-center ">
                                         <div style="text-align: center">
@@ -394,6 +411,8 @@
             </div>
         </div>
     </section>
+
+
 
     <footer style="padding-top: 40px;padding-bottom: 10px;">
         <div class="container text-center col-6" >
@@ -456,6 +475,20 @@
             $('#submit_btn').removeClass('btn-secondary')
             $('#submit_btn').addClass('btn-success');
         };
+
+         function setForm(value) {
+
+            if(value == 'form1'){
+                document.getElementById('form1').style='display:block;';
+                document.getElementById('form2').style='display:none;';
+            }
+            else {
+
+                document.getElementById('form2').style = 'display:block;';
+                document.getElementById('form1').style = 'display:none;';
+            }
+
+}
     </script>
 </body>
 

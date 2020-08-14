@@ -74,6 +74,7 @@
                         var parser = new DOMParser();
                         var responseHtml = parser.parseFromString(response, "text/html");
                         $("body").html(responseHtml.body)
+                        setTimeout(showModal, 200)
                     },
                 })
             }
@@ -91,6 +92,9 @@
         .then(html =>{
             document.getElementsByTagName("body")[0].innerHTML = html
         })
+    }
+    function showModal() {
+        $('#myModal').modal('show')
     }
 
 </script>

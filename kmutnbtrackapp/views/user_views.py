@@ -185,6 +185,15 @@ def check_in(request, lab_hash):  # when user checkin record in history
                     print(this_lab.max_number_of_people)
                     new_hist.exceeded_limit = True
                     new_hist.save()
+                    if person.ask_feedback is False:
+                        return render(request, 'Page/lab_checkin_successful_new.html',
+                                      {"lab_hash": this_lab.hash,
+                                       "lab_name": this_lab.name,
+                                       "exceeded_limit": new_hist.exceeded_limit,
+                                       "maximum_people": this_lab.max_number_of_people,
+                                       "check_in": new_hist.checkin.astimezone(tz).strftime("%A, %d %b %Y, %H:%M"),
+                                       "check_out": new_hist.checkout.astimezone(tz).strftime("%A, %d %b %Y, %H:%M"),
+                                       "show_ask_feedback": True})
                 return render(request, 'Page/lab_checkin_successful_new.html',
                               {"lab_hash": this_lab.hash,
                                "lab_name": this_lab.name,
@@ -277,5 +286,8 @@ def staff_signup(request):
 
 def questionnaire_views(request):  # api for logging out
     return render(request, 'Page/questionnaire.html')
+
+
 def scrollanime(request):  # api for logging out
     return render(request, 'Page/scrollanimation.html')
+

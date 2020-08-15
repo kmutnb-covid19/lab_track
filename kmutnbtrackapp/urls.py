@@ -15,6 +15,7 @@ urlpatterns = [
     path('home/', views.home, name='home'),
     path('check_in/<str:lab_hash>/', views.check_in, name='check_in'),
     path('check_out/<str:lab_hash>/', views.check_out, name='check_out'),
+    path('api/addfeedback/', views.add_feedback_api, name='add_feedback'),
     path('questionnaire/',views.questionnaire_views , name='questionnaire'),
     path('scrollanime/',views.scrollanime , name='scrollanime')
 ]

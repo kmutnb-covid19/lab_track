@@ -16,7 +16,7 @@
     const checkout_url = "{% url 'kmutnbtrackapp:check_out' lab_hash  %}";
 
     selectTime();
-
+    
     function selectTime(){
         const Mode = document.getElementById('time').value;
         const time_selector = document.getElementById('time_value');
@@ -74,29 +74,49 @@
                         var parser = new DOMParser();
                         var responseHtml = parser.parseFromString(response, "text/html");
                         $("body").html(responseHtml.body)
-                        setTimeout(showModal, 200)
+                        $("#feedbackModal").modal('show')
+                        $("#feedbackSubmit").click(function (event) {
+                            $("#feedbackModal").modal('hide')
+                        })
                     },
                 })
             }
         })
-    })
+    });
 
-    function checkout(){
-        fetch(checkout_url,{
-            method: "POST",
-            headers: { "X-CSRFToken": csrf_token },
-        })
-        .then(response =>{ 
-            return response.text()
-        })
-        .then(html =>{
-            document.getElementsByTagName("body")[0].innerHTML = html
-        })
-    }
     function showModal() {
-        $('#myModal').modal('show')
+       // document.getElementById('feedbackModal').style.display='block'
+        
     }
 
+    let feedbackApiURL = "{% url 'kmutnbtrackapp:add_feedback' %}"
+    function feedbackSubmit()
+    {
+            let checkedStar = document.querySelector('input[name = "rating"]:checked')
+            if (checkedStar != null)
+            {
+                let selectedRating = checkedStar.value;
+                let userComment = document.getElementById("comment").value;
+
+                let data = new FormData();
+                data.append("rating", selectedRating)
+                data.append("comment", userComment)
+
+                fetch(feedbackApiURL,{
+                    method: "POST",
+                    headers: { 
+                        'X-CSRFToken': csrf_token,
+                    },
+                    body:data
+                })
+                .then(response =>{ 
+
+                    console.log(`rating ${selectedRating} submitted!`)
+                })
+            }
+    }
+        
+    
 </script>
 {% endblock %}
 

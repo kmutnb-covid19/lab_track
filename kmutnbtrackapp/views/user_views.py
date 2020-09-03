@@ -12,6 +12,7 @@ import re
 from social_django.middleware import SocialAuthExceptionMiddleware
 from social_core import exceptions as social_exceptions
 from django.contrib.auth import logout, login
+from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode
@@ -232,6 +233,15 @@ def check_out(request, lab_hash):  # api
         return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(request.GET['next_lab'],)))
     return render(request, 'Page/check_out_success.html', {"lab_name": log.lab.name})
 
+def add_feedback_api(request):
+    rating = request.POST.get("rating", "")
+    comment = request.POST.get("comment", "")
+    print("recieve rating : " + rating + " star")
+    print("comment : " + comment)
+    ###
+    ### do something with rating here ###
+    ###
+    return HttpResponse(status=200)
 
 def staff_signup(request):
     username_flag = False

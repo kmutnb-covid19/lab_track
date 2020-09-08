@@ -233,6 +233,7 @@ def check_out(request, lab_hash):  # api
         return HttpResponseRedirect(reverse('kmutnbtrackapp:lab_home', args=(request.GET['next_lab'],)))
     return render(request, 'Page/check_out_success.html', {"lab_name": log.lab.name})
 
+
 def add_feedback_api(request):
     rating = request.POST.get("rating", "")
     comment = request.POST.get("comment", "")
@@ -242,6 +243,7 @@ def add_feedback_api(request):
     ### do something with rating here ###
     ###
     return HttpResponse(status=200)
+
 
 def staff_signup(request):
     username_flag = False
@@ -264,41 +266,77 @@ def staff_signup(request):
             return render(request, 'Page/homepage.html', {'username_flag': username_flag, 'email_flag': email_flag,
                                                           'password_flag': password_flag, 'lab_flag': lab_flag})
         if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False
-            user.save()
-            LabPending.objects.create(staff_user=user, name=request.POST['lab_name'], max=request.POST['max_lab'],
-                                      lab_head_first_name=request.POST['lab_head_first_name'],
-                                      lab_head_last_name=request.POST['lab_head_last_name'],
-                                      head_email=request.POST['head_email'])
-            current_site = get_current_site(request)
-            mail_subject = request.POST['lab_name'] + ' Lab request'
-            to_email = 'labrequest@cony.codes'
-            message_admin = {to_email: {'user': user.username, 'domain': current_site.domain,
-                                        'user_first_name': user.first_name, 'user_last_name': user.last_name,
-                                        'user_email': user.email,
-                                        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                                        'token': default_token_generator.make_token(user),
-                                        'lab_name': request.POST['lab_name'],
-                                        'lab_head_name': request.POST['lab_head_first_name'] + " " + request.POST['lab_head_last_name'],
-                                        'head_email': request.POST['head_email'],
-                                        'max_lab': request.POST['max_lab']}}
+            if request.POST['role'] == 'staff':
+                user = form.save(commit=False)
+                user.is_active = False
+                user.save()
+                LabPending.objects.create(staff_user=user, name=request.POST['lab_name'], max=request.POST['max_lab'],
+                                          lab_head_first_name=request.POST['lab_head_first_name'],
+                                          lab_head_last_name=request.POST['lab_head_last_name'],
+                                          head_email=request.POST['head_email'])
+                current_site = get_current_site(request)
+                mail_subject = request.POST['lab_name'] + ' Lab request'
+                to_email = 'labrequest@cony.codes'
+                message_admin = {to_email: {'user': user.username, 'domain': current_site.domain,
+                                            'user_first_name': user.first_name, 'user_last_name': user.last_name,
+                                            'user_email': user.email,
+                                            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                                            'token': default_token_generator.make_token(user),
+                                            'lab_name': request.POST['lab_name'],
+                                            'lab_head_name': request.POST['lab_head_first_name'] + " " + request.POST[
+                                                'lab_head_last_name'],
+                                            'head_email': request.POST['head_email'],
+                                            'max_lab': request.POST['max_lab']}}
 
-            email = EmailMessage(mail_subject, to=[to_email])
-            email.template_id = 'lab-request-admin'
-            email.merge_data = message_admin
-            email.send()
+                email = EmailMessage(mail_subject, to=[to_email])
+                email.template_id = 'lab-request-admin'
+                email.merge_data = message_admin
+                email.send()
 
-            message_requester = {form.cleaned_data.get('email'): {'username': user.username,
-                                                                  'lab_name': request.POST['lab_name'],
-                                                                  'max_lab': request.POST['max_lab'],
-                                                                  'lab_head_name': request.POST['lab_head_first_name'] + " " + request.POST['lab_head_last_name'],
-                                                                  'head_email': request.POST['head_email']}}
-            email = EmailMessage('เราได้รับคำขอใช้งาน Labtrack แล้ว', to=[form.cleaned_data.get('email')])
-            email.template_id = 'lab-request-user'
-            email.merge_data = message_requester
-            email.send()
-            return render(request, 'Page/homepage.html', {'correct_flag': True})
+                message_requester = {form.cleaned_data.get('email'): {'username': user.username,
+                                                                      'lab_name': request.POST['lab_name'],
+                                                                      'max_lab': request.POST['max_lab'],
+                                                                      'lab_head_name': request.POST[
+                                                                                           'lab_head_first_name'] + " " +
+                                                                                       request.POST[
+                                                                                           'lab_head_last_name'],
+                                                                      'head_email': request.POST['head_email']}}
+                email = EmailMessage('เราได้รับคำขอใช้งาน Labtrack แล้ว', to=[form.cleaned_data.get('email')])
+                email.template_id = 'lab-request-user'
+                email.merge_data = message_requester
+                email.send()
+                return render(request, 'Page/homepage.html', {'correct_flag': True})
+            if request.POST['role'] == 'lab_head':
+                user = form.save(commit=False)
+                user.is_active = False
+                user.save()
+                LabPending.objects.create(staff_user=user, name=request.POST['lab_name'], max=request.POST['max_lab'])
+                current_site = get_current_site(request)
+                mail_subject = request.POST['lab_name'] + ' Lab request'
+                to_email = 'labrequest@cony.codes'
+                message_admin = {to_email: {'user': user.username, 'domain': current_site.domain,
+                                            'user_first_name': user.first_name, 'user_last_name': user.last_name,
+                                            'user_email': user.email,
+                                            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                                            'token': default_token_generator.make_token(user),
+                                            'lab_name': request.POST['lab_name'],
+                                            'max_lab': request.POST['max_lab']}}
+
+                email = EmailMessage(mail_subject, to=[to_email])
+                email.template_id = 'lab-request-admin'
+                email.merge_data = message_admin
+                email.send()
+
+                message_requester = {form.cleaned_data.get('email'): {'username': user.username,
+                                                                      'lab_name': request.POST['lab_name'],
+                                                                      'max_lab': request.POST['max_lab'],
+                                                                      'lab_head_name': '-',
+                                                                      'head_email': '-'}}
+                email = EmailMessage('เราได้รับคำขอใช้งาน Labtrack แล้ว', to=[form.cleaned_data.get('email')])
+                email.template_id = 'lab-request-user'
+                email.merge_data = message_requester
+                email.send()
+                return render(request, 'Page/homepage.html', {'correct_flag': True})
         else:
             return render(request, 'Page/homepage.html', {'error_flag': True})
     else:
@@ -311,4 +349,3 @@ def questionnaire_views(request):  # api for logging out
 
 def scrollanime(request):  # api for logging out
     return render(request, 'Page/scrollanimation.html')
-

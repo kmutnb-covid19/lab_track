@@ -336,21 +336,25 @@ def auth_head(request, uid_b64, token):
         user = None
     if user is not None and default_token_generator.check_token(user, token):
         new_lab_data = LabPending.objects.get(staff_user=user)
-        current_site = get_current_site(request)
-        mail_subject = "เราได้รับคำขอสร้างแลป " + new_lab_data.name
-        lab_head = {new_lab_data.head_email: {'first_name': new_lab_data.lab_head_first_name,
-                                              'last_name': new_lab_data.lab_head_last_name,
-                                              'staff_first_name': user.first_name, 'staff_last_name': user.last_name,
-                                              'lab_name': new_lab_data.name,
-                                              'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                                              'token': default_token_generator.make_token(user),
-                                              'domain': current_site.domain}}
-        email = EmailMessage(mail_subject, to=[new_lab_data.head_email])
-        email.template_id = 'lab-send-head'
-        email.merge_data = lab_head
-        email.send()
-        success_message = "แลป " + new_lab_data.name + " ได้รับการยืนยันแล้ว"
-        return render(request, 'Page/success.html', {'success_message': success_message})
+        if new_lab_data.head_email is None:
+            auth_staff(request, uid_b64, token)
+            return HttpResponseRedirect('/admin/')
+        else:
+            current_site = get_current_site(request)
+            mail_subject = "เราได้รับคำขอสร้างแลป " + new_lab_data.name
+            lab_head = {new_lab_data.head_email: {'first_name': new_lab_data.lab_head_first_name,
+                                                  'last_name': new_lab_data.lab_head_last_name,
+                                                  'staff_first_name': user.first_name, 'staff_last_name': user.last_name,
+                                                  'lab_name': new_lab_data.name,
+                                                  'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                                                  'token': default_token_generator.make_token(user),
+                                                  'domain': current_site.domain}}
+            email = EmailMessage(mail_subject, to=[new_lab_data.head_email])
+            email.template_id = 'lab-send-head'
+            email.merge_data = lab_head
+            email.send()
+            success_message = "แลป " + new_lab_data.name + " ได้รับการยืนยันแล้ว"
+            return render(request, 'Page/success.html', {'success_message': success_message})
     else:
         return HttpResponse('ลิ้งค์ยินยันผิดพลาด ให้รีบแจ้งผู้ส่งคำขอโดยด่วน')
 

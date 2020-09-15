@@ -55,3 +55,6 @@ class LabPending(models.Model):
     def __str__(self):
         return self.name
 
+class Feedback(models.Model):
+    star = models.IntegerField(default=0)
+    text = models.TextField(default="")

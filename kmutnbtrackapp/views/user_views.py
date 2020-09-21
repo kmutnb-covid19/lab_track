@@ -235,13 +235,15 @@ def check_out(request, lab_hash):  # api
 
 
 def add_feedback_api(request):
-    rating = request.POST.get("rating", "")
+    rating = request.POST.get("rating", "0")
     comment = request.POST.get("comment", "")
     print("recieve rating : " + rating + " star")
     print("comment : " + comment)
-    ###
-    ### do something with rating here ###
-    ###
+    
+    rating = int(rating) if rating.isnumeric() else 0
+    new_feedback = Feedback.objects.create(star=rating, text=comment)
+    new_feedback.save()
+
     return HttpResponse(status=200)
 
 

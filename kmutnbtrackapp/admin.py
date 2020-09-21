@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 
-from .models import History, Lab, LabPending, Person
+from .models import History, Lab, LabPending, Person, Feedback
 
 
 # Register your models here.
@@ -44,3 +44,4 @@ admin.site.register(History, HistoryAdmin)
 admin.site.register(Lab, LabAdmin)
 admin.site.register(LabPending)
 admin.site.register(Person)
+admin.site.register(Feedback)

@@ -55,6 +55,11 @@ class LabPending(models.Model):
     def __str__(self):
         return self.name
 
+
 class Feedback(models.Model):
     star = models.IntegerField(default=0)
     text = models.TextField(default="")
+    is_student = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.text

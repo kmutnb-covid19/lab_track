@@ -197,15 +197,15 @@ def check_in(request, lab_hash):  # when user checkin record in history
                     print(this_lab.max_number_of_people)
                     new_hist.exceeded_limit = True
                     new_hist.save()
-                    if person.ask_feedback is False:
-                        return render(request, 'Page/lab_checkin_successful_new.html',
-                                      {"lab_hash": this_lab.hash,
-                                       "lab_name": this_lab.name,
-                                       "exceeded_limit": new_hist.exceeded_limit,
-                                       "maximum_people": this_lab.max_number_of_people,
-                                       "check_in": new_hist.checkin.astimezone(tz).strftime("%A, %d %b %Y, %H:%M"),
-                                       "check_out": new_hist.checkout.astimezone(tz).strftime("%A, %d %b %Y, %H:%M"),
-                                       "show_ask_feedback": True})
+                if person.ask_feedback is False:
+                    return render(request, 'Page/lab_checkin_successful_new.html',
+                                  {"lab_hash": this_lab.hash,
+                                   "lab_name": this_lab.name,
+                                   "exceeded_limit": new_hist.exceeded_limit,
+                                   "maximum_people": this_lab.max_number_of_people,
+                                   "check_in": new_hist.checkin.astimezone(tz).strftime("%A, %d %b %Y, %H:%M"),
+                                   "check_out": new_hist.checkout.astimezone(tz).strftime("%A, %d %b %Y, %H:%M"),
+                                   "show_ask_feedback": True})
                 return render(request, 'Page/lab_checkin_successful_new.html',
                               {"lab_hash": this_lab.hash,
                                "lab_name": this_lab.name,
@@ -235,14 +235,21 @@ def check_out(request, lab_hash):  # api
 
 
 def add_feedback_api(request):
+    person = Person.objects.get(user=request.user)
     rating = request.POST.get("rating", "0")
     comment = request.POST.get("comment", "")
     print("recieve rating : " + rating + " star")
     print("comment : " + comment)
-    
+
     rating = int(rating) if rating.isnumeric() else 0
-    new_feedback = Feedback.objects.create(star=rating, text=comment)
+    if person.is_student is True:
+        new_feedback = Feedback.objects.create(star=rating, text=comment, is_student=True)
+    else:
+        new_feedback = Feedback.objects.create(star=rating, text=comment)
     new_feedback.save()
+
+    person.ask_feedback = True
+    person.save()
 
     return HttpResponse(status=200)
 
@@ -343,11 +350,3 @@ def staff_signup(request):
             return render(request, 'Page/homepage.html', {'error_flag': True})
     else:
         return HttpResponseRedirect('/')
-
-
-def questionnaire_views(request):  # api for logging out
-    return render(request, 'Page/questionnaire.html')
-
-
-def scrollanime(request):  # api for logging out
-    return render(request, 'Page/scrollanimation.html')

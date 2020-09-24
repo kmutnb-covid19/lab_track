@@ -174,7 +174,7 @@
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-4 item" data-aos="fade">
-                        <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/kay.JPG" %}">
+                        <div class="box"><img class="rounded-circle" style="width: 150px;height: 150px" data-bs-hover-animate="pulse" src="{% static "images/kay3.JPG" %}">
                             <h3 class="name">Kitsanapong R.</h3>
                             <p class="title">Front-End-Developer</p>
 
@@ -253,14 +253,14 @@
                     <div class="container" style="margin-top: 50px;">
                         <div class="row d-flex justify-content-center ">
                             <div class="col-md-10 d-flex justify-content-center p-3 mb-5 bg-white rounded" >
-                                <div class="col-md-8 justify-content-center"style="padding-top: 10%;padding-bottom: 10%" >
+                                <div class="col-md-8 justify-content-center"style="padding-top: 10%;padding-bottom: 5%" >
                                     <h2 class="text-center" style="color:black;font-family: 'Kanit', sans-serif;">สมัครใช้งานการติดตามผู้เข้าใช้ห้อง lab (Labtrack)</h2>
                                     <form class="needs-validation" novalidate  method="post" action="{% url 'staff_signup' %}">
                                     {% csrf_token %}
                                     <div class="form-row"style="margin-bottom: 20px">
                                     <label class="col-lg-6">ตำแหน่งของคุณ</label>
                                     <div class="col-lg-3" >
-                                        <input  type="radio" onchange="setForm(this.value)" name="role" value="staff" checked/>
+                                        <input  type="radio" onchange="setForm(this.value)" name="role" value="staff" />
                                         <label >ผู้ช่วยสอน</label>
                                     </div>
                                     <div class="col-lg-3">
@@ -268,141 +268,143 @@
                                         <label >หัวหน้าแลป</label>
                                     </div>
                                     </div>
-                                    <div class="form-row">
-                                        <div class="form-group col-md-6">
-                                            <label for="first_name" >ชื่อจริง</label>
-                                            <input type="text" class="form-control" id="first_name" placeholder="สมหมาย" name="first_name" required>
-                                             <div class="invalid-feedback">
-                                                 กรุณาใส่ชื่อจริง
-                                            </div>
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label  for="last_name">นามสกุล</label>
-                                            <input type="text" class="form-control" id="last_name" placeholder="รักเรียน" name="last_name" required>
-                                             <div class="invalid-feedback">
-                                                 กรุณาใส่นามสกุล
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                         <div class="form-group">
-                                        <label for="email">อีเมล</label>
-                                             {% if email_flag %}
-                                                 <input type="email" class="form-control is-invalid" id="email" placeholder="Email" name="email" required>
-                                                 <div class="invalid-feedback">
-                                                         อีเมลนี้มีอยู่แล้วในระบบ
-                                                 </div>
-                                            {% else %}
-                                        <input type="email" class="form-control" id="email" placeholder="Email" name="email" required>
-                                                 <div class="invalid-feedback">
-                                                    กรุณาใส่อีเมล
-                                                 </div>
-                                        {% endif %}
-
-                                    </div>
-
-                                    <div class="form-group ">
-                                        {% if username_flag %}
-                                            <label for="username">Username สำหรับ staff</label>
-                                            <input type="text" class="form-control is-invalid" id="username" placeholder="Username" name="username" required>
-                                            <div class="invalid-feedback">
-                                                 Username นี้มีอยู่แล้วในระบบ
-                                            </div>
-                                        {% else %}
-                                            <label for="username">Username สำหรับ staff</label>
-                                            <input type="text" class="form-control" id="username" placeholder="Username" name="username" required>
-                                            <div class="invalid-feedback">
-                                                 กรุณาใส่ Username
-                                            </div>
-                                        {% endif %}
-
-                                        </div>
-                                    <div class="form-group">
-                                        <label for="pwd1">Password</label>
-                                        <input type="password" class="form-control" id="pwd1" placeholder="Password" name="password1" required>
-                                         <div class="invalid-feedback">
-                                                 กรุณาใส่ Password
-                                            </div>
-                                    </div>
-                                    {% if password_flag %}
-                                        <div class="form-group">
-                                            <label for="pwd2">ยืนยัน Password</label>
-                                            <input type="password" class="form-control is-invalid" id="pwd2" placeholder="ยืนยัน Password" name="password2" required>
-                                             <div class="invalid-feedback">
-                                                     Password ไม่ตรงกัน
-                                                </div>
-                                        </div>
-                                    {% else %}
-                                        <div class="form-group">
-                                            <label for="pwd2">ยืนยัน Password</label>
-                                            <input type="password" class="form-control" id="pwd2" placeholder="ยืนยัน Password" name="password2" required>
-                                            <div class="invalid-feedback">
-                                                 กรุณาใส่ Password confirmed
-                                            </div>
-                                    </div>
-                                    {% endif %}
-
-                                    {% if lab_flag %}
-
-                                            <div class="form-group">
-                                                <label for="lab_name">ชื่อ Lab</label>
-                                                <input type="text" class="form-control is-invalid" id="lab_name" placeholder="ชื่อ Lab" name="lab_name" required>
-                                                <div class="invalid-feedback">
-                                                 ชื่อ Lab นี้มีอยู่แล้วในระบบ
-                                                </div>
-                                            </div>
-
-
-                                    {% else %}
-                                            <div class="form-group">
-                                                <label for="lab_name">ชื่อ Lab</label>
-                                                <input type="text" class="form-control" id="lab_name" placeholder="ชื่อ Lab" name="lab_name" required>
-                                                <div class="invalid-feedback">
-                                                 กรุณาใส่ชื่อ Lab
-                                                </div>
-                                            </div>
-
-
-                                    {% endif %}
-
-                                        <div class="form-group">
-                                            <label for="max_lab">จำนวนคนสูงสุดที่ lab รับได้</label>
-                                            <input type="number" class="form-control" id="max_lab" placeholder="จำนวนคนสูงสุดที่ lab รับได้" name="max_lab" required>
-                                             <div class="invalid-feedback">
-                                                 กรุณาใส่จำนวนคนสูงสุดที่ lab รับได้
-                                            </div>
-                                        </div>
-
-                                    <div id="form1">
+                                    <div  id="checkform" style="display: none"data-aos="fade">
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
-                                                <label for="lab_head_first_name">ชื่อหัวหน้าแลป</label>
-                                                <input type="text" class="form-control" id="lab_head_first_name2" placeholder="ชื่อหัวหน้าแลป" name="lab_head_first_name" required>
+                                                <label for="first_name" >ชื่อจริง</label>
+                                                <input type="text" class="form-control" id="first_name" placeholder="สมหมาย" name="first_name" required>
+                                                 <div class="invalid-feedback">
+                                                     กรุณาใส่ชื่อจริง
+                                                </div>
                                             </div>
-
                                             <div class="form-group col-md-6">
-                                                <label for="lab_head_first_name">นามสกุลหัวหน้าแลป</label>
-                                                <input type="text" class="form-control" id="lab_head_last_name2" placeholder="นามสกุลหัวหน้าแลป" name="lab_head_last_name" required>
+                                                <label  for="last_name">นามสกุล</label>
+                                                <input type="text" class="form-control" id="last_name" placeholder="รักเรียน" name="last_name" required>
+                                                 <div class="invalid-feedback">
+                                                     กรุณาใส่นามสกุล
+                                                </div>
                                             </div>
                                         </div>
+
+                                             <div class="form-group">
+                                            <label for="email">อีเมล</label>
+                                                 {% if email_flag %}
+                                                     <input type="email" class="form-control is-invalid" id="email" placeholder="Email" name="email" required>
+                                                     <div class="invalid-feedback">
+                                                             อีเมลนี้มีอยู่แล้วในระบบ
+                                                     </div>
+                                                {% else %}
+                                            <input type="email" class="form-control" id="email" placeholder="Email" name="email" required>
+                                                     <div class="invalid-feedback">
+                                                        กรุณาใส่อีเมล
+                                                     </div>
+                                            {% endif %}
+
+                                        </div>
+
+                                        <div class="form-group ">
+                                            {% if username_flag %}
+                                                <label for="username">Username สำหรับ staff</label>
+                                                <input type="text" class="form-control is-invalid" id="username" placeholder="Username" name="username" required>
+                                                <div class="invalid-feedback">
+                                                     Username นี้มีอยู่แล้วในระบบ
+                                                </div>
+                                            {% else %}
+                                                <label for="username">Username สำหรับ staff</label>
+                                                <input type="text" class="form-control" id="username" placeholder="Username" name="username" required>
+                                                <div class="invalid-feedback">
+                                                     กรุณาใส่ Username
+                                                </div>
+                                            {% endif %}
+
+                                            </div>
                                         <div class="form-group">
-                                            <label for="lab_head_first_name">อีเมลหัวหน้าแลป</label>
-                                            <input type="email" class="form-control" id="head_email2" placeholder="อีเมลหัวหน้าแลป" name="head_email" required>
+                                            <label for="pwd1">Password</label>
+                                            <input type="password" class="form-control" id="pwd1" placeholder="Password" name="password1" required>
+                                             <div class="invalid-feedback">
+                                                     กรุณาใส่ Password
+                                                </div>
                                         </div>
-                                    </div>
-                                    <div  id="form2" style="display: none">
-                                    </div>
-
-
-
-                                        <div class="form-group d-flex justify-content-center ">
-                                        <div style="text-align: center">
-                                        <label  for="pwd2">โปรดยืนยันว่าคุณไม่ใช่หุ่นยนต์</label>
-                                        <div class="g-recaptcha " style="text-align: center" data-callback="recaptchaCallback" data-sitekey="6LdYxrUZAAAAAI9HXjGaZniXZgr_f2mL2QTqo55Q"></div>
+                                        {% if password_flag %}
+                                            <div class="form-group">
+                                                <label for="pwd2">ยืนยัน Password</label>
+                                                <input type="password" class="form-control is-invalid" id="pwd2" placeholder="ยืนยัน Password" name="password2" required>
+                                                 <div class="invalid-feedback">
+                                                         Password ไม่ตรงกัน
+                                                    </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="form-group">
+                                                <label for="pwd2">ยืนยัน Password</label>
+                                                <input type="password" class="form-control" id="pwd2" placeholder="ยืนยัน Password" name="password2" required>
+                                                <div class="invalid-feedback">
+                                                     กรุณาใส่ Password confirmed
+                                                </div>
                                         </div>
+                                        {% endif %}
+
+                                        {% if lab_flag %}
+
+                                                <div class="form-group">
+                                                    <label for="lab_name">ชื่อ Lab</label>
+                                                    <input type="text" class="form-control is-invalid" id="lab_name" placeholder="ชื่อ Lab" name="lab_name" required>
+                                                    <div class="invalid-feedback">
+                                                     ชื่อ Lab นี้มีอยู่แล้วในระบบ
+                                                    </div>
+                                                </div>
+
+
+                                        {% else %}
+                                                <div class="form-group">
+                                                    <label for="lab_name">ชื่อ Lab</label>
+                                                    <input type="text" class="form-control" id="lab_name" placeholder="ชื่อ Lab" name="lab_name" required>
+                                                    <div class="invalid-feedback">
+                                                     กรุณาใส่ชื่อ Lab
+                                                    </div>
+                                                </div>
+
+
+                                        {% endif %}
+
+                                            <div class="form-group">
+                                                <label for="max_lab">จำนวนคนสูงสุดที่ lab รับได้</label>
+                                                <input type="number" class="form-control" id="max_lab" placeholder="จำนวนคนสูงสุดที่ lab รับได้" name="max_lab" required>
+                                                 <div class="invalid-feedback">
+                                                     กรุณาใส่จำนวนคนสูงสุดที่ lab รับได้
+                                                </div>
+                                            </div>
+
+                                        <div id="form1">
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6">
+                                                    <label for="lab_head_first_name">ชื่อหัวหน้าแลป</label>
+                                                    <input type="text" class="form-control" id="lab_head_first_name2" placeholder="ชื่อหัวหน้าแลป" name="lab_head_first_name" required>
+                                                </div>
+
+                                                <div class="form-group col-md-6">
+                                                    <label for="lab_head_first_name">นามสกุลหัวหน้าแลป</label>
+                                                    <input type="text" class="form-control" id="lab_head_last_name2" placeholder="นามสกุลหัวหน้าแลป" name="lab_head_last_name" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="lab_head_first_name">อีเมลหัวหน้าแลป</label>
+                                                <input type="email" class="form-control" id="head_email2" placeholder="อีเมลหัวหน้าแลป" name="head_email" required>
+                                            </div>
+                                        </div>
+                                        <div  id="form2" style="display: none">
+                                        </div>
+
+
+
+                                            <div class="form-group d-flex justify-content-center ">
+                                            <div style="text-align: center">
+                                            <label  for="pwd2">โปรดยืนยันว่าคุณไม่ใช่หุ่นยนต์</label>
+                                            <div class="g-recaptcha " style="text-align: center" data-callback="recaptchaCallback" data-sitekey="6LdYxrUZAAAAAI9HXjGaZniXZgr_f2mL2QTqo55Q"></div>
+                                            </div>
+                                        </div>
+                                        <button id="submit_btn" disabled type="submit" class="btn btn-secondary" style="margin-top:5%;width: 100%;font-family: 'Kanit', sans-serif;color: white;font-size: 20px;">ยืนยัน</button>
+                                        </form>
                                     </div>
-                                    <button id="submit_btn" disabled type="submit" class="btn btn-secondary" style="margin-top:5%;width: 100%;font-family: 'Kanit', sans-serif;color: white;font-size: 20px;">ยืนยัน</button>
-                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -477,14 +479,14 @@
         };
 
          function setForm(value) {
-
             if(value == 'staff'){
+                document.getElementById('checkform').style='display:block;';
                 document.getElementById('form1').style='display:block;';
                 document.getElementById('form2').style='display:none;';
 
             }
             else {
-
+                document.getElementById('checkform').style='display:block;';
                 document.getElementById('form2').style = 'display:block;';
                 document.getElementById('form1').style = 'display:none;';
                 document.getElementById('lab_head_first_name2').removeAttribute("required");

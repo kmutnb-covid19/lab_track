@@ -1,4 +1,4 @@
-django==3.0.8
+django==3.1.13
 social-auth-app-django==4.0.0
 django-dbbackup==3.3.0
 django-storages==1.9.1

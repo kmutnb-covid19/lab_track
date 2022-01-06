@@ -2,7 +2,7 @@ django==3.0.8
 social-auth-app-django==4.0.0
 django-dbbackup==3.3.0
 django-storages==1.9.1
-celery==4.4.6
+celery==5.2.2
 selenium==3.141.0
 django-anymail==7.1.0
 python-dotenv==0.14.0
